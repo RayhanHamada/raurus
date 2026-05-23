@@ -1,9 +1,9 @@
 {
-  "$schema": "node_modules/turbo/schema.json",
-  "tasks": {
-    "build": {
-      "dependsOn": ["^build"],
-      "outputs": ["dist/**", "lib/**"]
+    "$schema": "node_modules/turbo/schema.json",
+    "tasks": {
+        "build": {
+            "dependsOn": ["^build"],
+            "outputs": ["dist/**", "lib/**"]
+        }
     }
-  }
 }
