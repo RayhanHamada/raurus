@@ -1,0 +1,28 @@
+{
+    "extends": "@tsconfig/strictest/tsconfig.json",
+    "compilerOptions": {
+        "ignoreDeprecations": "6.0",
+        "target": "ESNext",
+        "module": "ESNext",
+        "moduleResolution": "Bundler",
+        "moduleDetection": "force",
+        "resolveJsonModule": true,
+        "allowSyntheticDefaultImports": true,
+        "esModuleInterop": true,
+        "useDefineForClassFields": true,
+        "verbatimModuleSyntax": true,
+        "skipLibCheck": true,
+        "baseUrl": ".",
+        "paths": {
+            "@raurus/core": ["packages/core/src/index.ts"],
+            "@raurus/react": ["packages/react/src/index.ts"],
+            "@raurus/storage-local": ["packages/storage-local/src/index.ts"],
+            "@raurus/metadata-sqlite": [
+                "packages/metadata-sqlite/src/index.ts"
+            ],
+            "@raurus/permissions-basic": [
+                "packages/permissions-basic/src/index.ts"
+            ]
+        }
+    }
+}

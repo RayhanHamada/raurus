@@ -1,0 +1,30 @@
+{
+    "name": "@raurus/metadata-sqlite",
+    "version": "0.0.0",
+    "description": "SQLite metadata adapter for Raurus",
+    "files": [
+        "dist"
+    ],
+    "type": "module",
+    "exports": {
+        ".": "./dist/index.mjs",
+        "./package.json": "./package.json"
+    },
+    "scripts": {
+        "build": "tsdown",
+        "dev": "tsdown --watch",
+        "prepublishOnly": "bun run build",
+        "test": "vitest run",
+        "typecheck": "tsc --noEmit"
+    },
+    "dependencies": {
+        "@raurus/core": "workspace:*",
+        "better-sqlite3": "^12.4.6"
+    },
+    "devDependencies": {
+        "@types/better-sqlite3": "^7.6.13",
+        "tsdown": "^0.22.0",
+        "typescript": "^6.0.3",
+        "vitest": "^4.1.5"
+    }
+}
