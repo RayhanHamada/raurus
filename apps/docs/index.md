@@ -3,22 +3,22 @@
 layout: home
 
 hero:
-    name: "Raurus Documentation"
-    text: "Raurus Visual Editing Documentation"
-    tagline: My great project tagline
+    name: "Raurus"
+    text: "Inline image editing without handing your UI to a CMS"
+    tagline: A lightweight runtime and React integration for editable web assets with local storage, SQLite metadata, and permission-aware edit mode.
     actions:
         - theme: brand
-          text: Markdown Examples
-          link: /markdown-examples
-        - theme: alt
           text: API Examples
           link: /api-examples
+        - theme: alt
+          text: GitHub Repository
+          link: https://github.com/RayhanHamada/raurus
 
 features:
-    - title: Feature A
-      details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
-    - title: Feature B
-      details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
-    - title: Feature C
-      details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+    - title: Runtime-first design
+      details: Keep storage, permissions, validation, and metadata orchestration in a small framework-agnostic runtime.
+    - title: Thin React layer
+      details: Wrap images with `EditableAsset`, provide a runtime with `RaurusProvider`, and keep normal rendering untouched outside edit mode.
+    - title: Practical V0 workflow
+      details: Use the local filesystem, SQLite metadata, and a simple permission adapter to prove inline asset editing end to end.
 ---

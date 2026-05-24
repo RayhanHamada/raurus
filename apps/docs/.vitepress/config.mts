@@ -2,27 +2,34 @@ import { defineConfig } from "vitepress";
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
-    title: "Raurus Documentation",
-    description: "Raurus Visual Editing Documentation",
+    title: "Raurus",
+    description: "Inline image editing without handing your UI to a CMS.",
     themeConfig: {
         // https://vitepress.dev/reference/default-theme-config
         nav: [
             { text: "Home", link: "/" },
-            { text: "Examples", link: "/markdown-examples" },
+            { text: "API Examples", link: "/api-examples" },
+            {
+                text: "GitHub",
+                link: "https://github.com/RayhanHamada/raurus",
+            },
         ],
 
         sidebar: [
             {
-                text: "Examples",
+                text: "Documentation",
                 items: [
-                    { text: "Markdown Examples", link: "/markdown-examples" },
                     { text: "Runtime API Examples", link: "/api-examples" },
+                    { text: "Markdown Examples", link: "/markdown-examples" },
                 ],
             },
         ],
 
         socialLinks: [
-            { icon: "github", link: "https://github.com/vuejs/vitepress" },
+            {
+                icon: "github",
+                link: "https://github.com/RayhanHamada/raurus",
+            },
         ],
     },
 });
