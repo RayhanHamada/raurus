@@ -1,5 +1,27 @@
 # Ultracite Code Standards
 
+## Project Context
+
+Raurus is a monorepo for a simple inline editing library for web apps.
+
+## Monorepo Rules
+
+- Every package in this monorepo must be named with the `@raurus/<package>` prefix
+- Every package in this monorepo should be scaffolded with `tsdown`
+- Every package must remain tree-shakeable: prefer explicit exports, avoid unnecessary module side effects, and keep package build configuration aligned with tree-shaking
+
+## Agent Workflow
+
+- For every planning task, read `AGENTS.md` first before proposing or executing work
+- For every implementation task, read `AGENTS.md` first before making changes
+- Maintain an `AGENTS.md` file inside each monorepo package with package-specific instructions and documentation relevant to work in that package
+- When a task relates to a specific package, read that package's `AGENTS.md` after the root `AGENTS.md` and follow both sets of instructions
+- Before planning or implementing, load and use any relevant skills available to the current agent, especially from the agent-specific skills folder when applicable
+- Choose skills based on the task domain. For example, use React-related skills when working on React code or seeking React references
+- Use available tools and MCP integrations when they are relevant and necessary to complete the task effectively
+- After each implementation task, update `AGENTS.md` accordingly to reflect any new or changed repository conventions, workflows, or expectations introduced by the work
+- If an implementation task modifies a specific package, update that package's `AGENTS.md` by the end of the task when package-level instructions or documentation should change
+
 This project uses **Ultracite**, a zero-config preset that enforces strict code quality standards through automated formatting and linting.
 
 ## Quick Reference
@@ -15,6 +37,9 @@ Oxlint + Oxfmt (the underlying engine) provides robust linting and formatting. M
 ## Core Principles
 
 Write code that is **accessible, performant, type-safe, and maintainable**. Focus on clarity and explicit intent over brevity.
+
+- Always apply clean code principles, modularity, reusability, and scope-aware code placement
+- Be as type-safe as reasonably possible throughout the implementation
 
 ### Type Safety & Explicitness
 
@@ -43,11 +68,14 @@ Write code that is **accessible, performant, type-safe, and maintainable**. Focu
 ### React & JSX
 
 - Use function components over class components
+- For UI work such as React components, apply atomic design principles where they fit the existing project structure
 - Call hooks at the top level only, never conditionally
 - Specify all dependencies in hook dependency arrays correctly
 - Use the `key` prop for elements in iterables (prefer unique IDs over array indices)
 - Nest children between opening and closing tags instead of passing as props
 - Don't define components inside other components
+- If the project uses shadcn components, never edit shadcn-generated components directly
+- When shadcn customization is needed, derive from the existing component first; if that is insufficient, create a specific custom component instead
 - Use semantic HTML and ARIA attributes for accessibility:
     - Provide meaningful alt text for images
     - Use proper heading hierarchy
