@@ -14,13 +14,14 @@ Raurus is a monorepo for a simple inline editing library for web apps.
 
 - For every planning task, read `AGENTS.md` first before proposing or executing work
 - For every implementation task, read `AGENTS.md` first before making changes
-- Maintain an `AGENTS.md` file inside each monorepo package with package-specific instructions and documentation relevant to work in that package
-- When a task relates to a specific package, read that package's `AGENTS.md` after the root `AGENTS.md` and follow both sets of instructions
+- Maintain an `AGENTS.md` file inside each monorepo package or app with area-specific instructions and documentation relevant to work in that area
+- When a task relates to a specific package or app, read that area's `AGENTS.md` after the root `AGENTS.md` and follow both sets of instructions
 - Before planning or implementing, load and use any relevant skills available to the current agent, especially from the agent-specific skills folder when applicable
 - Choose skills based on the task domain. For example, use React-related skills when working on React code or seeking React references
 - Use available tools and MCP integrations when they are relevant and necessary to complete the task effectively
 - After each implementation task, update `AGENTS.md` accordingly to reflect any new or changed repository conventions, workflows, or expectations introduced by the work
-- If an implementation task modifies a specific package, update that package's `AGENTS.md` by the end of the task when package-level instructions or documentation should change
+- If an implementation task modifies a specific package or app, update that area's `AGENTS.md` by the end of the task when area-specific instructions or documentation should change
+- Use the `/sync-agents` opencode command when you need to reconcile current repository, package, or app state with durable `AGENTS.md` guidance
 
 This project uses **Ultracite**, a zero-config preset that enforces strict code quality standards through automated formatting and linting.
 
