@@ -10,6 +10,9 @@ This package is `@raurus/react`, the thin React integration for the Raurus runti
 - Preserve the render-prop API for `EditableAsset` and keep public exports explicit through `src/index.ts`
 - Keep admin UI minimal and avoid introducing framework-specific server assumptions
 - Keep the package scaffold and build flow based on `tsdown`
+- Ship the package UI stylesheet as an explicit `./styles.css` export, and keep Tailwind prefix/preflight configuration in `src/styles/index.css` instead of a separate Tailwind config file
+- Keep source files grouped by area under `src/components`, `src/context`, `src/hooks`, `src/lib`, and `src/provider`
+- Compose Tailwind utility `className` values through `src/lib/cn.ts` so package source stays IntelliSense-friendly and the compiled CSS remains package-local
 
 ## Workflow
 

@@ -1,7 +1,41 @@
 import { useEffect, useState } from "react";
 
-import { useRaurusContext } from "./context";
-import type { EditableAssetProps } from "./types";
+import { useRaurusContext } from "../context/raurus-context";
+import { cn } from "../lib/cn";
+import type { EditableAssetProps } from "../types";
+
+const editableAssetClassName = cn(
+    "raurus:relative",
+    "raurus:rounded-xl",
+    "raurus:border-2",
+    "raurus:p-1.5",
+    "raurus:transition-[border-color,box-shadow]"
+);
+
+const editableAssetIdleClassName = cn(
+    "raurus:border-dashed",
+    "raurus:border-blue-700/35",
+    "raurus:hover:border-blue-600/60"
+);
+
+const editableAssetSelectedClassName = cn(
+    "raurus:border-blue-700",
+    "raurus:shadow-[0_0_0_3px_rgba(29,78,216,0.16)]"
+);
+
+const editableAssetTriggerClassName = cn(
+    "raurus:absolute",
+    "raurus:inset-0",
+    "raurus:appearance-none",
+    "raurus:rounded-xl",
+    "raurus:border-0",
+    "raurus:bg-transparent",
+    "raurus:cursor-pointer",
+    "raurus:focus-visible:outline-none",
+    "raurus:focus-visible:ring-2",
+    "raurus:focus-visible:ring-blue-600",
+    "raurus:focus-visible:ring-offset-2"
+);
 
 export const EditableAsset = ({ children, id }: EditableAssetProps) => {
     const {
@@ -53,32 +87,20 @@ export const EditableAsset = ({ children, id }: EditableAssetProps) => {
 
     return (
         <div
+            className={cn(
+                editableAssetClassName,
+                isSelected
+                    ? editableAssetSelectedClassName
+                    : editableAssetIdleClassName
+            )}
             data-raurus-editable={id}
-            style={{
-                border: isSelected
-                    ? "2px solid #1d4ed8"
-                    : "2px dashed rgba(29, 78, 216, 0.35)",
-                borderRadius: 12,
-                cursor: "pointer",
-                padding: 6,
-                position: "relative",
-                transition: "border-color 160ms ease, box-shadow 160ms ease",
-            }}
         >
             {content}
             <button
                 aria-label={`Edit asset ${id}`}
+                className={editableAssetTriggerClassName}
                 onClick={() => {
                     selectAsset(id);
-                }}
-                style={{
-                    appearance: "none",
-                    background: "transparent",
-                    border: "none",
-                    borderRadius: 12,
-                    cursor: "pointer",
-                    inset: 0,
-                    position: "absolute",
                 }}
                 type="button"
             />

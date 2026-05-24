@@ -3,15 +3,19 @@
     "version": "0.0.0",
     "description": "React bindings for Raurus",
     "files": [
-        "dist"
+        "dist/index.d.ts",
+        "dist/index.js",
+        "dist/styles.css"
     ],
     "type": "module",
     "exports": {
         ".": "./dist/index.js",
+        "./styles.css": "./dist/styles.css",
         "./package.json": "./package.json"
     },
     "scripts": {
-        "build": "tsdown",
+        "build": "tsdown && bun run build:styles",
+        "build:styles": "bun x @tailwindcss/cli -i ./src/styles/index.css -o ./dist/styles.css --minify",
         "dev": "tsdown --watch",
         "prepublishOnly": "bun run build",
         "test": "vitest run",
@@ -22,6 +26,7 @@
     },
     "devDependencies": {
         "@rolldown/plugin-babel": "^0.2.3",
+        "@tailwindcss/cli": "^4.3.0",
         "@testing-library/jest-dom": "^6.9.1",
         "@testing-library/react": "^16.3.0",
         "@testing-library/user-event": "^14.6.1",
@@ -32,6 +37,7 @@
         "jsdom": "^26.1.0",
         "react": "^19.2.0",
         "react-dom": "^19.2.0",
+        "tailwindcss": "^4.3.0",
         "tsdown": "^0.22.0",
         "typescript": "^6.0.3",
         "vite": "^8.0.11",

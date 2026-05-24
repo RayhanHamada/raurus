@@ -5,7 +5,7 @@ import type {
 } from "@raurus/core";
 import { createContext, useContext } from "react";
 
-import type { RuntimeMutationState } from "./types";
+import type { RuntimeMutationState } from "../types";
 
 export interface RaurusContextValue {
     closeInspector(): void;

@@ -119,6 +119,7 @@ Expose that runtime through your own API layer, then pass a browser-safe runtime
 
 ```tsx
 import type { AssetRecord, RaurusRuntime } from "@raurus/core";
+import "@raurus/react/styles.css";
 import { EditableAsset, RaurusProvider } from "@raurus/react";
 
 const runtime: RaurusRuntime = {
@@ -128,7 +129,9 @@ const runtime: RaurusRuntime = {
         return data.canEdit;
     },
     async getAsset(id) {
-        const response = await fetch(`/api/raurus/assets/${encodeURIComponent(id)}`);
+        const response = await fetch(
+            `/api/raurus/assets/${encodeURIComponent(id)}`
+        );
         return (await response.json()) as AssetRecord | null;
     },
     async removeAsset(id) {

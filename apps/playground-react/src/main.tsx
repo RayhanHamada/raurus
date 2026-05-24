@@ -1,6 +1,8 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 
+import "@raurus/react/styles.css";
+
 import { App } from "./app";
 
 const container = document.querySelector("#root");

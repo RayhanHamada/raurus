@@ -52,7 +52,6 @@ Use this after implementation work when the repository structure, workflows, con
 4. **Edit the appropriate `AGENTS.md` files**
 
     Keep edits minimal and factual.
-
     - Update root `AGENTS.md` for monorepo-wide workflow or conventions
     - If a scoped package or app has no `AGENTS.md`, add one with durable package-specific guidance based on the current codebase state
     - Update only the package or app `AGENTS.md` files affected by the scoped changes

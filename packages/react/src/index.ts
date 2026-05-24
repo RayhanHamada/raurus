@@ -1,6 +1,6 @@
-export { EditableAsset } from "./editable-asset";
-export { RaurusProvider } from "./provider";
-export { useRaurus } from "./hooks";
+export { EditableAsset } from "./components/editable-asset";
+export { useRaurus } from "./hooks/use-raurus";
+export { RaurusProvider } from "./provider/raurus-provider";
 export type {
     EditableAssetProps,
     EditableRenderContext,
