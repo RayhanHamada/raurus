@@ -1,11 +1,17 @@
 {
-    "version": 1,
-    "skills": {
-        "tsdown": {
-            "source": "antfu/skills",
-            "sourceType": "github",
-            "skillPath": "skills/tsdown/SKILL.md",
-            "computedHash": "5d7a0732aa15849d7363d168c13eec9c4367c9e534397de3fc550d582ffea09b"
-        }
+  "version": 1,
+  "skills": {
+    "tanstack-router-best-practices": {
+      "source": "deckardger/tanstack-agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/tanstack-router/SKILL.md",
+      "computedHash": "65764bc7b90e47f6023cb7f89b3af93eaaafc517754f10b9382e184d4646a77d"
+    },
+    "tsdown": {
+      "source": "antfu/skills",
+      "sourceType": "github",
+      "skillPath": "skills/tsdown/SKILL.md",
+      "computedHash": "5d7a0732aa15849d7363d168c13eec9c4367c9e534397de3fc550d582ffea09b"
     }
+  }
 }
