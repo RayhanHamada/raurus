@@ -1,0 +1,8 @@
+[
+    ".*",
+    "**/components/ui/**",
+    "**/routeTree.gen.ts",
+    "skills-lock.json",
+    "worker-configuration.d.ts",
+    "**/migrations/meta"
+]
