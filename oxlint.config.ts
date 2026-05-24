@@ -10,7 +10,9 @@ export default defineConfig({
     ignorePatterns: [...oxignore],
     rules: {
         "func-style": ["off"],
+        "sort-keys": "off",
         "unicorn/filename-case": ["off"],
         "vitest/require-top-level-describe": "off",
+        "no-inline-comments": "off",
     },
 });
