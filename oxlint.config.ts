@@ -16,5 +16,7 @@ export default defineConfig({
         "vitest/require-top-level-describe": "off",
         "no-inline-comments": "off",
         "ban-ts-comment": "off",
+        "typescript/no-empty-interface": "off",
+        "typescript/no-empty-object-type": "off",
     },
 });

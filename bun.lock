@@ -26,26 +26,6 @@
         "vue": "^3.5.34",
       },
     },
-    "apps/playground-react": {
-      "name": "@raurus/playground-react",
-      "dependencies": {
-        "@raurus/core": "workspace:*",
-        "@raurus/metadata-sqlite": "workspace:*",
-        "@raurus/permissions-basic": "workspace:*",
-        "@raurus/react": "workspace:*",
-        "@raurus/storage-local": "workspace:*",
-        "react": "^19.2.0",
-        "react-dom": "^19.2.0",
-      },
-      "devDependencies": {
-        "@rolldown/plugin-babel": "^0.2.3",
-        "@types/react": "^19.2.2",
-        "@types/react-dom": "^19.2.2",
-        "@vitejs/plugin-react": "^6.0.1",
-        "typescript": "^6.0.3",
-        "vite": "^8.0.11",
-      },
-    },
     "packages/core": {
       "name": "@raurus/core",
       "version": "0.0.0",
@@ -492,8 +472,6 @@
     "@raurus/metadata-sqlite": ["@raurus/metadata-sqlite@workspace:packages/metadata-sqlite"],
 
     "@raurus/permissions-basic": ["@raurus/permissions-basic@workspace:packages/permissions-basic"],
-
-    "@raurus/playground-react": ["@raurus/playground-react@workspace:apps/playground-react"],
 
     "@raurus/react": ["@raurus/react@workspace:packages/react"],
 

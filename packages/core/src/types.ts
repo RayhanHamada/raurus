@@ -20,20 +20,26 @@ export interface StorageAdapter {
     delete(key: string): Promise<void>;
 }
 
-export interface MetadataAdapter {
+export interface IMetadataAdapter {
     get(id: string): Promise<AssetRecord | null>;
     set(id: string, record: AssetRecord): Promise<void>;
     remove(id: string): Promise<void>;
 }
 
-export interface PermissionContext {
-    request?: unknown;
-    user?: unknown;
+export interface IPermissionContext<TRequest = unknown, TUser = unknown> {
+    request?: TRequest;
+    user?: TUser;
 }
 
-export interface PermissionAdapter {
-    canEdit(ctx?: PermissionContext): Promise<boolean>;
+export interface IPermissionAdapter<
+    TContext extends IPermissionContext = IPermissionContext,
+> {
+    canEdit(ctx?: TContext): Promise<boolean>;
 }
+
+export type IPermissionFactory<T extends IPermissionAdapter> = (
+    options: T
+) => IPermissionAdapter;
 
 export interface ValidationOptions {
     allowedMimeTypes?: readonly string[];
@@ -42,20 +48,20 @@ export interface ValidationOptions {
 
 export interface RaurusRuntimeOptions {
     storage: StorageAdapter;
-    metadata: MetadataAdapter;
-    permissions: PermissionAdapter;
+    metadata: IMetadataAdapter;
+    permissions: IPermissionAdapter;
     validation?: ValidationOptions;
 }
 
-export interface RaurusRuntime {
+export interface IRaurusRuntime {
     getAsset(id: string): Promise<AssetRecord | null>;
     replaceAsset(
         id: string,
         file: File,
-        ctx?: PermissionContext
+        ctx?: IPermissionContext
     ): Promise<AssetRecord>;
-    removeAsset(id: string, ctx?: PermissionContext): Promise<void>;
-    canEdit(ctx?: PermissionContext): Promise<boolean>;
+    removeAsset(id: string, ctx?: IPermissionContext): Promise<void>;
+    canEdit(ctx?: IPermissionContext): Promise<boolean>;
 }
 
 export type ReplaceAssetError = RaurusRuntimeError;

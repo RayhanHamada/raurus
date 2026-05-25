@@ -1,8 +1,8 @@
 import { RaurusRuntimeError, isRaurusRuntimeError } from "./errors";
 import type {
     AssetRecord,
-    PermissionContext,
-    RaurusRuntime,
+    IPermissionContext,
+    IRaurusRuntime,
     RaurusRuntimeOptions,
     StoredAsset,
 } from "./types";
@@ -46,7 +46,7 @@ const validateFile = (
 
 const assertCanEdit = async (
     runtime: Pick<RaurusRuntimeOptions, "permissions">,
-    ctx?: PermissionContext
+    ctx?: IPermissionContext
 ): Promise<void> => {
     const allowed = await runtime.permissions.canEdit(ctx);
 
@@ -60,14 +60,14 @@ const assertCanEdit = async (
 
 export const createRaurusRuntime = (
     options: RaurusRuntimeOptions
-): RaurusRuntime => {
+): IRaurusRuntime => {
     const allowedMimeTypes =
         options.validation?.allowedMimeTypes ?? DEFAULT_ALLOWED_MIME_TYPES;
     const maxFileSizeBytes =
         options.validation?.maxFileSizeBytes ?? DEFAULT_MAX_FILE_SIZE_BYTES;
 
     return {
-        canEdit(ctx?: PermissionContext): Promise<boolean> {
+        canEdit(ctx?: IPermissionContext): Promise<boolean> {
             return options.permissions.canEdit(ctx);
         },
 
@@ -75,7 +75,7 @@ export const createRaurusRuntime = (
             return options.metadata.get(id);
         },
 
-        async removeAsset(id: string, ctx?: PermissionContext): Promise<void> {
+        async removeAsset(id: string, ctx?: IPermissionContext): Promise<void> {
             await assertCanEdit(options, ctx);
 
             const record = await options.metadata.get(id);
@@ -94,7 +94,7 @@ export const createRaurusRuntime = (
         async replaceAsset(
             id: string,
             file: File,
-            ctx?: PermissionContext
+            ctx?: IPermissionContext
         ): Promise<AssetRecord> {
             await assertCanEdit(options, ctx);
             validateFile(file, allowedMimeTypes, maxFileSizeBytes);

@@ -4,7 +4,9 @@ import { basicPermissions } from "../src";
 
 describe("@raurus/permissions-basic", () => {
     test("delegates to the configured callback", async () => {
-        const canEdit = vi.fn<() => boolean>(() => true);
+        const canEdit = vi.fn<() => Promise<boolean>>(() =>
+            Promise.resolve(true)
+        );
         const adapter = basicPermissions({ canEdit });
 
         await expect(

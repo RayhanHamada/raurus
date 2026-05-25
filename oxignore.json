@@ -1,5 +1,10 @@
 [
-    ".(agents|changeset|claude|codex|opencode|turbo)",
+    ".agents",
+    ".changeset",
+    ".claude",
+    ".codex",
+    ".opencode",
+    ".turbo",
     "**/components/ui/**",
     "**/routeTree.gen.ts",
     "skills-lock.json",
