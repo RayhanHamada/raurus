@@ -1,6 +1,0 @@
-@layer theme, base, components, utilities;
-
-@import "tailwindcss/preflight.css" layer(base);
-@import "tailwindcss/theme.css" layer(theme) prefix(raurus);
-@import "tailwindcss/utilities.css" layer(utilities) source("../")
-    prefix(raurus);

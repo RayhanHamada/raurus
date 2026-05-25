@@ -1,16 +1,21 @@
 {
+    "$schema": "https://www.schemastore.org/tsconfig",
     "extends": "@tsconfig/strictest/tsconfig.json",
     "compilerOptions": {
         "ignoreDeprecations": "6.0",
         "target": "ESNext",
         "module": "ESNext",
-        "moduleResolution": "Bundler",
+        "moduleResolution": "bundler",
         "moduleDetection": "force",
+        "strict": true,
         "resolveJsonModule": true,
         "allowSyntheticDefaultImports": true,
         "esModuleInterop": true,
         "useDefineForClassFields": true,
         "verbatimModuleSyntax": true,
-        "skipLibCheck": true
+        "skipLibCheck": true,
+        "noUncheckedIndexedAccess": true,
+        "noUncheckedSideEffectImports": true,
+        "noFallthroughCasesInSwitch": true
     }
 }
