@@ -8,6 +8,7 @@ import oxignore from "./oxignore.json" with { type: "json" };
 
 export default defineConfig({
     extends: [core, react, vitest, vue],
+    jsPlugins: ["oxlint-tailwindcss"],
     ignorePatterns: [...oxignore],
     rules: {
         "func-style": ["off"],
@@ -18,5 +19,13 @@ export default defineConfig({
         "ban-ts-comment": "off",
         "typescript/no-empty-interface": "off",
         "typescript/no-empty-object-type": "off",
+
+        "tailwindcss/enforce-canonical": "error",
+        "tailwindcss/enforce-sort-order": "error",
+    },
+    settings: {
+        tailwindcss: {
+            entryPoint: ["packages/packages/react/src/styles/index.css"],
+        },
     },
 });

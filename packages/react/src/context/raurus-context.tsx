@@ -1,7 +1,7 @@
 import type {
     AssetRecord,
-    PermissionContext,
-    RaurusRuntime,
+    IPermissionContext,
+    IRaurusRuntime,
 } from "@raurus/core";
 import { createContext, useContext } from "react";
 
@@ -12,11 +12,11 @@ export interface RaurusContextValue {
     editModeEnabled: boolean;
     getAsset(id: string): Promise<AssetRecord | null>;
     mutationState: RuntimeMutationState;
-    permissionContext: PermissionContext | undefined;
+    permissionContext: IPermissionContext | undefined;
     refreshAsset(id: string): Promise<AssetRecord | null>;
     removeSelectedAsset(): Promise<void>;
     replaceSelectedAsset(file: File): Promise<void>;
-    runtime: RaurusRuntime;
+    runtime: IRaurusRuntime;
     selectAsset(id: string): void;
     selectedAsset: AssetRecord | null;
     selectedAssetId: string | null;

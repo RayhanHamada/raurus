@@ -11,7 +11,6 @@
         "check": "ultracite check",
         "fix": "ultracite fix",
         "dev:docs": "bun run --cwd apps/docs dev",
-        "dev:playground": "bun run --cwd apps/playground-react dev",
         "test": "turbo run test",
         "typecheck": "turbo run typecheck"
     },
@@ -22,6 +21,7 @@
         "@types/node": "^25.9.1",
         "oxfmt": "^0.51.0",
         "oxlint": "^1.66.0",
+        "oxlint-tailwindcss": "^0.8.0",
         "tsdown": "^0.22.0",
         "turbo": "^2.9.14",
         "typescript": "^6.0.3",
