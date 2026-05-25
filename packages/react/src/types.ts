@@ -1,12 +1,12 @@
 import type {
-    AssetRecord,
+    IAssetRecord,
     PermissionContext,
     RaurusRuntime,
 } from "@raurus/core";
 import type { ReactNode } from "react";
 
 export interface EditableRenderContext {
-    asset: AssetRecord | null;
+    asset: IAssetRecord | null;
     edit(): void;
     isAdmin: boolean;
     isSelected: boolean;

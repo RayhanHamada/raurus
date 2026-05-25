@@ -4,7 +4,10 @@
         "declaration": true,
         "emitDeclarationOnly": true,
         "lib": ["ES2023", "DOM"],
-        "types": []
+        "types": [],
+        "paths": {
+            "@/*": ["./src/*"]
+        }
     },
     "include": ["src", "tests"]
 }

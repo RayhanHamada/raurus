@@ -1,4 +1,4 @@
-import type { AssetRecord, RaurusRuntime } from "@raurus/core";
+import type { IAssetRecord, RaurusRuntime } from "@raurus/core";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, test, vi } from "vitest";
@@ -7,7 +7,7 @@ import { EditableAsset, RaurusProvider } from "../src";
 
 const HERO_ID = "homepage.hero.banner";
 
-const createRecord = (url: string): AssetRecord => ({
+const createRecord = (url: string): IAssetRecord => ({
     assetKey: url.split("/").at(-1) ?? "hero.png",
     id: HERO_ID,
     mimeType: "image/png",
@@ -17,7 +17,7 @@ const createRecord = (url: string): AssetRecord => ({
 
 const createRuntime = (options?: {
     canEdit?: boolean;
-    initialAsset?: AssetRecord | null;
+    initialAsset?: IAssetRecord | null;
 }): RaurusRuntime => {
     let asset = options?.initialAsset ?? null;
 
@@ -25,14 +25,14 @@ const createRuntime = (options?: {
         canEdit: vi.fn<() => Promise<boolean>>(() =>
             Promise.resolve(options?.canEdit ?? false)
         ),
-        getAsset: vi.fn<(id: string) => Promise<AssetRecord | null>>(() =>
+        getAsset: vi.fn<(id: string) => Promise<IAssetRecord | null>>(() =>
             Promise.resolve(asset)
         ),
         removeAsset: vi.fn<(id: string) => Promise<void>>(() => {
             asset = null;
             return Promise.resolve();
         }),
-        replaceAsset: vi.fn<(id: string, file: File) => Promise<AssetRecord>>(
+        replaceAsset: vi.fn<(id: string, file: File) => Promise<IAssetRecord>>(
             (_id, file) => {
                 asset = createRecord(`/uploads/${file.name}`);
                 return Promise.resolve(asset);

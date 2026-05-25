@@ -1,11 +1,12 @@
-import type { IPermissionAdapter, IPermissionFactory } from "@raurus/core";
+import type { IPermissionAdapterFactory } from "@raurus/core";
 
-export interface BasicPermissionsOptions extends IPermissionAdapter {}
+import type { BasicPermissionContext, BasicPermissionOptions } from "./types";
 
-export const basicPermissions: IPermissionFactory<BasicPermissionsOptions> = (
-    options
-) => ({
-    canEdit(ctx) {
-        return Promise.resolve(options.canEdit(ctx));
+export const basicPermissions: IPermissionAdapterFactory<
+    BasicPermissionOptions,
+    BasicPermissionContext
+> = (_options) => ({
+    canEdit(_ctx) {
+        return Promise.resolve(true);
     },
 });

@@ -1,5 +1,5 @@
 import type {
-    AssetRecord,
+    IAssetRecord,
     IPermissionContext,
     IRaurusRuntime,
 } from "@raurus/core";
@@ -10,15 +10,15 @@ import type { RuntimeMutationState } from "../types";
 export interface RaurusContextValue {
     closeInspector(): void;
     editModeEnabled: boolean;
-    getAsset(id: string): Promise<AssetRecord | null>;
+    getAsset(id: string): Promise<IAssetRecord | null>;
     mutationState: RuntimeMutationState;
     permissionContext: IPermissionContext | undefined;
-    refreshAsset(id: string): Promise<AssetRecord | null>;
+    refreshAsset(id: string): Promise<IAssetRecord | null>;
     removeSelectedAsset(): Promise<void>;
     replaceSelectedAsset(file: File): Promise<void>;
     runtime: IRaurusRuntime;
     selectAsset(id: string): void;
-    selectedAsset: AssetRecord | null;
+    selectedAsset: IAssetRecord | null;
     selectedAssetId: string | null;
 }
 

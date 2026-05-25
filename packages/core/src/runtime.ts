@@ -1,6 +1,6 @@
 import { RaurusRuntimeError, isRaurusRuntimeError } from "./errors";
 import type {
-    AssetRecord,
+    IAssetRecord,
     IPermissionContext,
     IRaurusRuntime,
     RaurusRuntimeOptions,
@@ -16,7 +16,7 @@ export const DEFAULT_ALLOWED_MIME_TYPES = [
 
 export const DEFAULT_MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024;
 
-const toAssetRecord = (id: string, storedAsset: StoredAsset): AssetRecord => ({
+const toAssetRecord = (id: string, storedAsset: StoredAsset): IAssetRecord => ({
     assetKey: storedAsset.key,
     id,
     mimeType: storedAsset.mimeType,
@@ -71,7 +71,7 @@ export const createRaurusRuntime = (
             return options.permissions.canEdit(ctx);
         },
 
-        getAsset(id: string): Promise<AssetRecord | null> {
+        getAsset(id: string): Promise<IAssetRecord | null> {
             return options.metadata.get(id);
         },
 
@@ -95,7 +95,7 @@ export const createRaurusRuntime = (
             id: string,
             file: File,
             ctx?: IPermissionContext
-        ): Promise<AssetRecord> {
+        ): Promise<IAssetRecord> {
             await assertCanEdit(options, ctx);
             validateFile(file, allowedMimeTypes, maxFileSizeBytes);
 

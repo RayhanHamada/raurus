@@ -1,6 +1,6 @@
 import { describe, expect, test, vi } from "vitest";
 
-import type { AssetRecord } from "../src";
+import type { IAssetRecord } from "../src";
 import {
     createRaurusRuntime,
     DEFAULT_MAX_FILE_SIZE_BYTES,
@@ -24,7 +24,7 @@ const createStoredAsset = () => ({
     url: "/uploads/asset-1.png",
 });
 
-const createRecord = (id: string): AssetRecord => ({
+const createRecord = (id: string): IAssetRecord => ({
     assetKey: "asset-1.png",
     id,
     mimeType: "image/png",
@@ -50,11 +50,11 @@ const voidMock = <TArgs extends unknown[]>(
 describe("@raurus/core createRaurusRuntime", () => {
     test("returns an existing asset record", async () => {
         const metadata = {
-            get: resolvedMock<[string], AssetRecord>(() =>
+            get: resolvedMock<[string], IAssetRecord>(() =>
                 createRecord("homepage.hero.banner")
             ),
             remove: voidMock<[string]>(),
-            set: voidMock<[string, AssetRecord]>(),
+            set: voidMock<[string, IAssetRecord]>(),
         };
         const runtime = createRaurusRuntime({
             metadata,
@@ -76,9 +76,9 @@ describe("@raurus/core createRaurusRuntime", () => {
     test("returns null when an asset record is missing", async () => {
         const runtime = createRaurusRuntime({
             metadata: {
-                get: resolvedMock<[string], AssetRecord | null>(() => null),
+                get: resolvedMock<[string], IAssetRecord | null>(() => null),
                 remove: voidMock<[string]>(),
-                set: voidMock<[string, AssetRecord]>(),
+                set: voidMock<[string, IAssetRecord]>(),
             },
             permissions: { canEdit: resolvedMock<[], boolean>(() => true) },
             storage: {
@@ -101,9 +101,9 @@ describe("@raurus/core createRaurusRuntime", () => {
             .mockResolvedValueOnce(true);
         const runtime = createRaurusRuntime({
             metadata: {
-                get: resolvedMock<[string], AssetRecord | null>(() => null),
+                get: resolvedMock<[string], IAssetRecord | null>(() => null),
                 remove: voidMock<[string]>(),
-                set: voidMock<[string, AssetRecord]>(),
+                set: voidMock<[string, IAssetRecord]>(),
             },
             permissions: { canEdit },
             storage: {
@@ -122,9 +122,9 @@ describe("@raurus/core createRaurusRuntime", () => {
     test("rejects invalid MIME types", async () => {
         const runtime = createRaurusRuntime({
             metadata: {
-                get: resolvedMock<[string], AssetRecord | null>(() => null),
+                get: resolvedMock<[string], IAssetRecord | null>(() => null),
                 remove: voidMock<[string]>(),
-                set: voidMock<[string, AssetRecord]>(),
+                set: voidMock<[string, IAssetRecord]>(),
             },
             permissions: { canEdit: resolvedMock<[], boolean>(() => true) },
             storage: {
@@ -147,9 +147,9 @@ describe("@raurus/core createRaurusRuntime", () => {
     test("rejects oversized files", async () => {
         const runtime = createRaurusRuntime({
             metadata: {
-                get: resolvedMock<[string], AssetRecord | null>(() => null),
+                get: resolvedMock<[string], IAssetRecord | null>(() => null),
                 remove: voidMock<[string]>(),
-                set: voidMock<[string, AssetRecord]>(),
+                set: voidMock<[string, IAssetRecord]>(),
             },
             permissions: { canEdit: resolvedMock<[], boolean>(() => true) },
             storage: {
@@ -180,9 +180,9 @@ describe("@raurus/core createRaurusRuntime", () => {
             ),
         };
         const metadata = {
-            get: resolvedMock<[string], AssetRecord | null>(() => null),
+            get: resolvedMock<[string], IAssetRecord | null>(() => null),
             remove: voidMock<[string]>(),
-            set: voidMock<[string, AssetRecord]>(),
+            set: voidMock<[string, IAssetRecord]>(),
         };
         const runtime = createRaurusRuntime({
             metadata,
@@ -215,9 +215,9 @@ describe("@raurus/core createRaurusRuntime", () => {
         };
         const runtime = createRaurusRuntime({
             metadata: {
-                get: resolvedMock<[string], AssetRecord | null>(() => null),
+                get: resolvedMock<[string], IAssetRecord | null>(() => null),
                 remove: voidMock<[string]>(),
-                set: vi.fn<(id: string, record: AssetRecord) => Promise<void>>(
+                set: vi.fn<(id: string, record: IAssetRecord) => Promise<void>>(
                     () => Promise.reject(new Error("db write failed"))
                 ),
             },
@@ -233,11 +233,11 @@ describe("@raurus/core createRaurusRuntime", () => {
 
     test("removes an asset successfully", async () => {
         const metadata = {
-            get: resolvedMock<[string], AssetRecord | null>(() =>
+            get: resolvedMock<[string], IAssetRecord | null>(() =>
                 createRecord("homepage.hero.banner")
             ),
             remove: voidMock<[string]>(),
-            set: voidMock<[string, AssetRecord]>(),
+            set: voidMock<[string, IAssetRecord]>(),
         };
         const storage = {
             delete: voidMock<[string]>(),
@@ -260,9 +260,9 @@ describe("@raurus/core createRaurusRuntime", () => {
     test("throws a missing-asset error for absent removals", async () => {
         const runtime = createRaurusRuntime({
             metadata: {
-                get: resolvedMock<[string], AssetRecord | null>(() => null),
+                get: resolvedMock<[string], IAssetRecord | null>(() => null),
                 remove: voidMock<[string]>(),
-                set: voidMock<[string, AssetRecord]>(),
+                set: voidMock<[string, IAssetRecord]>(),
             },
             permissions: { canEdit: resolvedMock<[], boolean>(() => true) },
             storage: {
