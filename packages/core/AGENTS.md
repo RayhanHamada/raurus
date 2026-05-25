@@ -10,6 +10,7 @@ This package is `@raurus/core`, the framework-agnostic runtime for editable asse
 - Keep public exports explicit through `src/index.ts`
 - Prefer typed errors and small, focused runtime helpers over broad abstractions
 - Preserve tree-shakeability and keep the `tsdown` build focused on the public entrypoint
+- Keep the local `tsconfig.json` extending `@raurus/tsconfig` and limit local overrides to package-specific compiler needs
 
 ## Workflow
 

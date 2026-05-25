@@ -1,11 +1,11 @@
-import { RaurusRuntimeError, isRaurusRuntimeError } from "./errors";
+import { RaurusRuntimeError, isRaurusRuntimeError } from "@/errors";
 import type {
     IAssetRecord,
     IPermissionContext,
     IRaurusRuntime,
     RaurusRuntimeOptions,
     StoredAsset,
-} from "./types";
+} from "@/types";
 
 export const DEFAULT_ALLOWED_MIME_TYPES = [
     "image/png",

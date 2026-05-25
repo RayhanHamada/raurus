@@ -9,6 +9,7 @@ This package is `@raurus/storage-local`, the V0 local filesystem storage adapter
 - Keep the adapter limited to local filesystem upload and delete behavior
 - Preserve file extension handling and deterministic public URL construction
 - Keep public exports explicit through `src/index.ts`
+- Keep the local `tsconfig.json` extending `@raurus/tsconfig` and only add adapter-specific compiler overrides locally
 
 ## Workflow
 

@@ -1,4 +1,4 @@
-import type { IAssetRecord, RaurusRuntime } from "@raurus/core";
+import type { IAssetRecord, IRaurusRuntime } from "@raurus/core";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, test, vi } from "vitest";
@@ -18,7 +18,7 @@ const createRecord = (url: string): IAssetRecord => ({
 const createRuntime = (options?: {
     canEdit?: boolean;
     initialAsset?: IAssetRecord | null;
-}): RaurusRuntime => {
+}): IRaurusRuntime => {
     let asset = options?.initialAsset ?? null;
 
     return {

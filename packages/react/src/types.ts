@@ -1,7 +1,7 @@
 import type {
     IAssetRecord,
-    PermissionContext,
-    RaurusRuntime,
+    IPermissionContext,
+    IRaurusRuntime,
 } from "@raurus/core";
 import type { ReactNode } from "react";
 
@@ -24,6 +24,6 @@ export interface RuntimeMutationState {
 
 export interface RaurusProviderProps {
     children: ReactNode;
-    permissionContext?: PermissionContext;
-    runtime: RaurusRuntime;
+    permissionContext?: IPermissionContext;
+    runtime: IRaurusRuntime;
 }

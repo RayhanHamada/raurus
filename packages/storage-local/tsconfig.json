@@ -1,10 +1,13 @@
 {
-    "extends": "../../tsconfig.base.json",
+    "extends": "@raurus/tsconfig",
     "compilerOptions": {
         "declaration": true,
         "emitDeclarationOnly": true,
         "lib": ["ES2023", "DOM"],
-        "types": ["node"]
+        "types": ["node"],
+        "paths": {
+            "@/*": ["./src/*"]
+        }
     },
     "include": ["src", "tests"]
 }

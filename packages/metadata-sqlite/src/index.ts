@@ -1,8 +1,8 @@
 import type { IAssetRecord, IMetadataAdapterFactory } from "@raurus/core";
 import Database from "better-sqlite3";
-import { toAssetRecord } from "packages/metadata-sqlite/src/util";
 
-import type { AssetRow, SqliteMetadataAdapterOptions } from "./types";
+import type { AssetRow, SqliteMetadataAdapterOptions } from "@/types";
+import { toAssetRecord } from "@/util";
 
 const CREATE_TABLE_SQL = `
 CREATE TABLE IF NOT EXISTS editable_assets (

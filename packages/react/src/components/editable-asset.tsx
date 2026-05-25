@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 
-import { useRaurusContext } from "../context/raurus-context";
-import { cn } from "../lib/cn";
-import type { EditableAssetProps } from "../types";
+import { useRaurusContext } from "@/context/raurus-context";
+import { cn } from "@/lib/cn";
+import type { EditableAssetProps } from "@/types";
 
 const editableAssetClassName = cn(
     "raurus:relative",

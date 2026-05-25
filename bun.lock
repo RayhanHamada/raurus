@@ -6,7 +6,6 @@
       "name": "raurus",
       "devDependencies": {
         "@changesets/cli": "^2.31.0",
-        "@tsconfig/strictest": "^2.0.8",
         "@types/bun": "latest",
         "@types/node": "^25.9.1",
         "oxfmt": "^0.51.0",
@@ -26,11 +25,16 @@
         "vitepress": "^1.6.4",
         "vue": "^3.5.34",
       },
+      "devDependencies": {
+        "@raurus/tsconfig": "workspace:*",
+        "typescript": "^6.0.3",
+      },
     },
     "packages/core": {
       "name": "@raurus/core",
       "version": "0.0.0",
       "devDependencies": {
+        "@raurus/tsconfig": "workspace:*",
         "tsdown": "^0.22.0",
         "typescript": "^6.0.3",
         "vitest": "^4.1.5",
@@ -40,8 +44,8 @@
       "name": "@raurus/example",
       "version": "0.0.0",
       "devDependencies": {
+        "@raurus/tsconfig": "workspace:*",
         "@rolldown/plugin-babel": "^0.2.3",
-        "@tsconfig/strictest": "^2.0.8",
         "@types/node": "^25.6.2",
         "@types/react": "^19.2.14",
         "@types/react-dom": "^19.2.3",
@@ -68,6 +72,7 @@
         "better-sqlite3": "^12.4.6",
       },
       "devDependencies": {
+        "@raurus/tsconfig": "workspace:*",
         "@types/better-sqlite3": "^7.6.13",
         "tsdown": "^0.22.0",
         "typescript": "^6.0.3",
@@ -81,6 +86,7 @@
         "@raurus/core": "workspace:*",
       },
       "devDependencies": {
+        "@raurus/tsconfig": "workspace:*",
         "tsdown": "^0.22.0",
         "typescript": "^6.0.3",
         "vitest": "^4.1.5",
@@ -93,6 +99,7 @@
         "@raurus/core": "workspace:*",
       },
       "devDependencies": {
+        "@raurus/tsconfig": "workspace:*",
         "@rolldown/plugin-babel": "^0.2.3",
         "@tailwindcss/cli": "^4.3.0",
         "@testing-library/jest-dom": "^6.9.1",
@@ -123,9 +130,17 @@
         "@raurus/core": "workspace:*",
       },
       "devDependencies": {
+        "@raurus/tsconfig": "workspace:*",
         "tsdown": "^0.22.0",
         "typescript": "^6.0.3",
         "vitest": "^4.1.5",
+      },
+    },
+    "packages/tsconfig": {
+      "name": "@raurus/tsconfig",
+      "version": "0.0.0",
+      "dependencies": {
+        "@tsconfig/strictest": "^2.0.8",
       },
     },
   },
@@ -479,6 +494,8 @@
     "@raurus/react": ["@raurus/react@workspace:packages/react"],
 
     "@raurus/storage-local": ["@raurus/storage-local@workspace:packages/storage-local"],
+
+    "@raurus/tsconfig": ["@raurus/tsconfig@workspace:packages/tsconfig"],
 
     "@rolldown/binding-android-arm64": ["@rolldown/binding-android-arm64@1.0.2", "", { "os": "android", "cpu": "arm64" }, "sha512-ZS4D1JPGn/MYQN/SYDWftIE/nVsM8j/AFOYEzAoOE2O3NktQOZru+/vYXGbR/qtdLdIfGCP0lcoJiYVzsEz+iQ=="],
 

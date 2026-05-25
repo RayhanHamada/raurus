@@ -1,8 +1,8 @@
 import { startTransition, useEffect, useState } from "react";
 
-import { RaurusAdminChrome } from "../components/raurus-admin-chrome";
-import { RaurusContextProvider } from "../context/raurus-context";
-import type { RaurusProviderProps, RuntimeMutationState } from "../types";
+import { RaurusAdminChrome } from "@/components/raurus-admin-chrome";
+import { RaurusContextProvider } from "@/context/raurus-context";
+import type { RaurusProviderProps, RuntimeMutationState } from "@/types";
 
 const VIEWER_STATE: RuntimeMutationState = {
     errorMessage: null,

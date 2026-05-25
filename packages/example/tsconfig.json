@@ -1,5 +1,5 @@
 {
-    "extends": "@tsconfig/strictest/tsconfig.json",
+    "extends": "@raurus/tsconfig",
     "compilerOptions": {
         "target": "esnext",
         "jsx": "react-jsx",
@@ -11,7 +11,10 @@
         "types": [],
         "declaration": true,
         "emitDeclarationOnly": true,
-        "verbatimModuleSyntax": true
+        "verbatimModuleSyntax": true,
+        "paths": {
+            "@/*": ["./src/*"]
+        }
     },
     "include": ["src"]
 }

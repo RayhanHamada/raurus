@@ -8,6 +8,7 @@ This package is `@raurus/example`, a React-based example package in the Raurus m
 
 - Keep the package name aligned with the monorepo naming rule: `@raurus/<package>`
 - Keep the package scaffold and build flow based on `tsdown`
+- Keep the local `tsconfig.json` extending `@raurus/tsconfig` while preserving any example-specific compiler overrides in the package
 - Preserve tree-shakeability by using explicit exports, avoiding unnecessary side effects, and keeping package entrypoints focused
 - Keep public exports intentionally defined through `src/index.ts`
 

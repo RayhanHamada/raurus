@@ -9,6 +9,7 @@ Raurus is a monorepo for a simple inline editing library for web apps.
 - Every package in this monorepo must be named with the `@raurus/<package>` prefix
 - Every package in this monorepo should be scaffolded with `tsdown`
 - Every package must remain tree-shakeable: prefer explicit exports, avoid unnecessary module side effects, and keep package build configuration aligned with tree-shaking
+- Every workspace package should install `@raurus/tsconfig` and extend it from its local `tsconfig.json`
 
 ## Agent Workflow
 

@@ -1,0 +1,17 @@
+{
+    "name": "@raurus/tsconfig",
+    "version": "0.0.0",
+    "description": "Shared TypeScript configuration for Raurus workspaces",
+    "files": [
+        "base.json"
+    ],
+    "type": "module",
+    "exports": {
+        ".": "./base.json",
+        "./base.json": "./base.json",
+        "./package.json": "./package.json"
+    },
+    "dependencies": {
+        "@tsconfig/strictest": "^2.0.8"
+    }
+}

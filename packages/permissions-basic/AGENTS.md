@@ -9,6 +9,7 @@ This package is `@raurus/permissions-basic`, the V0 basic permissions adapter.
 - Keep the adapter focused on delegating `canEdit` checks to caller-provided logic
 - Avoid introducing authentication framework integrations or user models in this package
 - Keep public exports explicit through `src/index.ts`
+- Keep the local `tsconfig.json` extending `@raurus/tsconfig` and only override package-specific compiler settings locally
 
 ## Workflow
 

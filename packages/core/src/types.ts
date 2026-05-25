@@ -1,5 +1,5 @@
 // oxlint-disable typescript/no-explicit-any
-import type { RaurusRuntimeError } from "./errors";
+import type { RaurusRuntimeError } from "@/errors";
 
 export interface StoredAsset {
     key: string;

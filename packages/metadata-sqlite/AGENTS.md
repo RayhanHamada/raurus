@@ -9,6 +9,7 @@ This package is `@raurus/metadata-sqlite`, the V0 SQLite metadata adapter.
 - Keep the adapter focused on the `editable_assets` table and V0 metadata contract
 - Prefer explicit row-to-type mapping over implicit database object usage
 - Keep public exports explicit through `src/index.ts`
+- Keep the local `tsconfig.json` extending `@raurus/tsconfig` and keep SQLite-specific path or environment settings local
 
 ## Workflow
 

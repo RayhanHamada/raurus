@@ -18,6 +18,7 @@
         "typecheck": "tsc --noEmit"
     },
     "devDependencies": {
+        "@raurus/tsconfig": "workspace:*",
         "tsdown": "^0.22.0",
         "typescript": "^6.0.3",
         "vitest": "^4.1.5"

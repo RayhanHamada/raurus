@@ -1,6 +1,6 @@
 import type { IPermissionAdapterFactory } from "@raurus/core";
 
-import type { BasicPermissionContext, BasicPermissionOptions } from "./types";
+import type { BasicPermissionContext, BasicPermissionOptions } from "@/types";
 
 export const basicPermissions: IPermissionAdapterFactory<
     BasicPermissionOptions,

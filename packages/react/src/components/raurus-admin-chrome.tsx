@@ -2,7 +2,7 @@
 
 import { useId } from "react";
 
-import { useRaurusContext } from "../context/raurus-context";
+import { useRaurusContext } from "@/context/raurus-context";
 
 export const RaurusAdminChrome = () => {
     const {

@@ -9,6 +9,7 @@ This app is `@raurus/docs`, the VitePress documentation site for Raurus.
 - Keep docs focused on the current public Raurus APIs and user-facing workflows rather than internal implementation details
 - Preserve the VitePress structure: site config and theme wiring live under `.vitepress/`, while page content lives in top-level Markdown files
 - Treat `.vitepress/cache/` as generated output and do not edit it as source content
+- Keep the app `tsconfig.json` extending `@raurus/tsconfig` and reserve local overrides for docs-specific compiler settings
 
 ## Workflow
 

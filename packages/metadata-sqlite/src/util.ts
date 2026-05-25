@@ -1,6 +1,6 @@
 import type { IAssetRecord } from "@raurus/core";
 
-import type { AssetRow } from "./types";
+import type { AssetRow } from "@/types";
 
 export const toAssetRecord = (row: AssetRow): IAssetRecord => ({
     assetKey: row.asset_key,
