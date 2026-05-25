@@ -13,7 +13,7 @@ This app is `@raurus/docs`, the VitePress documentation site for Raurus.
 ## Workflow
 
 - Read the root `AGENTS.md` before planning or implementing changes in this app
-- Verify docs app changes with `bun docs:build` when navigation, theme config, or page content changes materially
+- Verify docs app changes with `bun run --cwd apps/docs docs:build` when navigation, theme config, or page content changes materially
 - Update this file when the docs app introduces app-specific structure, scripts, or verification expectations
 
 ## Package Notes

@@ -18,9 +18,11 @@ This package is `@raurus/react`, the thin React integration for the Raurus runti
 
 - Read the root `AGENTS.md` before planning or implementing changes in this package
 - Use React-specific guidance for state, rendering, and interaction work
+- Verify export or packaged asset changes with `bun run --cwd packages/react test`; package output tests cover the shipped `./styles.css` entry and published files
 - Update this file when package-specific React conventions or verification expectations change
 
 ## Package Notes
 
-- `RaurusProvider` owns edit mode and selected asset state
+- `RaurusProvider` owns edit mode, selected asset state, and the built-in admin chrome
+- Edit mode must stay gated by both `?edit=true` and `runtime.canEdit(permissionContext)`
 - `EditableAsset` must remain invisible in viewer mode and lightweight in editor mode
