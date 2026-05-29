@@ -1,5 +1,5 @@
 {
-    "name": "@raurus/playground-tanstack-router",
+    "name": "@raurus/playground-tanstack-start",
     "private": true,
     "type": "module",
     "imports": {
