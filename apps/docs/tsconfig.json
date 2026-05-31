@@ -1,8 +1,0 @@
-{
-    "extends": "@raurus/tsconfig",
-    "compilerOptions": {
-        "lib": ["ES2023", "DOM", "DOM.Iterable"],
-        "types": ["node"]
-    },
-    "include": [".vitepress/**/*.ts", ".vitepress/**/*.mts"]
-}
