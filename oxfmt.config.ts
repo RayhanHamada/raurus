@@ -7,4 +7,5 @@ export default defineConfig({
     ...ultracite,
     ignorePatterns: [...oxignore],
     tabWidth: 4,
+    printWidth: 120,
 });
