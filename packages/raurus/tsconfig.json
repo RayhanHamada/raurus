@@ -2,7 +2,11 @@
     "extends": ["@raurus/tsconfig"],
     "compilerOptions": {
         "target": "esnext",
-        "lib": ["ES2023"]
+        "lib": ["ES2023", "DOM"],
+        "types": ["node"],
+        "paths": {
+            "@/*": ["./src/*"]
+        }
     },
     "include": ["src"]
 }

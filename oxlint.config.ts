@@ -20,6 +20,7 @@ export default defineConfig({
         "ban-ts-comment": "off",
         "typescript/no-empty-interface": "off",
         "typescript/no-empty-object-type": "off",
+        "require-await": "off",
 
         "tailwindcss/enforce-canonical": "error",
         "tailwindcss/enforce-sort-order": "error",

@@ -1,5 +1,3 @@
-// oxlint-disable no-unused-vars
-
 export interface RaurusMetadataAdapterConfig {}
 export interface RaurusMetadataAdapter {}
 export type RaurusMetadataAdapterFactory = (config: RaurusMetadataAdapterConfig) => RaurusMetadataAdapter;
