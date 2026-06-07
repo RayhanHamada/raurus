@@ -52,6 +52,17 @@
           "error"
         ]
       },
+      "uploadAssetRes200applicationjson": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "const": "OK"
+          }
+        },
+        "required": [
+          "message"
+        ]
+      },
       "uploadAssetRes400applicationjson": {
         "type": "object",
         "properties": {
@@ -65,17 +76,6 @@
         "required": [
           "message",
           "error"
-        ]
-      },
-      "uploadAssetRes200applicationjson": {
-        "type": "object",
-        "properties": {
-          "message": {
-            "const": "OK"
-          }
-        },
-        "required": [
-          "message"
         ]
       }
     }
