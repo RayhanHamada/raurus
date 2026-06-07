@@ -1,6 +1,6 @@
 import type { OpenApiSpecificationOptions } from "itty-spec";
 
-import type { CreateRuntimeOptions } from "@/server/types";
+import type { CreateRuntimeOptions } from "./types";
 
 export const openapiConfig: OpenApiSpecificationOptions = {
     title: "Raurus OpenAPI",

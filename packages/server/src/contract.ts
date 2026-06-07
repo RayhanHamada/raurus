@@ -1,7 +1,7 @@
 import { createContract } from "itty-spec";
 import * as v from "valibot";
 
-import { OPENAPI_JSON_PATH } from "@/server/config";
+import { OPENAPI_JSON_PATH } from "./config";
 
 export const contract = createContract({
     /**
