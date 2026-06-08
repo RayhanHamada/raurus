@@ -20,7 +20,7 @@ export function createRuntime<Options extends CreateRuntimeOptions>(config?: Opt
         base: options.basePath,
         handlers: {
             async getSpec(request) {
-                const openapi = await import("../openapi.json");
+                const { default: openapi } = await import("../openapi.json");
 
                 return request.respond({
                     contentType: "application/json",

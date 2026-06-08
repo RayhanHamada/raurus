@@ -40,6 +40,7 @@
         "valibot": "^1.4.1",
       },
       "devDependencies": {
+        "@raurus/core": "workspace:*",
         "@raurus/tsconfig": "workspace:*",
         "@types/node": "^25.6.2",
         "bumpp": "^11.1.0",
