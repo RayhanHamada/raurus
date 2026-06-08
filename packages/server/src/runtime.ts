@@ -3,13 +3,13 @@ import { createRouter } from "itty-spec";
 
 import { DEFAULT_RUNTIME_OPTIONS, OPENAPI_CONFIG } from "./config";
 import { contract } from "./contract";
-import type { CreateRuntimeOptions } from "./types";
+import type { CreateRaurusOptions } from "./types";
 
 type TRouter = ReturnType<typeof createRouter>;
 
 let cachedRouter: TRouter | null = null;
 
-export function createRuntime<Options extends CreateRuntimeOptions>(config?: Options) {
+export function createRuntime<Options extends CreateRaurusOptions>(config?: Options) {
     const options = {
         ...DEFAULT_RUNTIME_OPTIONS,
         ...config,

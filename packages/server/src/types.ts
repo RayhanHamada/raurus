@@ -1,6 +1,6 @@
 import type { RaurusMetadataAdapter, RaurusStorageAdapter } from "@raurus/core";
 
-export interface CreateRuntimeOptions {
+export interface CreateRaurusOptions {
     /**
      * The metadata adapter to use for the Raurus instance. This is required.
      */

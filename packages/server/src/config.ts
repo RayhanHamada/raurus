@@ -1,6 +1,6 @@
 import type { OpenApiSpecificationOptions } from "itty-spec";
 
-import type { CreateRuntimeOptions } from "./types";
+import type { CreateRaurusOptions } from "./types";
 
 export const OPENAPI_CONFIG: OpenApiSpecificationOptions = {
     title: "Raurus OpenAPI",
@@ -15,4 +15,4 @@ export const OPENAPI_JSON_PATH = "/openapi.json";
 export const DEFAULT_RUNTIME_OPTIONS = {
     basePath: "/api",
     docsPath: "/docs",
-} as const satisfies CreateRuntimeOptions;
+} as const satisfies CreateRaurusOptions;
