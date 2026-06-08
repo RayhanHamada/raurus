@@ -17,8 +17,7 @@
     ],
     "type": "module",
     "exports": {
-        "./client": "./dist/client/index.js",
-        "./server": "./dist/server/index.js",
+        ".": "./dist/index.js",
         "./package.json": "./package.json"
     },
     "scripts": {

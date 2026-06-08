@@ -1,4 +1,4 @@
-import type { RaurusMetadataAdapter, RaurusStorageAdapter } from "@raurus/core/server";
+import type { RaurusMetadataAdapter, RaurusStorageAdapter } from "@raurus/core";
 
 export interface CreateRuntimeOptions {
     /**
