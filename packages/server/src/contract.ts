@@ -72,8 +72,14 @@ export const contract = createContract({
         summary: "Upload Asset",
         tags: ["Operations"],
         requests: {
-            "application/json": {
-                body: v.file(),
+            "multipart/form-data": {
+                body: v.object({
+                    files: v.pipe(
+                        v.array(v.file()),
+                        v.nonEmpty(),
+                        v.everyItem((item) => item.size > 1 * 1024 * 1024, "Each file must be larger than 1MB")
+                    ),
+                }),
             },
         },
         responses: {
