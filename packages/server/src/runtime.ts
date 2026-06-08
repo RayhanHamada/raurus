@@ -57,7 +57,7 @@ export function createRuntime<Options extends CreateRaurusOptions>(config?: Opti
                 cdn: `${options.basePath || ""}/scalar/scalar.js`,
                 config: {
                     content,
-                    theme: "saturn",
+                    theme: "default",
                 },
             });
 
