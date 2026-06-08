@@ -3,7 +3,6 @@ import { createRouter } from "itty-spec";
 
 import { defaultRuntimeOptions } from "./config";
 import { contract } from "./contract";
-import openapi from "./openapi.json" with { type: "json" };
 import type { CreateRuntimeOptions } from "./types";
 
 type TRouter = ReturnType<typeof createRouter>;
@@ -21,6 +20,8 @@ export function createRuntime<Options extends CreateRuntimeOptions>(config?: Opt
         base: options.basePath,
         handlers: {
             async getSpec(request) {
+                const openapi = await import("../openapi.json");
+
                 return request.respond({
                     contentType: "application/json",
                     status: 200,
