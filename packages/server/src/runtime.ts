@@ -1,7 +1,7 @@
-import { swaggerUI } from "@hono/swagger-ui";
+import { getJsAsset, renderApiReference } from "@scalar/server-side-rendering";
 import { createRouter } from "itty-spec";
 
-import { DEFAULT_RUNTIME_OPTIONS } from "./config";
+import { DEFAULT_RUNTIME_OPTIONS, OPENAPI_CONFIG } from "./config";
 import { contract } from "./contract";
 import type { CreateRuntimeOptions } from "./types";
 
@@ -49,7 +49,34 @@ export function createRuntime<Options extends CreateRuntimeOptions>(config?: Opt
         /**
          * Serve Swagger UI at /docs endpoint
          */
-        .get(options.docsPath, swaggerUI({ url: "/openapi.json" }));
+        .get("/docs", async () => {
+            const { default: content } = await import("../openapi.json");
+
+            const html = await renderApiReference({
+                pageTitle: OPENAPI_CONFIG.title,
+                cdn: `${options.basePath || ""}/scalar/scalar.js`,
+                config: {
+                    content,
+                    theme: "saturn",
+                },
+            });
+
+            return new Response(html, {
+                headers: {
+                    "Content-Type": "text/html",
+                },
+            });
+        })
+
+        .get(
+            "/scalar/scalar.js",
+            async () =>
+                new Response(getJsAsset(), {
+                    headers: {
+                        "Content-Type": "application/javascript",
+                    },
+                })
+        );
 
     return {
         fetch: cachedRouter.fetch as typeof fetch,
