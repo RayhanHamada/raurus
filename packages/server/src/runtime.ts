@@ -1,9 +1,10 @@
 import { getJsAsset, renderApiReference } from "@scalar/server-side-rendering";
 import { createRouter } from "itty-spec";
 
-import { DEFAULT_RUNTIME_OPTIONS, OPENAPI_CONFIG } from "./config";
-import { contract } from "./contract";
-import type { CreateRaurusOptions } from "./types";
+import { DEFAULT_RUNTIME_OPTIONS, OPENAPI_CONFIG } from "@/config";
+import { contract } from "@/contract";
+import openapi from "@/openapi.json";
+import type { CreateRaurusOptions } from "@/types";
 
 type TRouter = ReturnType<typeof createRouter>;
 
@@ -20,8 +21,6 @@ export function createRuntime<Options extends CreateRaurusOptions>(config?: Opti
         base: options.basePath,
         handlers: {
             async getSpec(request) {
-                const { default: openapi } = await import("../openapi.json");
-
                 return request.respond({
                     contentType: "application/json",
                     status: 200,
@@ -55,13 +54,11 @@ export function createRuntime<Options extends CreateRaurusOptions>(config?: Opti
          * Serve Swagger UI at /docs endpoint
          */
         .get("/docs", async () => {
-            const { default: content } = await import("../openapi.json");
-
             const html = await renderApiReference({
                 pageTitle: OPENAPI_CONFIG.title,
                 cdn: `${options.basePath || ""}/scalar/scalar.js`,
                 config: {
-                    content,
+                    content: openapi,
                     theme: "default",
                 },
             });
