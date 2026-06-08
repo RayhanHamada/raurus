@@ -1,3 +1,4 @@
+// export type { RequestLike } from "itty-router";
 export interface CreateRuntimeOptions {
     /**
      * default to "/api", the base path for all API endpoints. You can change this if you want to serve the API under a different path.

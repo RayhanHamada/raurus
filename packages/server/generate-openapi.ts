@@ -3,10 +3,10 @@ import { resolve } from "node:path";
 
 import { createOpenApiSpecification } from "itty-spec";
 
-import { openapiConfig } from "@/config";
+import { OPENAPI_CONFIG } from "@/config";
 import { contract } from "@/contract";
 
-const spec = await createOpenApiSpecification(contract, openapiConfig);
+const spec = await createOpenApiSpecification(contract, OPENAPI_CONFIG);
 const output = resolve(process.cwd(), "openapi.json");
 
 await writeFile(output, JSON.stringify(spec), "utf-8");

@@ -1,7 +1,7 @@
 import { swaggerUI } from "@hono/swagger-ui";
 import { createRouter } from "itty-spec";
 
-import { defaultRuntimeOptions } from "./config";
+import { DEFAULT_RUNTIME_OPTIONS } from "./config";
 import { contract } from "./contract";
 import type { CreateRuntimeOptions } from "./types";
 
@@ -9,9 +9,9 @@ type TRouter = ReturnType<typeof createRouter>;
 
 let cachedRouter: TRouter | null = null;
 
-export function createRuntime<Options extends CreateRuntimeOptions>(config?: Options): TRouter {
+export function createRuntime<Options extends CreateRuntimeOptions>(config?: Options) {
     const options = {
-        ...defaultRuntimeOptions,
+        ...DEFAULT_RUNTIME_OPTIONS,
         ...config,
     };
 
@@ -51,5 +51,7 @@ export function createRuntime<Options extends CreateRuntimeOptions>(config?: Opt
          */
         .get(options.docsPath, swaggerUI({ url: "/openapi.json" }));
 
-    return cachedRouter;
+    return {
+        fetch: cachedRouter.fetch as typeof fetch,
+    };
 }
