@@ -50,6 +50,9 @@ export const contract = createContract({
                 "application/json": {
                     body: v.object({
                         message: v.literal("OK"),
+                        data: v.object({
+                            url: v.pipe(v.string(), v.url()),
+                        }),
                     }),
                 },
             },
@@ -101,3 +104,5 @@ export const contract = createContract({
         },
     },
 } as const);
+
+export type Contract = Exclude<typeof contract, "getSpec">;

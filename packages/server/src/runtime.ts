@@ -33,7 +33,12 @@ export function createRuntime<Options extends CreateRaurusOptions>(config?: Opti
                 return request.respond({
                     contentType: "application/json",
                     status: 200,
-                    body: { message: "OK" },
+                    body: {
+                        message: "OK",
+                        data: {
+                            url: "https://example.com/presigned-url",
+                        },
+                    },
                 });
             },
 
