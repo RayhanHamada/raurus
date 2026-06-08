@@ -10,5 +10,6 @@
     "skills-lock.json",
     "worker-configuration.d.ts",
     "**/migrations/meta",
-    "**/.vitepress/cache"
+    "**/.vitepress/cache",
+    "**/openapi.json"
 ]
