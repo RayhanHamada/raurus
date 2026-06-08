@@ -37,6 +37,7 @@ raurus/
 - Extend `@raurus/tsconfig` in every package's `tsconfig.json`
 - Use `tsdown` for building packages, not tsup, rollup, or esbuild directly
 - Every package-level AGENTS.md references this root AGENTS.md
+- **When a task touches one or more packages, update the relevant `packages/<name>/AGENTS.md`** to reflect any new conventions, patterns, dependencies, or architectural decisions introduced by the change
 
 ## Workflow
 
