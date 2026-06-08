@@ -19,15 +19,15 @@ raurus/
 
 ## Tooling
 
-| Tool | Purpose |
-|------|---------|
-| **turbo** | Monorepo orchestration — `build`, `test`, `typecheck`, `dev` pipelines |
-| **tsdown** | Rolldown-based build tool for bundling packages (tsup successor) |
-| **oxlint** | Rust-based linter, configured via `ultracite` presets |
-| **oxfmt** | Rust-based formatter, configured via `ultracite` |
-| **vitest** | Unit testing framework |
-| **TypeScript 6** | Type checking with `@tsconfig/strictest` as baseline |
-| **@changesets/cli** | Versioning and changelog management |
+| Tool                | Purpose                                                                |
+| ------------------- | ---------------------------------------------------------------------- |
+| **turbo**           | Monorepo orchestration — `build`, `test`, `typecheck`, `dev` pipelines |
+| **tsdown**          | Rolldown-based build tool for bundling packages (tsup successor)       |
+| **oxlint**          | Rust-based linter, configured via `ultracite` presets                  |
+| **oxfmt**           | Rust-based formatter, configured via `ultracite`                       |
+| **vitest**          | Unit testing framework                                                 |
+| **TypeScript 6**    | Type checking with `@tsconfig/strictest` as baseline                   |
+| **@changesets/cli** | Versioning and changelog management                                    |
 
 ## Standards
 
