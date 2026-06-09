@@ -2,30 +2,33 @@
 
 ## Package Context
 
-This package is `@raurus/core`, the foundation library for the Raurus framework. It defines adapter interfaces and types for pluggable metadata and storage backends.
+This package is `@raurus/core`, the foundation library for the Raurus framework. It defines shared domain types plus adapter contracts for pluggable metadata and storage backends.
 
 ## Architecture
 
-The package has a dual entry point architecture:
+The package currently has a flat source layout:
 
-- `@raurus/core/client` — client-side types and interfaces
-- `@raurus/core/server` — server-side adapter interfaces (metadata, storage, factory patterns)
-
-Source is organized under `src/client/` and `src/server/`, with each directory having its own `index.ts` barrel file.
+```
+src/
+├── types.ts      # Shared domain types and adapter contracts
+└── index.ts      # Public barrel export
+```
 
 ## Key Concepts
 
-- **Metadata Adapter** — `RaurusMetadataAdapter` and `RaurusMetadataAdapterFactory` define the pluggable interface for metadata backends
-- **Storage Adapter** — `RaurusStorageAdapter` and `RaurusStorageAdapterFactory` define the pluggable interface for storage backends
+- **Metadata Adapter** — `RaurusMetadataAdapter` and `RaurusMetadataAdapterFactory` define the placeholder-to-asset metadata contract
+- **Storage Adapter** — `RaurusStorageAdapter` and `RaurusStorageAdapterFactory` own asset upload, presigned URL generation, and deletion
+- **Raurus Asset** — `RaurusAsset` is the shared upload input type used by storage adapters
 - **Raurus Instance** — `RaurusInstance` is the core runtime, constructed via `RaurusFactory` with a `RaurusInstanceConfig` that composes both adapters
 - The config and factory types use generics to preserve concrete adapter types through composition
 
 ## Package Standards
 
 - Keep all domain types in `@raurus/core` — implementations belong in separate packages
-- Maintain the client/server barrel structure when adding new exports
+- Keep the public surface on the root package export unless the package is deliberately restructured
 - Use interfaces for adapter contracts, types for factory functions
-- Export types from the appropriate subpath (`./client` or `./server`), not from the package root
+- Keep metadata persistence concerns on `RaurusMetadataAdapter`; presigned URL and asset lifecycle APIs belong on `RaurusStorageAdapter`
+- Re-export public types through `src/index.ts`
 
 ## Workflow
 
@@ -37,5 +40,5 @@ Source is organized under `src/client/` and `src/server/`, with each directory h
 ## Package Notes
 
 - This package is currently type-only — all runtime logic lives in other packages
-- The build outputs separate `dist/client/` and `dist/server/` directories matching the entry points
+- The current public surface is a single root entry point that re-exports `src/types.ts`
 - When adding a new adapter concept, follow the existing factory pattern: `Config` interface → `Adapter` interface → `Factory` type

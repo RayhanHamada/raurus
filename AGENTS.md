@@ -10,8 +10,8 @@ Raurus is a TypeScript monorepo building a modular, contract-first web applicati
 raurus/
 ├── apps/                    # Application workspaces (future)
 ├── packages/
-│   ├── core/                # @raurus/core — adapter interfaces, client/server entry points
-│   ├── server/              # @raurus/server — Hono + itty-spec contract-driven API server
+│   ├── core/                # @raurus/core — shared framework types and adapter interfaces
+│   ├── server/              # @raurus/server — Hono + itty-spec runtime with generated OpenAPI export
 │   └── tsconfig/            # @raurus/tsconfig — shared TypeScript base configuration
 ├── turbo.json               # Turborepo pipeline config
 └── package.json             # Root workspace config (bun@1.3.14)
