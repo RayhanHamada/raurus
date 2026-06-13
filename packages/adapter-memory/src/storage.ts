@@ -18,9 +18,6 @@ export function createMemoryStorageAdapter(): RaurusStorageAdapter {
         async createPresignedUploadUrl(assetKey, _expiresIn?: number) {
             return `memory://upload/${assetKey}`;
         },
-        async createPresignedDownloadUrl(assetKey, _expiresIn?: number) {
-            return `memory://download/${assetKey}`;
-        },
         async deleteAsset(assetKey) {
             store.delete(assetKey);
         },

@@ -1,24 +1,27 @@
 import { getJsAsset, renderApiReference } from "@scalar/server-side-rendering";
-import { createRouter } from "itty-spec";
+import { createOpenApiSpecification, createRouter } from "itty-spec";
 
 import { DEFAULT_RUNTIME_OPTIONS, OPENAPI_CONFIG } from "@/config";
 import { contract } from "@/contract";
-import openapi from "@/openapi.json";
 import type { CreateRaurusOptions } from "@/types";
 
 type TRouter = ReturnType<typeof createRouter>;
 
 let cachedRouter: TRouter | null = null;
 
-export function createRuntime<Options extends CreateRaurusOptions>(config?: Options) {
+type BaseOptions = Partial<CreateRaurusOptions> & Pick<CreateRaurusOptions, "baseUrl">;
+
+export function createRuntime<Options extends BaseOptions>(config: Options) {
     const options = {
         ...DEFAULT_RUNTIME_OPTIONS,
         ...config,
     };
 
+    const basePath = new URL(options.baseUrl).pathname;
+
     cachedRouter ??= createRouter({
         contract,
-        base: options.basePath,
+        base: basePath,
         handlers: {
             async getPresignedUrl(request) {
                 return request.respond({
@@ -42,39 +45,26 @@ export function createRuntime<Options extends CreateRaurusOptions>(config?: Opti
             },
         },
     })
-        /**
-         * Serve OpenAPI specification at /openapi.json endpoint
-         */
-        .get("/openapi.json", async () => Response.json(openapi))
-
-        /**
-         * Serve Swagger UI at /docs endpoint
-         */
-        .get("/docs", async () => {
-            const html = await renderApiReference({
-                pageTitle: OPENAPI_CONFIG.title,
-                cdn: `${options.basePath || ""}/scalar/scalar.js`,
-                config: {
-                    content: openapi,
-                    theme: "default",
-                },
-            });
-
-            return new Response(html, {
-                headers: {
-                    "Content-Type": "text/html",
-                },
-            });
+        .get(options.specPath, async () => {
+            const spec = await createOpenApiSpecification(contract, { ...OPENAPI_CONFIG });
+            return Response.json(spec);
         })
+        .get(options.docsPath, async () => {
+            const contentUrl = `${options.baseUrl}${options.specPath}`;
+            const cdn = `${options.baseUrl}/scalar/scalar.js`;
+            const pageTitle = OPENAPI_CONFIG.title;
 
+            const html = await renderApiReference({
+                cdn,
+                pageTitle,
+                config: { url: contentUrl },
+            });
+
+            return new Response(html, { headers: { "Content-Type": "text/html" } });
+        })
         .get(
             "/scalar/scalar.js",
-            async () =>
-                new Response(getJsAsset(), {
-                    headers: {
-                        "Content-Type": "application/javascript",
-                    },
-                })
+            async () => new Response(getJsAsset(), { headers: { "Content-Type": "application/javascript" } })
         );
 
     return {

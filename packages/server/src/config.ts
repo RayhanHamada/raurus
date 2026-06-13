@@ -11,7 +11,6 @@ export const OPENAPI_CONFIG: OpenApiSpecificationOptions = {
 };
 
 export const DEFAULT_RUNTIME_OPTIONS = {
-    basePath: "/api",
     docsPath: "/docs",
     specPath: "/openapi.json",
-} as const satisfies Pick<CreateRaurusOptions, "basePath" | "docsPath" | "specPath">;
+} as const satisfies Pick<CreateRaurusOptions, "docsPath" | "specPath">;
