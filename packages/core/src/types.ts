@@ -1,5 +1,5 @@
 export interface RaurusMetadata {
-    placeholderId: string;
+    placeholderId: string | number;
     assetKey: string;
 }
 
@@ -8,6 +8,9 @@ export type RaurusAsset = ArrayBuffer | File | Blob;
 export interface RaurusMetadataAdapterBaseConfig {}
 export interface RaurusStorageAdapterBaseConfig {}
 
+/**
+ * Defines the interface for a metadata adapter that provides methods for retrieving and upserting metadata associated with placeholder IDs and asset keys. The adapter allows for interaction with a metadata storage system to manage the association between placeholder IDs and their corresponding asset keys.
+ */
 export interface RaurusMetadataAdapter {
     /**
      * Retrieves metadata associated with a given placeholder ID. If no metadata is found for the provided placeholder ID, the method returns null.
@@ -18,14 +21,18 @@ export interface RaurusMetadataAdapter {
     getMetadataById(placeholderId: RaurusMetadata["placeholderId"]): Promise<RaurusMetadata | null>;
 
     /**
-     * Inserts metadata for a given placeholder ID and asset key.
+     * Inserts or updates metadata for a given placeholder ID and asset key.
      *
-     * @param placeholderId The placeholder ID for which to insert metadata.
+     * @param placeholderId The placeholder ID for which to insert or update metadata.
      * @param assetKey The asset key associated with the placeholder ID.
-     * @returns A promise that resolves when the metadata has been successfully inserted.
+     * @returns A promise that resolves when the metadata has been successfully inserted or updated.
      */
-    insertMetadata(placeholderId: RaurusMetadata["placeholderId"], assetKey: RaurusMetadata["assetKey"]): Promise<void>;
+    upsertMetadata(placeholderId: RaurusMetadata["placeholderId"], assetKey: RaurusMetadata["assetKey"]): Promise<void>;
 }
+
+/**
+ * Defines the interface for a storage adapter that provides methods for uploading, generating presigned URLs, and deleting assets in a storage service. The adapter allows for interaction with the storage service using asset keys and supports various data formats for asset uploads.
+ */
 export interface RaurusStorageAdapter {
     /**
      * Uploads an asset to the storage service using its asset key. The asset data can be provided as an ArrayBuffer, File, or Blob.
