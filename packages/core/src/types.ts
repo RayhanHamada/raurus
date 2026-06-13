@@ -53,15 +53,6 @@ export interface RaurusStorageAdapter {
     createPresignedUploadUrl(assetKey: RaurusMetadata["assetKey"], expiresIn?: number): Promise<string>;
 
     /**
-     * Generates a presigned URL for downloading an asset directly from the storage service.
-     *
-     * @param assetKey The asset key for which to generate the presigned download URL.
-     * @param expiresIn Optional expiration time in seconds for the presigned URL. If not provided, a default expiration time will be used.
-     * @returns A promise that resolves to the generated presigned download URL as a string.
-     */
-    createPresignedDownloadUrl(assetKey: RaurusMetadata["assetKey"], expiresIn?: number): Promise<string>;
-
-    /**
      * Deletes an asset from the storage service using its asset key.
      *
      * @param assetKey The asset key of the asset to be deleted.
