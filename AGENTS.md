@@ -8,7 +8,7 @@ Raurus is a TypeScript monorepo building a modular, contract-first web applicati
 
 ```
 raurus/
-├── apps/                    # Application workspaces (future)
+├── apps/
 ├── packages/
 │   ├── core/                # @raurus/core — shared framework types and adapter interfaces
 │   ├── server/              # @raurus/server — Hono + itty-spec runtime with generated OpenAPI export
@@ -38,6 +38,7 @@ raurus/
 - Use `tsdown` for building packages, not tsup, rollup, or esbuild directly
 - Every package-level AGENTS.md references this root AGENTS.md
 - **When a task touches one or more packages, update the relevant `packages/<name>/AGENTS.md`** to reflect any new conventions, patterns, dependencies, or architectural decisions introduced by the change
+- **At the end of every task, verify `AGENTS.md` files are current** — check that root and any affected package-level AGENTS.md files accurately reflect the current codebase. If stale, update them before considering the task complete
 
 ## Workflow
 
