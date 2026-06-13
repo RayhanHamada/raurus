@@ -51,6 +51,11 @@ export function createRuntime<Options extends CreateRaurusOptions>(config?: Opti
         },
     })
         /**
+         * Serve OpenAPI specification at /openapi.json endpoint
+         */
+        .get("/openapi.json", async () => Response.json(openapi))
+
+        /**
          * Serve Swagger UI at /docs endpoint
          */
         .get("/docs", async () => {

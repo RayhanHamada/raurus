@@ -10,9 +10,8 @@ export const OPENAPI_CONFIG: OpenApiSpecificationOptions = {
     license: { name: "MIT" },
 };
 
-export const OPENAPI_JSON_PATH = "/openapi.json";
-
 export const DEFAULT_RUNTIME_OPTIONS = {
     basePath: "/api",
     docsPath: "/docs",
-} as const satisfies CreateRaurusOptions;
+    specPath: "/openapi.json",
+} as const satisfies Pick<CreateRaurusOptions, "basePath" | "docsPath" | "specPath">;

@@ -1,7 +1,7 @@
 import { createContract } from "itty-spec";
 import * as v from "valibot";
 
-import { OPENAPI_JSON_PATH } from "./config";
+import { DEFAULT_RUNTIME_OPTIONS } from "./config";
 
 export const contract = createContract({
     /**
@@ -9,7 +9,7 @@ export const contract = createContract({
      */
     getSpec: {
         method: "GET",
-        path: OPENAPI_JSON_PATH,
+        path: DEFAULT_RUNTIME_OPTIONS.specPath,
         title: "Get OpenAPI specification",
         description: "Endpoint to retrieve the OpenAPI specification for the Raurus server.",
         summary: "Get OpenAPI specification",
