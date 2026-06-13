@@ -20,14 +20,6 @@ export function createRuntime<Options extends CreateRaurusOptions>(config?: Opti
         contract,
         base: options.basePath,
         handlers: {
-            async getSpec(request) {
-                return request.respond({
-                    contentType: "application/json",
-                    status: 200,
-                    body: JSON.stringify(openapi),
-                });
-            },
-
             async getPresignedUrl(request) {
                 return request.respond({
                     contentType: "application/json",

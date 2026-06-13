@@ -1,36 +1,7 @@
 import { createContract } from "itty-spec";
 import * as v from "valibot";
 
-import { DEFAULT_RUNTIME_OPTIONS } from "./config";
-
 export const contract = createContract({
-    /**
-     * for getting openapi specification
-     */
-    getSpec: {
-        method: "GET",
-        path: DEFAULT_RUNTIME_OPTIONS.specPath,
-        title: "Get OpenAPI specification",
-        description: "Endpoint to retrieve the OpenAPI specification for the Raurus server.",
-        summary: "Get OpenAPI specification",
-        tags: ["OpenAPI"],
-        responses: {
-            200: {
-                "application/json": {
-                    body: v.any(),
-                },
-            },
-            400: {
-                "application/json": {
-                    body: v.object({
-                        message: v.literal("Error"),
-                        error: v.string(),
-                    }),
-                },
-            },
-        },
-    },
-
     /**
      * for getting a presigned URL for uploading an asset
      */

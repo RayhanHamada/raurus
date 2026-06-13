@@ -1,0 +1,19 @@
+{
+    "name": "@raurus/app-simple-rest-api",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "dev": "bun run --watch src/index.ts",
+        "typecheck": "tsc --noEmit"
+    },
+    "dependencies": {
+        "@raurus/adapter-memory": "workspace:*",
+        "@raurus/core": "workspace:*",
+        "@raurus/server": "workspace:*"
+    },
+    "devDependencies": {
+        "@raurus/tsconfig": "workspace:*",
+        "@types/bun": "latest",
+        "typescript": "^6.0.3"
+    }
+}

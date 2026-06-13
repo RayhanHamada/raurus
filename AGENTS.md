@@ -9,7 +9,9 @@ Raurus is a TypeScript monorepo building a modular, contract-first web applicati
 ```
 raurus/
 ├── apps/
+│   └── simple-rest-api/     # @raurus/app-simple-rest-api — minimal Bun app validating @raurus/server
 ├── packages/
+│   ├── adapter-memory/      # @raurus/adapter-memory — in-memory storage and metadata adapters
 │   ├── core/                # @raurus/core — shared framework types and adapter interfaces
 │   ├── server/              # @raurus/server — Hono + itty-spec runtime with generated OpenAPI export
 │   └── tsconfig/            # @raurus/tsconfig — shared TypeScript base configuration
