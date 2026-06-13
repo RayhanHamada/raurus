@@ -30,6 +30,7 @@
     "dependencies": {
         "@raurus/core": "workspace:*",
         "@scalar/server-side-rendering": "^0.1.22",
+        "@valibot/to-json-schema": "^1.7.1",
         "itty-spec": "^0.2.9",
         "valibot": "^1.4.1"
     },
