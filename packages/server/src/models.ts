@@ -9,14 +9,14 @@ const UploadAssetBody = t.Object({
 });
 
 const PresignedUrlResponse = t.Object({
-    message: t.String(),
+    message: t.Literal("OK"),
     data: t.Object({
         url: t.String(),
     }),
 });
 
 const UploadAssetResponse = t.Object({
-    message: t.String(),
+    message: t.Literal("OK"),
 });
 
 const ErrorResponse = t.Object({

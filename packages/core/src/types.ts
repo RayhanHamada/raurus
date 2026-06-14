@@ -5,13 +5,13 @@ export interface RaurusMetadata {
 
 export type RaurusAsset = ArrayBuffer | File | Blob;
 
-export interface RaurusMetadataAdapterBaseConfig {}
-export interface RaurusStorageAdapterBaseConfig {}
+export interface RuntimeMetadataAdapterBaseConfig {}
+export interface RuntimeStorageAdapterBaseConfig {}
 
 /**
  * Defines the interface for a metadata adapter that provides methods for retrieving and upserting metadata associated with placeholder IDs and asset keys. The adapter allows for interaction with a metadata storage system to manage the association between placeholder IDs and their corresponding asset keys.
  */
-export interface RaurusMetadataAdapter {
+export interface RuntimeMetadataAdapter {
     /**
      * Retrieves metadata associated with a given placeholder ID. If no metadata is found for the provided placeholder ID, the method returns null.
      *
@@ -33,7 +33,7 @@ export interface RaurusMetadataAdapter {
 /**
  * Defines the interface for a storage adapter that provides methods for uploading, generating presigned URLs, and deleting assets in a storage service. The adapter allows for interaction with the storage service using asset keys and supports various data formats for asset uploads.
  */
-export interface RaurusStorageAdapter {
+export interface RuntimeStorageAdapter {
     /**
      * Uploads an asset to the storage service using its asset key. The asset data can be provided as an ArrayBuffer, File, or Blob.
      *
@@ -61,17 +61,16 @@ export interface RaurusStorageAdapter {
     deleteAsset(assetKey: RaurusMetadata["assetKey"]): Promise<void>;
 }
 
-export type RaurusMetadataAdapterFactory = (config: RaurusMetadataAdapterBaseConfig) => RaurusMetadataAdapter;
-export type RaurusStorageAdapterFactory = (config: RaurusStorageAdapterBaseConfig) => RaurusStorageAdapter;
+/**
+ * Defines the factory type for creating instances of RuntimeMetadataAdapter and RuntimeStorageAdapter. The factories take a configuration object as input and return an instance of the respective adapter. The configuration objects can be extended to include specific settings required for the adapters, allowing for flexibility in their implementation and usage.
+ */
+export type RuntimeMetadataAdapterFactory<
+    Config extends RuntimeMetadataAdapterBaseConfig = RuntimeMetadataAdapterBaseConfig,
+> = (config: Config) => RuntimeMetadataAdapter;
 
-export interface RaurusInstanceConfig<
-    TMetadataAdapter extends RaurusMetadataAdapter = RaurusMetadataAdapter,
-    TStorageAdapter extends RaurusStorageAdapter = RaurusStorageAdapter,
-> {
-    metadata: TMetadataAdapter;
-    storage: TStorageAdapter;
-}
-
-export interface RaurusInstance {}
-
-export type RaurusFactory = (config: RaurusInstanceConfig) => RaurusInstance;
+/**
+ * Defines the factory type for creating instances of RuntimeStorageAdapter. The factory takes a configuration object as input and returns an instance of RuntimeStorageAdapter. The configuration object can be extended to include specific settings required for the storage adapter, allowing for flexibility in its implementation and usage.
+ */
+export type RuntimeStorageAdapterFactory<
+    Config extends RuntimeStorageAdapterBaseConfig = RuntimeStorageAdapterBaseConfig,
+> = (config: Config) => RuntimeStorageAdapter;
