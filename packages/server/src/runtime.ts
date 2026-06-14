@@ -46,7 +46,10 @@ export function createRuntime<Options extends BaseOptions>(config: Options) {
         },
     })
         .get(options.specPath, async () => {
-            const spec = await createOpenApiSpecification(contract, { ...OPENAPI_CONFIG });
+            const spec = await createOpenApiSpecification(contract, {
+                ...OPENAPI_CONFIG,
+                servers: [{ url: options.baseUrl }],
+            });
             return Response.json(spec);
         })
         .get(options.docsPath, async () => {
