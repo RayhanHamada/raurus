@@ -17,7 +17,7 @@ src/
 
 - Both adapters use `Map` for in-memory storage — data is lost on process restart
 - `createMemoryMetadataAdapter()` maps placeholder IDs to `RaurusMetadata` records
-- `createMemoryStorageAdapter()` maps asset keys to `Uint8Array` buffers, with presigned URL methods returning `memory://` scheme strings
+- `createMemoryStorageAdapter()` maps asset keys to `Uint8Array` buffers, with a presigned upload URL method returning `memory://` scheme strings
 - The storage adapter handles `ArrayBuffer`, `File`, and `Blob` inputs uniformly by converting to `Uint8Array`
 
 ## Package Standards
