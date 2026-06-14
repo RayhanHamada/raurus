@@ -24,5 +24,5 @@ export function createRuntime<Options extends CreateRaurusOptions>(config: Optio
         )
         .group(basePath, (groupApp) => groupApp.use(routes));
 
-    return { fetch: app.fetch };
+    return { fetch: app.handle };
 }
