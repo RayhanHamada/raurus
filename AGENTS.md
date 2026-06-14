@@ -8,11 +8,12 @@ Raurus is a TypeScript monorepo building a modular, contract-first web applicati
 
 ```
 raurus/
+├── examples/
+│   └── server-example/     # @raurus/example-server — minimal Bun app validating @raurus/server
 ├── packages/
 │   ├── adapter-memory/      # @raurus/adapter-memory — in-memory storage and metadata adapters
 │   ├── core/                # @raurus/core — shared framework types and adapter interfaces
 │   ├── server/              # @raurus/server — Elysia + @elysia/openapi runtime with generated OpenAPI export
-│   │   └── example/         # @raurus/example-server — minimal Bun app validating @raurus/server
 │   └── tsconfig/            # @raurus/tsconfig — shared TypeScript base configuration
 ├── turbo.json               # Turborepo pipeline config
 └── package.json             # Root workspace config (bun@1.3.14)

@@ -1,12 +1,15 @@
 # Example: Server
 
-`@raurus/example-server` is a minimal Bun app that boots the `@raurus/server` runtime with `@raurus/adapter-memory` implementations. It validates that the server package builds, starts, and serves endpoints correctly.
+`@raurus/example-server` lives in `examples/server-example/`. It is a minimal Bun app that boots the `@raurus/server` runtime with `@raurus/adapter-memory` implementations. It validates that the server package builds, starts, and serves endpoints correctly.
 
 ## Architecture
 
 ```
-src/
-└── index.ts      # Bun entry point — imports adapters, boots on port 3000
+examples/server-example/
+├── src/
+│   └── index.ts      # Bun entry point — imports adapters, boots on port 3000
+├── package.json
+└── tsconfig.json
 ```
 
 ## Key Concepts
