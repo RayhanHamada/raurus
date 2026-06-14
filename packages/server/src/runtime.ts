@@ -1,76 +1,28 @@
-import { getJsAsset, renderApiReference } from "@scalar/server-side-rendering";
-import { createOpenApiSpecification, createRouter } from "itty-spec";
+import { openapi } from "@elysia/openapi";
+import { Elysia } from "elysia";
 
 import { DEFAULT_RUNTIME_OPTIONS, OPENAPI_CONFIG } from "@/config";
-import { contract } from "@/contract";
-import type { CreateRaurusOptions } from "@/types";
 
-type TRouter = ReturnType<typeof createRouter>;
+import { routes } from "./routes";
+import type { CreateRaurusOptions } from "./types";
 
-let cachedRouter: TRouter | null = null;
+export function createRuntime<Options extends CreateRaurusOptions>(config: Options) {
+    const options = { ...DEFAULT_RUNTIME_OPTIONS, ...config };
 
-type BaseOptions = Partial<CreateRaurusOptions> & Pick<CreateRaurusOptions, "baseUrl">;
+    const url = new URL(options.baseUrl);
+    const { origin } = url;
+    const basePath = url.pathname;
 
-export function createRuntime<Options extends BaseOptions>(config: Options) {
-    const options = {
-        ...DEFAULT_RUNTIME_OPTIONS,
-        ...config,
-    };
+    const app = new Elysia()
+        .use(
+            openapi({
+                documentation: {
+                    info: OPENAPI_CONFIG.info,
+                    servers: [{ url: origin }],
+                },
+            })
+        )
+        .group(basePath, (groupApp) => groupApp.use(routes));
 
-    const basePath = new URL(options.baseUrl).pathname;
-
-    cachedRouter ??= createRouter({
-        contract,
-        base: basePath,
-        handlers: {
-            async getPresignedUrl(request) {
-                return request.respond({
-                    contentType: "application/json",
-                    status: 200,
-                    body: {
-                        message: "OK",
-                        data: {
-                            url: "https://example.com/presigned-url",
-                        },
-                    },
-                });
-            },
-
-            async uploadAsset(request) {
-                return request.respond({
-                    contentType: "application/json",
-                    status: 200,
-                    body: { message: "OK" },
-                });
-            },
-        },
-    })
-        .get(options.specPath, async () => {
-            const spec = await createOpenApiSpecification(contract, {
-                ...OPENAPI_CONFIG,
-                servers: [{ url: options.baseUrl }],
-            });
-            return Response.json(spec);
-        })
-        .get(options.docsPath, async () => {
-            const contentUrl = `${options.baseUrl}${options.specPath}`;
-            const cdn = `${options.baseUrl}/scalar/scalar.js`;
-            const pageTitle = OPENAPI_CONFIG.title;
-
-            const html = await renderApiReference({
-                cdn,
-                pageTitle,
-                config: { url: contentUrl },
-            });
-
-            return new Response(html, { headers: { "Content-Type": "text/html" } });
-        })
-        .get(
-            "/scalar/scalar.js",
-            async () => new Response(getJsAsset(), { headers: { "Content-Type": "application/javascript" } })
-        );
-
-    return {
-        fetch: cachedRouter.fetch as typeof fetch,
-    };
+    return { fetch: app.fetch };
 }

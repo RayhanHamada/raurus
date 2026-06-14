@@ -5,6 +5,7 @@
     ".codex",
     ".opencode",
     ".turbo",
+    ".commandcode",
     "**/components/ui/**",
     "**/routeTree.gen.ts",
     "skills-lock.json",

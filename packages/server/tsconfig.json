@@ -10,5 +10,5 @@
             "@/*": ["./src/*"]
         }
     },
-    "include": ["src", "tsdown.config.ts", "generate-openapi.ts"]
+    "include": ["src", "tsdown.config.ts"]
 }
