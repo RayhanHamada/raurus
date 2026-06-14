@@ -20,7 +20,7 @@
         "vitest": "^4.1.5",
       },
     },
-    "examples/server-example": {
+    "examples/example-server": {
       "name": "@raurus/example-server",
       "dependencies": {
         "@raurus/adapter-memory": "workspace:*",
@@ -343,7 +343,7 @@
 
     "@raurus/core": ["@raurus/core@workspace:packages/core"],
 
-    "@raurus/example-server": ["@raurus/example-server@workspace:examples/server-example"],
+    "@raurus/example-server": ["@raurus/example-server@workspace:examples/example-server"],
 
     "@raurus/server": ["@raurus/server@workspace:packages/server"],
 

@@ -39,8 +39,8 @@ raurus/
 - Extend `@raurus/tsconfig` in every package's `tsconfig.json`
 - Use `tsdown` for building packages, not tsup, rollup, or esbuild directly
 - Every package-level AGENTS.md references this root AGENTS.md
-- **When a task touches one or more packages, update the relevant `packages/<name>/AGENTS.md`** to reflect any new conventions, patterns, dependencies, or architectural decisions introduced by the change
-- **At the end of every task, verify `AGENTS.md` files are current** — check that root and any affected package-level AGENTS.md files accurately reflect the current codebase. If stale, update them before considering the task complete
+- **When a task touches one or more packages or examples, update the relevant `packages/<name>/AGENTS.md` or `examples/<name>/AGENTS.md`** to reflect any new conventions, patterns, dependencies, or architectural decisions introduced by the change
+- **At the end of every task, verify `AGENTS.md` files are current** — check that root and any affected package-level or example-level AGENTS.md files accurately reflect the current codebase. If stale, update them before considering the task complete
 
 ## Workflow
 
@@ -54,6 +54,6 @@ raurus/
 
 - Package names follow the `@raurus/<name>` pattern
 - Packages use ESM (`"type": "module"`) exclusively
-- Each package documents its own conventions in `packages/<name>/AGENTS.md`
+- Each package documents its own conventions in `packages/<name>/AGENTS.md`; examples document theirs in `examples/<name>/AGENTS.md`
 - Ignored paths for linting and formatting are defined in `oxignore.json`
 - Agent skills are locked via `skills-lock.json` and stored in `.agents/skills/`
