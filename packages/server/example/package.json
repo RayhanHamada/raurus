@@ -1,5 +1,5 @@
 {
-    "name": "@raurus/app-simple-rest-api",
+    "name": "@raurus/example-server",
     "private": true,
     "type": "module",
     "scripts": {

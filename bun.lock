@@ -20,19 +20,6 @@
         "vitest": "^4.1.5",
       },
     },
-    "apps/simple-rest-api": {
-      "name": "@raurus/app-simple-rest-api",
-      "dependencies": {
-        "@raurus/adapter-memory": "workspace:*",
-        "@raurus/core": "workspace:*",
-        "@raurus/server": "workspace:*",
-      },
-      "devDependencies": {
-        "@raurus/tsconfig": "workspace:*",
-        "@types/bun": "latest",
-        "typescript": "^6.0.3",
-      },
-    },
     "packages/adapter-memory": {
       "name": "@raurus/adapter-memory",
       "version": "0.0.0",
@@ -76,6 +63,19 @@
         "typescript": "^6.0.3",
         "unrun": "^0.3.1",
         "vitest": "^4.1.5",
+      },
+    },
+    "packages/server/example": {
+      "name": "@raurus/example-server",
+      "dependencies": {
+        "@raurus/adapter-memory": "workspace:*",
+        "@raurus/core": "workspace:*",
+        "@raurus/server": "workspace:*",
+      },
+      "devDependencies": {
+        "@raurus/tsconfig": "workspace:*",
+        "@types/bun": "latest",
+        "typescript": "^6.0.3",
       },
     },
     "packages/tsconfig": {
@@ -341,9 +341,9 @@
 
     "@raurus/adapter-memory": ["@raurus/adapter-memory@workspace:packages/adapter-memory"],
 
-    "@raurus/app-simple-rest-api": ["@raurus/app-simple-rest-api@workspace:apps/simple-rest-api"],
-
     "@raurus/core": ["@raurus/core@workspace:packages/core"],
+
+    "@raurus/example-server": ["@raurus/example-server@workspace:packages/server/example"],
 
     "@raurus/server": ["@raurus/server@workspace:packages/server"],
 

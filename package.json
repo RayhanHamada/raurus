@@ -2,15 +2,14 @@
     "name": "raurus",
     "private": true,
     "workspaces": [
-        "apps/*",
-        "packages/*"
+        "packages/*",
+        "packages/server/example"
     ],
     "type": "module",
     "scripts": {
         "build": "turbo run build",
         "check": "ultracite check",
         "fix": "ultracite fix",
-        "dev:docs": "bun run --cwd apps/docs dev",
         "test": "turbo run test",
         "typecheck": "turbo run typecheck"
     },

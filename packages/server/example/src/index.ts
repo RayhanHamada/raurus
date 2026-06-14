@@ -12,7 +12,4 @@ console.log(`  API:  http://localhost:3000/api`);
 console.log(`  Docs: http://localhost:3000/api/docs`);
 console.log(`  Spec: http://localhost:3000/api/openapi.json`);
 
-export default {
-    port: 3000,
-    fetch: server.fetch,
-};
+export default { port: 3000, fetch: server.fetch };

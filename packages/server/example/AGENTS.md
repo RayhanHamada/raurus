@@ -1,14 +1,12 @@
-# App Agent Guide
+# Example: Server
 
-## App Context
-
-`@raurus/app-simple-rest-api` is a minimal Bun app that boots the `@raurus/server` runtime with `@raurus/adapter-memory` implementations. It exists to validate that the server package builds, starts, and serves endpoints correctly.
+`@raurus/example-server` is a minimal Bun app that boots the `@raurus/server` runtime with `@raurus/adapter-memory` implementations. It validates that the server package builds, starts, and serves endpoints correctly.
 
 ## Architecture
 
 ```
 src/
-└── index.ts      # Bun entry point — imports adapters from @raurus/adapter-memory, boots on port 3000
+└── index.ts      # Bun entry point — imports adapters, boots on port 3000
 ```
 
 ## Key Concepts
