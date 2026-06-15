@@ -5,7 +5,7 @@ export const PresignedUrlQuerySchema = t.Object({
 });
 
 export const UploadAssetBodySchema = t.Object({
-    file: t.File(),
+    files: t.Files({ minItems: 1 }),
 });
 
 export const PresignedUrlResponseSchema = t.Object({

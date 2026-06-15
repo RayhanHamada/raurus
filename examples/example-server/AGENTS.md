@@ -1,11 +1,11 @@
 # Example: Server
 
-`@raurus/example-server` lives in `examples/server-example/`. It is a minimal Bun app that boots the `@raurus/server` runtime with in-memory adapter implementations from `@raurus/server/adapters/example-metadata-adapter` and `@raurus/server/adapters/example-storage-adapter`. It validates that the server package builds, starts, and serves endpoints correctly.
+`@raurus/example-server` lives in `examples/example-server/`. It is a minimal Bun app that boots the `@raurus/server` runtime with in-memory adapter implementations from `@raurus/server/adapters/example-metadata-adapter` and `@raurus/server/adapters/example-storage-adapter`. It validates that the server package builds, starts, and serves endpoints correctly.
 
 ## Architecture
 
 ```
-examples/server-example/
+examples/example-server/
 ├── src/
 │   └── index.ts      # Bun entry point — calls raurus({…}), exports { port: 3000, fetch }
 ├── package.json

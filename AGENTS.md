@@ -9,7 +9,7 @@ Raurus is a TypeScript monorepo building a modular, contract-first web applicati
 ```
 raurus/
 ├── examples/
-│   └── server-example/     # @raurus/example-server — minimal Bun app validating @raurus/server
+│   └── example-server/     # @raurus/example-server — minimal Bun app validating @raurus/server
 ├── packages/
 │   ├── core/                # @raurus/core — shared framework types and adapter interfaces
 │   ├── server/              # @raurus/server — Elysia + @elysia/openapi runtime, includes example and platform adapters

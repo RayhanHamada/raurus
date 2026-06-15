@@ -31,7 +31,7 @@ tsdown.config.ts          # Build config — entry: ["src/index.ts", "src/runtim
 
 - **Single public export** — `raurus()` from `@raurus/server` is the only entry point. It creates a fetch-compatible runtime from adapter options.
 - **Route options** — `routes.ts` takes `RouteOptions` with `metadata` and `storage` adapter objects directly, rather than receiving them through Elysia decorate/store.
-- **Inline OpenAPI** — The `@elysia/openapi` plugin is configured inline in `utils.ts` with server URL derived from `origin + basePath`.
+- **Inline OpenAPI** — The `@elysia/openapi` plugin is configured inline in `utils.ts` with OpenAPI servers derived from parsing `baseUrl` (a required `string | URL`). When the pathname is `/`, the API prefix defaults to `_raurus`.
 - **Schema modules** — `models.ts` exports plain Elysia TypeSystem schemas. Routes import and reference them directly (e.g. `query: PresignedUrlQuerySchema`).
 - **Fetch-compatible** — `createRuntime()` returns `{ fetch }`, compatible with Bun, Cloudflare Workers, and other WinterCG runtimes.
 
@@ -53,6 +53,9 @@ tsdown.config.ts          # Build config — entry: ["src/index.ts", "src/runtim
 ## Package Notes
 
 - Build uses tsdown with entries `src/index.ts`, `src/runtime/index.ts`, and `src/adapters/*/index.ts` — new adapter subdirectories are auto-picked up
+- Each adapter subdirectory under `src/adapters/` must have a corresponding `exports` entry in `package.json` (e.g. `"./adapters/example-metadata-adapter": "./dist/adapters/example-metadata-adapter/index.mjs"`)
+- Adapters extend the base config interfaces from `@raurus/core` (`RuntimeMetadataAdapterBaseConfig`, `RuntimeStorageAdapterBaseConfig`) and use factory types for type safety
 - Example adapters (`example-metadata-adapter`, `example-storage-adapter`) provide in-memory Map-based implementations for development and testing — imported via `@raurus/server/adapters/example-metadata-adapter` and `@raurus/server/adapters/example-storage-adapter`
+- Cloudflare adapters (`cloudflare-d1`, `cloudflare-r2`) depend on `@cloudflare/workers-types` and `s3mini` respectively — currently stubbed with descriptive errors
 - Routes currently use adapter guard clauses for optional methods (createPresignedUploadUrl, uploadAsset)
 - Handlers are stubbed in their responses — wire to full adapter logic when ready
