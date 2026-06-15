@@ -23,7 +23,6 @@
     "examples/example-server": {
       "name": "@raurus/example-server",
       "dependencies": {
-        "@raurus/adapter-memory": "workspace:*",
         "@raurus/core": "workspace:*",
         "@raurus/server": "workspace:*",
       },
@@ -31,21 +30,6 @@
         "@raurus/tsconfig": "workspace:*",
         "@types/bun": "latest",
         "typescript": "^6.0.3",
-      },
-    },
-    "packages/adapter-memory": {
-      "name": "@raurus/adapter-memory",
-      "version": "0.0.0",
-      "dependencies": {
-        "@raurus/core": "workspace:*",
-      },
-      "devDependencies": {
-        "@raurus/tsconfig": "workspace:*",
-        "@types/node": "^25.6.2",
-        "bumpp": "^11.1.0",
-        "tsdown": "^0.22.0",
-        "typescript": "^6.0.3",
-        "vitest": "^4.1.5",
       },
     },
     "packages/core": {
@@ -342,8 +326,6 @@
     "@polka/url": ["@polka/url@1.0.0-next.29", "", {}, "sha512-wwQAWhWSuHaag8c4q/KN/vCoeOJYshAIvMQwD4GpSb3OiZklFfvAgmj0VCBBImRpuF/aFgIRzllXlVX93Jevww=="],
 
     "@quansync/fs": ["@quansync/fs@1.0.0", "", { "dependencies": { "quansync": "^1.0.0" } }, "sha512-4TJ3DFtlf1L5LDMaM6CanJ/0lckGNtJcMjQ1NAV6zDmA0tEHKZtxNKin8EgPaVX1YzljbxckyT2tJrpQKAtngQ=="],
-
-    "@raurus/adapter-memory": ["@raurus/adapter-memory@workspace:packages/adapter-memory"],
 
     "@raurus/core": ["@raurus/core@workspace:packages/core"],
 
@@ -908,8 +890,6 @@
     "@manypkg/get-packages/fs-extra": ["fs-extra@8.1.0", "", { "dependencies": { "graceful-fs": "^4.2.0", "jsonfile": "^4.0.0", "universalify": "^0.1.0" } }, "sha512-yhlQgA6mnOJUKOsRUFsgJdQCvkKhcz8tlZG5HBQfReYZy46OwLcY+Zia0mtdHsOo9y/hP+CxMN0TU9QxoOtG4g=="],
 
     "@quansync/fs/quansync": ["quansync@1.0.0", "", {}, "sha512-5xZacEEufv3HSTPQuchrvV6soaiACMFnq1H8wkVioctoH3TRha9Sz66lOxRwPK/qZj7HPiSveih9yAyh98gvqA=="],
-
-    "@raurus/adapter-memory/@types/node": ["@types/node@25.9.2", "", { "dependencies": { "undici-types": ">=7.24.0 <7.24.7" } }, "sha512-G05zqtJhcDLb8uslf5EjCxXg9G1KQxiV8OS0R26IC//Eoyitzqe8z37I7cqvnZlrlSfgocQRfSn/AHBZJJFyGw=="],
 
     "@raurus/core/@types/node": ["@types/node@25.9.2", "", { "dependencies": { "undici-types": ">=7.24.0 <7.24.7" } }, "sha512-G05zqtJhcDLb8uslf5EjCxXg9G1KQxiV8OS0R26IC//Eoyitzqe8z37I7cqvnZlrlSfgocQRfSn/AHBZJJFyGw=="],
 

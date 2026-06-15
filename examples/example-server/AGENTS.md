@@ -1,6 +1,6 @@
 # Example: Server
 
-`@raurus/example-server` lives in `examples/server-example/`. It is a minimal Bun app that boots the `@raurus/server` runtime with `@raurus/adapter-memory` implementations. It validates that the server package builds, starts, and serves endpoints correctly.
+`@raurus/example-server` lives in `examples/server-example/`. It is a minimal Bun app that boots the `@raurus/server` runtime with in-memory adapter implementations from `@raurus/server/adapters/example-metadata-adapter` and `@raurus/server/adapters/example-storage-adapter`. It validates that the server package builds, starts, and serves endpoints correctly.
 
 ## Architecture
 
@@ -14,7 +14,8 @@ examples/server-example/
 
 ## Key Concepts
 
-- Imports `createMemoryMetadataAdapter` and `createMemoryStorageAdapter` from `@raurus/adapter-memory`
+- Imports `createMemoryMetadataAdapter` from `@raurus/server/adapters/example-metadata-adapter`
+- Imports `createMemoryStorageAdapter` from `@raurus/server/adapters/example-storage-adapter`
 - Imports `raurus` from `@raurus/server` — the single public factory for creating a fetch-compatible runtime
 - Passes `metadataAdapter` and `storageAdapter` directly as options to `raurus()`
 - Exports a default Bun server object `{ port: 3000, fetch }` where `fetch` comes from `server.fetch`

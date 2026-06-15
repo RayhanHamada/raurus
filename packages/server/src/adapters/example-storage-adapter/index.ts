@@ -17,9 +17,6 @@ export const createMemoryStorageAdapter: RuntimeStorageAdapterFactory<MemoryStor
             }
             store.set(assetKey, buffer);
         },
-        // async createPresignedUploadUrl(assetKey, _expiresIn?: number) {
-        //     return `memory://upload/${assetKey}`;
-        // },
         async deleteAsset(assetKey) {
             store.delete(assetKey);
         },

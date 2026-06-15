@@ -19,23 +19,19 @@ export interface CreateRuntimeOptions {
     storageAdapter: RuntimeStorageAdapter;
 
     /**
-     * The origin for the Raurus API. This can be a string or a URL object.
+     * base URL + base path for the API. Required.
      */
-    origin: string | URL;
-
-    /**
-     * The base path for the API. This is optional and defaults to "/_raurus".
-     */
-    basePath?: string;
+    baseUrl: string | URL;
 
     /**
      * Whether to enable OpenAPI documentation. This is optional and defaults to `true`.
+     *
+     * @default true
      */
     openapi?: boolean;
 }
 
 const DEFAULT_RUNTIME_OPTIONS = {
-    basePath: "/_raurus",
     openapi: true,
 } satisfies Partial<CreateRuntimeOptions>;
 
@@ -45,19 +41,26 @@ const DEFAULT_RUNTIME_OPTIONS = {
  * @param config The configuration object for creating the runtime instance, which can include options such as the base URL for the API.
  * @returns An object containing the fetch method for handling API requests.
  */
-export function createRuntime<Options extends CreateRuntimeOptions>(config: Options) {
+export function createRuntime(config: CreateRuntimeOptions) {
     const options = { ...DEFAULT_RUNTIME_OPTIONS, ...config };
 
-    const url = new URL(options.origin);
-    const fullUrl = new URL(options.basePath, url);
+    const url = URL.parse(options.baseUrl);
+    if (!url) {
+        throw new Error(`Invalid baseUrl: ${options.baseUrl}`);
+    }
 
-    const app = new Elysia()
+    const basePath = url.pathname === "/" ? "_raurus" : url.pathname;
+
+    const app = new Elysia({
+        name: "raurus.runtime",
+        prefix: basePath,
+    })
         .use(
             openapi({
                 enabled: options.openapi,
                 documentation: {
                     openapi: "3.1.1",
-                    servers: [{ url: fullUrl.href }],
+                    servers: [{ url: url.origin }],
                     info: {
                         title: "Raurus OpenAPI",
                         version: "1.0.0",
@@ -68,13 +71,11 @@ export function createRuntime<Options extends CreateRuntimeOptions>(config: Opti
             })
         )
 
-        .group(options.basePath, (groupApp) =>
-            groupApp.use(
-                routes({
-                    metadata: options.metadataAdapter,
-                    storage: options.storageAdapter,
-                })
-            )
+        .use(
+            routes({
+                metadata: options.metadataAdapter,
+                storage: options.storageAdapter,
+            })
         );
 
     return { fetch: app.handle };

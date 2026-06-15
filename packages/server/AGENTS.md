@@ -9,13 +9,22 @@ This package is `@raurus/server`, a contract-first, OpenAPI-driven HTTP server b
 ```
 src/
 ├── index.ts             # Public barrel — re-exports from src/runtime/
+├── adapters/
+│   ├── cloudflare-d1/
+│   │   └── index.ts       # D1 metadata adapter
+│   ├── cloudflare-r2/
+│   │   └── index.ts       # R2 storage adapter
+│   ├── example-metadata-adapter/
+│   │   └── index.ts       # In-memory metadata adapter (dev/testing reference)
+│   └── example-storage-adapter/
+│       └── index.ts       # In-memory storage adapter (dev/testing reference)
 └── runtime/
     ├── index.ts          # Named export: raurus (alias for createRuntime)
     ├── models.ts         # Elysia TypeSystem schemas (t.Object, t.String, etc.)
     ├── routes.ts         # Route plugin — composable Elysia instance taking adapter options
     └── utils.ts          # createRuntime() — inline OpenAPI config, route composition, fetch handle
 
-tsdown.config.ts          # Build config — entry: ["src/index.ts", "src/*/index.ts"]
+tsdown.config.ts          # Build config — entry: ["src/index.ts", "src/runtime/index.ts", "src/adapters/*/index.ts"]
 ```
 
 ## Key Concepts
@@ -43,6 +52,7 @@ tsdown.config.ts          # Build config — entry: ["src/index.ts", "src/*/inde
 
 ## Package Notes
 
-- Build uses tsdown with entries `src/index.ts` and `src/*/index.ts` — new runtime subdirectories are auto-picked up
+- Build uses tsdown with entries `src/index.ts`, `src/runtime/index.ts`, and `src/adapters/*/index.ts` — new adapter subdirectories are auto-picked up
+- Example adapters (`example-metadata-adapter`, `example-storage-adapter`) provide in-memory Map-based implementations for development and testing — imported via `@raurus/server/adapters/example-metadata-adapter` and `@raurus/server/adapters/example-storage-adapter`
 - Routes currently use adapter guard clauses for optional methods (createPresignedUploadUrl, uploadAsset)
 - Handlers are stubbed in their responses — wire to full adapter logic when ready

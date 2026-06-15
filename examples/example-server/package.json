@@ -7,7 +7,6 @@
         "typecheck": "tsc --noEmit"
     },
     "dependencies": {
-        "@raurus/adapter-memory": "workspace:*",
         "@raurus/core": "workspace:*",
         "@raurus/server": "workspace:*"
     },
