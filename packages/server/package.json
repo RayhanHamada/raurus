@@ -18,6 +18,8 @@
     "type": "module",
     "exports": {
         ".": "./dist/index.mjs",
+        "./adapters/cloudflare-d1": "./dist/adapters/cloudflare-d1/index.mjs",
+        "./adapters/cloudflare-r2": "./dist/adapters/cloudflare-r2/index.mjs",
         "./runtime": "./dist/runtime/index.mjs",
         "./package.json": "./package.json"
     },
@@ -29,6 +31,7 @@
         "release": "bumpp"
     },
     "dependencies": {
+        "@cloudflare/workers-types": "^4.20260615.1",
         "@elysia/openapi": "^1.4.15",
         "@raurus/core": "workspace:*",
         "elysia": "^1.4.28",
