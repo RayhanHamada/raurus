@@ -9,13 +9,13 @@ import {
     UploadAssetResponseSchema,
 } from "./models";
 
-interface GetRoutesOptions {
+interface RouteOptions {
     // Define any options needed for route generation here
     metadata: RuntimeMetadataAdapter;
     storage: RuntimeStorageAdapter;
 }
 
-export function getRoutes(options: GetRoutesOptions) {
+export function routes(options: RouteOptions) {
     return new Elysia({ name: "raurus.routes" })
 
         .get(

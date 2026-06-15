@@ -10,5 +10,5 @@
             "@/*": ["./src/*"]
         }
     },
-    "include": ["src", "tsdown.config.ts"]
+    "include": ["src", "tsdown.config.ts", "src/runtime/models.ts", "src/runtime/routes.ts"]
 }
