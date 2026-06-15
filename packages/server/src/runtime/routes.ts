@@ -1,5 +1,5 @@
 import type { RuntimeMetadataAdapter, RuntimeStorageAdapter } from "@raurus/core";
-import { Elysia, status } from "elysia";
+import { Elysia } from "elysia";
 
 import {
     ErrorResponseSchema,
@@ -17,25 +17,25 @@ interface RouteOptions {
 
 export function routes(options: RouteOptions) {
     return new Elysia({ name: "raurus.routes" })
+        .derive(() => ({
+            opts: options,
+        }))
 
         .get(
             "/presigned-url",
-            async (c) => {
-                if (!options.storage.createPresignedUploadUrl) {
+            async ({ status, opts, query: { assetKey } }) => {
+                if (!opts.storage.createPresignedUploadUrl) {
                     return status(400, {
                         message: "Error",
                         error: "Storage adapter does not support presigned URLs",
                     });
                 }
 
-                const { assetKey } = c.query;
-                const url = await options.storage.createPresignedUploadUrl(assetKey);
+                const url = await opts.storage.createPresignedUploadUrl(assetKey);
 
                 return status(200, {
                     message: "OK",
-                    data: {
-                        url,
-                    },
+                    data: { url },
                 });
             },
             {
@@ -55,17 +55,15 @@ export function routes(options: RouteOptions) {
 
         .post(
             "/upload-asset",
-            async (_c) => {
-                if (!options.storage.uploadAsset) {
+            async ({ status, opts }) => {
+                if (!opts.storage?.uploadAsset) {
                     return status(400, {
                         message: "Error",
                         error: "Storage adapter does not support direct asset upload",
                     });
                 }
 
-                return status(200, {
-                    message: "OK",
-                });
+                return status(200, { message: "OK" });
             },
             {
                 detail: {
@@ -77,6 +75,7 @@ export function routes(options: RouteOptions) {
                 response: {
                     200: UploadAssetResponseSchema,
                     400: ErrorResponseSchema,
+                    401: ErrorResponseSchema,
                 },
             }
         );

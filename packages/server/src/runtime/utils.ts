@@ -5,23 +5,23 @@ import { Elysia } from "elysia";
 import { routes } from "./routes";
 
 /**
- * Options for creating a Raurus runtime instance. This interface defines the configuration options that can be passed to the `createRuntime` function when setting up a Raurus server. It includes properties for specifying the metadata adapter, storage adapter, API origin, base path, and whether to enable OpenAPI documentation. The `metadataAdapter` and `storageAdapter` are required for the runtime to function properly, while the `origin`, `basePath`, and `openapi` options have default values if not provided.
+ * Options for creating a Raurus runtime instance. The `metadataAdapter` and `storageAdapter` are required for the runtime to function properly. The `openapi` option defaults to true if not provided.
  */
 export interface CreateRuntimeOptions {
-    /**
-     * The metadata adapter to use for the Raurus instance. This is required.
-     */
-    metadataAdapter: RuntimeMetadataAdapter;
-
-    /**
-     * The storage adapter to use for the Raurus instance. This is required.
-     */
-    storageAdapter: RuntimeStorageAdapter;
-
     /**
      * base URL + base path for the API. Required.
      */
     baseUrl: string | URL;
+
+    /**
+     * The metadata adapter to use for the Raurus instance.
+     */
+    metadataAdapter: RuntimeMetadataAdapter;
+
+    /**
+     * The storage adapter to use for the Raurus instance.
+     */
+    storageAdapter: RuntimeStorageAdapter;
 
     /**
      * Whether to enable OpenAPI documentation. This is optional and defaults to `true`.
