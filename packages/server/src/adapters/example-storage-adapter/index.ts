@@ -6,6 +6,9 @@ export const createMemoryStorageAdapter: RuntimeStorageAdapterFactory<MemoryStor
     const store = new Map<string, Uint8Array>();
 
     return {
+        async checkConnection() {
+            return { ok: true };
+        },
         async uploadAsset(assetKey, data) {
             let buffer: Uint8Array;
             if (data instanceof Blob) {

@@ -13,7 +13,13 @@ export const r2: RuntimeStorageAdapterFactory<R2StorageAdapterOptions> = (config
         ...DEFAULTS,
         ...config,
     };
+
+    console.log(_options);
+
     return {
+        async checkConnection() {
+            return { ok: true };
+        },
         async createPresignedUploadUrl(assetKey, expiresIn) {
             throw new Error(
                 `Cloudflare R2 does not support presigned upload URLs. Asset Key: ${assetKey}, Expires In: ${expiresIn}`

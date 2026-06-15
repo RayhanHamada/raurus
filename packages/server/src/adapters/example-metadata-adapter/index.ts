@@ -11,6 +11,9 @@ export const createMemoryMetadataAdapter: RuntimeMetadataAdapterFactory<MemoryMe
     const store = new Map<RaurusMetadata["placeholderId"], RaurusMetadata>();
 
     return {
+        async checkConnection() {
+            return { ok: true };
+        },
         async getMetadataById(placeholderId) {
             return store.get(placeholderId) ?? null;
         },

@@ -28,7 +28,12 @@ export const d1: RuntimeMetadataAdapterFactory<D1MetadataAdapterOptions> = (conf
         ...config,
     };
 
+    console.log(_options);
+
     return {
+        async checkConnection() {
+            return { ok: true };
+        },
         async getMetadataById(placeholderId) {
             throw new Error(`Cloudflare D1 does not support metadata by ID. Placeholder ID: ${placeholderId}`);
         },

@@ -13,6 +13,13 @@ export interface RuntimeStorageAdapterBaseConfig {}
  */
 export interface RuntimeMetadataAdapter {
     /**
+     * Checks the connection to the metadata storage system and returns an object indicating whether the connection is successful (ok: true) or if there was an issue (ok: false) along with an optional message providing additional information about the connection status.
+     *
+     * @returns A promise that resolves to an object containing the connection status (ok) and an optional message providing additional information about the connection status.
+     */
+    checkConnection(): Promise<{ ok: boolean; message?: string }>;
+
+    /**
      * Retrieves metadata associated with a given placeholder ID. If no metadata is found for the provided placeholder ID, the method returns null.
      *
      * @param placeholderId The placeholder ID for which to retrieve metadata.
@@ -34,6 +41,13 @@ export interface RuntimeMetadataAdapter {
  * Defines the interface for a storage adapter that provides methods for uploading, generating presigned URLs, and deleting assets in a storage service. The adapter allows for interaction with the storage service using asset keys and supports various data formats for asset uploads.
  */
 export interface RuntimeStorageAdapter {
+    /**
+     * Checks the connection to the storage service and returns an object indicating whether the connection is successful (ok: true) or if there was an issue (ok: false) along with an optional message providing additional information about the connection status.
+     *
+     * @returns A promise that resolves to an object containing the connection status (ok) and an optional message providing additional information about the connection status.
+     */
+    checkConnection(): Promise<{ ok: boolean; message?: string }>;
+
     /**
      * Generates a presigned URL for uploading an asset directly to the storage service.
      *
