@@ -2,7 +2,7 @@ import { createMemoryMetadataAdapter, createMemoryStorageAdapter } from "@raurus
 import { raurus } from "@raurus/server";
 
 const server = raurus({
-    baseUrl: "http://localhost:3000/api",
+    origin: "http://localhost:3000",
     metadataAdapter: createMemoryMetadataAdapter(),
     storageAdapter: createMemoryStorageAdapter(),
 });

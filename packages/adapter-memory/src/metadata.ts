@@ -1,6 +1,13 @@
-import type { RaurusMetadata, RuntimeMetadataAdapter } from "@raurus/core";
+import type {
+    RaurusMetadata,
+    RuntimeMetadataAdapter,
+    RuntimeMetadataAdapterBaseConfig,
+    RuntimeMetadataAdapterFactory,
+} from "@raurus/core";
 
-export function createMemoryMetadataAdapter() {
+interface MemoryMetadataAdapterConfig extends RuntimeMetadataAdapterBaseConfig {}
+
+export const createMemoryMetadataAdapter: RuntimeMetadataAdapterFactory<MemoryMetadataAdapterConfig> = (_) => {
     const store = new Map<RaurusMetadata["placeholderId"], RaurusMetadata>();
 
     return {
@@ -11,4 +18,4 @@ export function createMemoryMetadataAdapter() {
             store.set(placeholderId, { placeholderId, assetKey });
         },
     } satisfies RuntimeMetadataAdapter;
-}
+};

@@ -66,11 +66,11 @@ export interface RuntimeStorageAdapter {
  */
 export type RuntimeMetadataAdapterFactory<
     Config extends RuntimeMetadataAdapterBaseConfig = RuntimeMetadataAdapterBaseConfig,
-> = (config: Config) => RuntimeMetadataAdapter;
+> = (config?: Config) => RuntimeMetadataAdapter;
 
 /**
  * Defines the factory type for creating instances of RuntimeStorageAdapter. The factory takes a configuration object as input and returns an instance of RuntimeStorageAdapter. The configuration object can be extended to include specific settings required for the storage adapter, allowing for flexibility in its implementation and usage.
  */
 export type RuntimeStorageAdapterFactory<
     Config extends RuntimeStorageAdapterBaseConfig = RuntimeStorageAdapterBaseConfig,
-> = (config: Config) => RuntimeStorageAdapter;
+> = (config?: Config) => RuntimeStorageAdapter;

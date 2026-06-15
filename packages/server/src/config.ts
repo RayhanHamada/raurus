@@ -1,6 +1,6 @@
 import type { OpenAPIV3_1 } from "openapi-types";
 
-import type { CreateRaurusOptions } from "./types";
+import type { CreateRuntimeOptions } from "./types";
 
 export const OPENAPI_CONFIG = {
     openapi: "3.1.1",
@@ -13,6 +13,6 @@ export const OPENAPI_CONFIG = {
 } as OpenAPIV3_1.Document<Record<string, unknown>>;
 
 export const DEFAULT_RUNTIME_OPTIONS = {
-    docsPath: "/docs",
-    specPath: "/openapi.json",
-} as const satisfies Pick<CreateRaurusOptions, "docsPath" | "specPath">;
+    basePath: "/_raurus",
+    openapi: true,
+} as const satisfies Partial<CreateRuntimeOptions>;

@@ -2,7 +2,7 @@ import type { RuntimeStorageAdapterBaseConfig, RuntimeStorageAdapterFactory } fr
 
 interface MemoryStorageAdapterConfig extends RuntimeStorageAdapterBaseConfig {}
 
-export const createMemoryStorageAdapter: RuntimeStorageAdapterFactory<MemoryStorageAdapterConfig> = (_config) => {
+export const createMemoryStorageAdapter: RuntimeStorageAdapterFactory<MemoryStorageAdapterConfig> = (_) => {
     const store = new Map<string, Uint8Array>();
 
     return {
