@@ -1,6 +1,8 @@
-import type { RaurusStorageAdapter } from "@raurus/core";
+import type { RuntimeStorageAdapterBaseConfig, RuntimeStorageAdapterFactory } from "@raurus/core";
 
-export function createMemoryStorageAdapter(): RaurusStorageAdapter {
+interface MemoryStorageAdapterConfig extends RuntimeStorageAdapterBaseConfig {}
+
+export const createMemoryStorageAdapter: RuntimeStorageAdapterFactory<MemoryStorageAdapterConfig> = (_config) => {
     const store = new Map<string, Uint8Array>();
 
     return {
@@ -15,11 +17,11 @@ export function createMemoryStorageAdapter(): RaurusStorageAdapter {
             }
             store.set(assetKey, buffer);
         },
-        async createPresignedUploadUrl(assetKey, _expiresIn?: number) {
-            return `memory://upload/${assetKey}`;
-        },
+        // async createPresignedUploadUrl(assetKey, _expiresIn?: number) {
+        //     return `memory://upload/${assetKey}`;
+        // },
         async deleteAsset(assetKey) {
             store.delete(assetKey);
         },
     };
-}
+};

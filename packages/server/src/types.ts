@@ -1,15 +1,15 @@
-import type { RaurusMetadataAdapter, RaurusStorageAdapter } from "@raurus/core";
+import type { RuntimeMetadataAdapter, RuntimeStorageAdapter } from "@raurus/core";
 
 export interface CreateRaurusOptions {
     /**
      * The metadata adapter to use for the Raurus instance. This is required.
      */
-    metadataAdapter: RaurusMetadataAdapter;
+    metadataAdapter: RuntimeMetadataAdapter;
 
     /**
      * The storage adapter to use for the Raurus instance. This is required.
      */
-    storageAdapter: RaurusStorageAdapter;
+    storageAdapter: RuntimeStorageAdapter;
 
     /**
      * The base URL for the API endpoints. This base url can includes `base path`. For example, if your API is served at https://example.com/api, then the base URL should be https://example.com. This is used to generate the OpenAPI specification and the Swagger UI documentation. If not provided, it will default to the origin of the request.

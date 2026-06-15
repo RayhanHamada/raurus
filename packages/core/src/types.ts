@@ -35,22 +35,13 @@ export interface RuntimeMetadataAdapter {
  */
 export interface RuntimeStorageAdapter {
     /**
-     * Uploads an asset to the storage service using its asset key. The asset data can be provided as an ArrayBuffer, File, or Blob.
-     *
-     * @param assetKey The asset key under which the asset will be stored.
-     * @param data The asset data to be uploaded, which can be an ArrayBuffer, File, or Blob.
-     * @returns A promise that resolves when the asset has been successfully uploaded.
-     */
-    uploadAsset(assetKey: RaurusMetadata["assetKey"], data: RaurusAsset): Promise<void>;
-
-    /**
      * Generates a presigned URL for uploading an asset directly to the storage service.
      *
      * @param assetKey The asset key for which to generate the presigned upload URL.
      * @param expiresIn Optional expiration time in seconds for the presigned URL. If not provided, a default expiration time will be used.
      * @returns A promise that resolves to the generated presigned upload URL as a string.
      */
-    createPresignedUploadUrl(assetKey: RaurusMetadata["assetKey"], expiresIn?: number): Promise<string>;
+    createPresignedUploadUrl?(assetKey: RaurusMetadata["assetKey"], expiresIn?: number): Promise<string>;
 
     /**
      * Deletes an asset from the storage service using its asset key.
@@ -58,7 +49,16 @@ export interface RuntimeStorageAdapter {
      * @param assetKey The asset key of the asset to be deleted.
      * @returns A promise that resolves when the asset has been successfully deleted.
      */
-    deleteAsset(assetKey: RaurusMetadata["assetKey"]): Promise<void>;
+    deleteAsset?(assetKey: RaurusMetadata["assetKey"]): Promise<void>;
+
+    /**
+     * Uploads an asset to the storage service using its asset key. The asset data can be provided as an ArrayBuffer, File, or Blob.
+     *
+     * @param assetKey The asset key under which the asset will be stored.
+     * @param data The asset data to be uploaded, which can be an ArrayBuffer, File, or Blob.
+     * @returns A promise that resolves when the asset has been successfully uploaded.
+     */
+    uploadAsset?(assetKey: RaurusMetadata["assetKey"], data: RaurusAsset): Promise<void>;
 }
 
 /**

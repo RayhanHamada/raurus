@@ -1,33 +1,25 @@
-import { Elysia, t } from "elysia";
+import { t } from "elysia";
 
-const PresignedUrlQuery = t.Object({
+export const PresignedUrlQuerySchema = t.Object({
     assetKey: t.String({ minLength: 1 }),
 });
 
-const UploadAssetBody = t.Object({
+export const UploadAssetBodySchema = t.Object({
     file: t.File(),
 });
 
-const PresignedUrlResponse = t.Object({
+export const PresignedUrlResponseSchema = t.Object({
     message: t.Literal("OK"),
     data: t.Object({
         url: t.String(),
     }),
 });
 
-const UploadAssetResponse = t.Object({
+export const UploadAssetResponseSchema = t.Object({
     message: t.Literal("OK"),
 });
 
-const ErrorResponse = t.Object({
-    message: t.String(),
+export const ErrorResponseSchema = t.Object({
+    message: t.Literal("Error"),
     error: t.String(),
-});
-
-export const models = new Elysia({ name: "raurus.models" }).model({
-    PresignedUrlQuery,
-    UploadAssetBody,
-    PresignedUrlResponse,
-    UploadAssetResponse,
-    ErrorResponse,
 });

@@ -32,8 +32,8 @@ export function createRuntime<Options extends CreateRaurusOptions>(config: Optio
         .group(basePath, (groupApp) =>
             groupApp.use(
                 getRoutes({
-                    metadataAdapter: options.metadataAdapter,
-                    storageAdapter: options.storageAdapter,
+                    metadata: options.metadataAdapter,
+                    storage: options.storageAdapter,
                 })
             )
         );
