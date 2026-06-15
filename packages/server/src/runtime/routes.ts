@@ -56,7 +56,7 @@ export function routes(options: RouteOptions) {
         .post(
             "/upload-asset",
             async ({ status, opts }) => {
-                if (!opts.storage?.uploadAsset) {
+                if (!opts.storage?.createPresignedUploadUrl) {
                     return status(400, {
                         message: "Error",
                         error: "Storage adapter does not support direct asset upload",
