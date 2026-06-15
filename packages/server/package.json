@@ -31,7 +31,8 @@
     "dependencies": {
         "@elysia/openapi": "^1.4.15",
         "@raurus/core": "workspace:*",
-        "elysia": "^1.4.28"
+        "elysia": "^1.4.28",
+        "s3mini": "^0.9.5"
     },
     "devDependencies": {
         "@raurus/tsconfig": "workspace:*",
