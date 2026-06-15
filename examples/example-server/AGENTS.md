@@ -7,7 +7,7 @@
 ```
 examples/server-example/
 ├── src/
-│   └── index.ts      # Bun entry point — imports adapters, boots on port 3000
+│   └── index.ts      # Bun entry point — calls raurus({…}), exports { port: 3000, fetch }
 ├── package.json
 └── tsconfig.json
 ```
@@ -15,8 +15,9 @@ examples/server-example/
 ## Key Concepts
 
 - Imports `createMemoryMetadataAdapter` and `createMemoryStorageAdapter` from `@raurus/adapter-memory`
-- The server's handlers are stubs and do not currently call the adapters at runtime — the adapters are passed for type-safety and future wiring
-- Exports a default Bun server object `{ port: 3000, fetch }` compatible with `Bun.serve`
+- Imports `raurus` from `@raurus/server` — the single public factory for creating a fetch-compatible runtime
+- Passes `metadataAdapter` and `storageAdapter` directly as options to `raurus()`
+- Exports a default Bun server object `{ port: 3000, fetch }` where `fetch` comes from `server.fetch`
 
 ## Workflow
 

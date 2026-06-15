@@ -16,18 +16,19 @@ src/
 
 ## Key Concepts
 
-- **Metadata Adapter** — `RaurusMetadataAdapter` and `RaurusMetadataAdapterFactory` define the placeholder-to-asset metadata contract
-- **Storage Adapter** — `RaurusStorageAdapter` and `RaurusStorageAdapterFactory` own asset upload, presigned URL generation, and deletion
-- **Raurus Asset** — `RaurusAsset` is the shared upload input type used by storage adapters
-- **Raurus Instance** — `RaurusInstance` is the core runtime, constructed via `RaurusFactory` with a `RaurusInstanceConfig` that composes both adapters
-- The config and factory types use generics to preserve concrete adapter types through composition
+- **Metadata Adapter** — `RuntimeMetadataAdapter` and `RuntimeMetadataAdapterFactory` define the placeholder-to-asset metadata contract
+- **Storage Adapter** — `RuntimeStorageAdapter` and `RuntimeStorageAdapterFactory` own asset upload, presigned URL generation, and deletion
+- **Asset type** — `RaurusAsset` is the shared upload input type (`ArrayBuffer | File | Blob`)
+- **Base configs** — `RuntimeMetadataAdapterBaseConfig` and `RuntimeStorageAdapterBaseConfig` are empty interfaces that adapter implementations extend to define their own config options
+- Factory types use generics over these base configs to preserve concrete adapter configuration types through composition
+- Adapter methods that may not be supported by all implementations (`createPresignedUploadUrl`, `uploadAsset`, `deleteAsset`) are declared optional
 
 ## Package Standards
 
 - Keep all domain types in `@raurus/core` — implementations belong in separate packages
-- Keep the public surface on the root package export unless the package is deliberately restructured
+- Prefix adapter contracts and factories with `Runtime` (e.g. `RuntimeMetadataAdapter`, `RuntimeStorageAdapterFactory`)
 - Use interfaces for adapter contracts, types for factory functions
-- Keep metadata persistence concerns on `RaurusMetadataAdapter`; presigned URL and asset lifecycle APIs belong on `RaurusStorageAdapter`
+- Provide empty base config interfaces that adapter packages extend
 - Re-export public types through `src/index.ts`
 
 ## Workflow
@@ -41,4 +42,4 @@ src/
 
 - This package is currently type-only — all runtime logic lives in other packages
 - The current public surface is a single root entry point that re-exports `src/types.ts`
-- When adding a new adapter concept, follow the existing factory pattern: `Config` interface → `Adapter` interface → `Factory` type
+- When adding a new adapter concept, follow the existing factory pattern: `BaseConfig` interface → `Adapter` interface → `Factory` type
