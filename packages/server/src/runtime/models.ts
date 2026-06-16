@@ -6,7 +6,9 @@ export const HealthCheckResponseSchema = t.Object({
 });
 
 export const PresignedUrlQuerySchema = t.Object({
-    assetKey: t.String({ minLength: 1 }),
+    assetKey: t.RegExp(/^(?!\/)(?!.*\/\/)[A-Za-z0-9!_\-.*'()/]+(?:\/[A-Za-z0-9!_\-.*'()/]+)*$/u, {
+        examples: ["folder1/file.png", "file.txt", "folder1/folder2/file.jpg"],
+    }),
     expiresIn: t.Optional(t.Number({ minimum: 60, examples: [3600] })),
 });
 
