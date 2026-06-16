@@ -33,25 +33,50 @@ export const s3MiniStorageAdapter: RuntimeStorageAdapterFactory<S3MiniStorageAda
             try {
                 const ok = await client.bucketExists();
 
-                return { ok };
+                if (!ok) {
+                    log.error("S3mini storage connection check failed: bucket does not exist");
+
+                    return {
+                        ok: false,
+                        error: new Error("Bucket does not exist"),
+                    };
+                }
+
+                log.info("S3mini storage connection check succeeded");
+
+                return {
+                    ok: true,
+                    data: null,
+                };
             } catch (error) {
                 const message = error instanceof Error ? error.message : "Unknown error";
                 log.error("S3mini storage connection check failed", { message });
+
                 return {
                     ok: false,
-                    message,
+                    error: error instanceof Error ? error : new Error("Unknown error"),
                 };
             }
         },
 
         async createPresignedUploadUrl(assetKey, expiresIn) {
-            const url = await client.getPresignedUrl("PUT", assetKey, expiresIn);
-            return {
-                ok: true,
-                data: {
-                    url,
-                },
-            };
+            try {
+                const url = await client.getPresignedUrl("PUT", assetKey, expiresIn);
+                log.info("Generated presigned upload URL", { assetKey, expiresIn });
+
+                return {
+                    ok: true,
+                    data: { url },
+                };
+            } catch (error) {
+                const message = error instanceof Error ? error.message : "Unknown error";
+                log.error("Failed to create presigned upload URL", { message });
+
+                return {
+                    ok: false,
+                    error: error instanceof Error ? error : new Error("Unknown error"),
+                };
+            }
         },
     };
 };

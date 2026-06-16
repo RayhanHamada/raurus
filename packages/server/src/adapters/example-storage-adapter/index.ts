@@ -6,7 +6,7 @@ export const createMemoryStorageAdapter: RuntimeStorageAdapterFactory<MemoryStor
     id: "memory-storage-adapter",
 
     async checkConnection() {
-        return { ok: true };
+        return { ok: true, data: null };
     },
 
     async createPresignedUploadUrl(assetKey, expiresIn) {

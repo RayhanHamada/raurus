@@ -53,7 +53,7 @@ export interface CommonRuntimeAdapter {
     /**
      * Checks the connection to the underlying service or database used by the adapter. This method is intended to verify that the adapter can successfully connect to its required resources and is functioning correctly. The method returns a promise that resolves to an object containing an "ok" boolean property indicating the success of the connection check, and an optional "message" property providing additional information about the connection status.
      */
-    checkConnection(): Promise<{ ok: boolean; message?: string }>;
+    checkConnection(): Promise<AdapterMethodResult<null>>;
 }
 
 /**

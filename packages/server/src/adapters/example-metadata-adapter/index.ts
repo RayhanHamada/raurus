@@ -9,7 +9,7 @@ export const createMemoryMetadataAdapter: RuntimeMetadataAdapterFactory<MemoryMe
         id: "memory-metadata-adapter",
 
         async checkConnection() {
-            return { ok: true };
+            return { ok: true, data: null };
         },
         async getMetadataByPlaceholderId(placeholderId) {
             return { ok: true, data: store.get(placeholderId) ?? null };
