@@ -17,8 +17,9 @@ examples/example-server/
 - Imports `createMemoryMetadataAdapter` from `@raurus/server/adapters/example-metadata-adapter`
 - Imports `createMemoryStorageAdapter` from `@raurus/server/adapters/example-storage-adapter`
 - Imports `raurus` from `@raurus/server` — the single public factory for creating a fetch-compatible runtime
-- Passes `metadataAdapter` and `storageAdapter` directly as options to `raurus()`
+- Passes `baseUrl: "http://localhost:3000"` plus `metadataAdapter` and `storageAdapter` to `raurus()`; because the URL pathname is `/`, the runtime derives its API base path as `_raurus`, so endpoints are served under `http://localhost:3000/_raurus/...`
 - Exports a default Bun server object `{ port: 3000, fetch }` where `fetch` comes from `server.fetch`
+- The OpenAPI spec is served at `/openapi.json` and Scalar docs at `/docs`, both under the derived `_raurus` prefix
 
 ## Workflow
 

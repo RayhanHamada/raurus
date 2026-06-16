@@ -1,5 +1,10 @@
 import { t } from "elysia";
 
+export const HealthCheckResponseSchema = t.Object({
+    status: t.Union([t.Literal("OK"), t.Literal("Error")]),
+    message: t.Literal("RAURUS_ENDPOINT"),
+});
+
 export const PresignedUrlQuerySchema = t.Object({
     assetKey: t.String({ minLength: 1 }),
 });

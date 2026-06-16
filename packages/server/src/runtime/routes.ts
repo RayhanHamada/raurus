@@ -1,13 +1,7 @@
 import type { RuntimeMetadataAdapter, RuntimeStorageAdapter } from "@raurus/core";
 import { Elysia } from "elysia";
 
-import {
-    ErrorResponseSchema,
-    PresignedUrlQuerySchema,
-    PresignedUrlResponseSchema,
-    UploadAssetBodySchema,
-    UploadAssetResponseSchema,
-} from "./models";
+import * as m from "./models";
 
 interface RouteOptions {
     // Define any options needed for route generation here
@@ -20,6 +14,25 @@ export function routes(options: RouteOptions) {
         .derive(() => ({
             opts: options,
         }))
+
+        .get(
+            "/",
+            async (_) => ({
+                status: "OK",
+                message: "RAURUS_ENDPOINT",
+            }),
+            {
+                detail: {
+                    summary: "Health Check",
+                    description:
+                        "A simple endpoint to check if the Raurus Rest API is running. It can be used for monitoring and health checks.",
+                    tags: ["Operations"],
+                },
+                response: {
+                    200: m.HealthCheckResponseSchema,
+                },
+            }
+        )
 
         .get(
             "/presigned-url",
@@ -45,10 +58,10 @@ export function routes(options: RouteOptions) {
                         "If implemented, this endpoint would generate a presigned URL for uploading an asset to a storage service.",
                     tags: ["Operations"],
                 },
-                query: PresignedUrlQuerySchema,
+                query: m.PresignedUrlQuerySchema,
                 response: {
-                    200: PresignedUrlResponseSchema,
-                    400: ErrorResponseSchema,
+                    200: m.PresignedUrlResponseSchema,
+                    400: m.ErrorResponseSchema,
                 },
             }
         )
@@ -71,11 +84,11 @@ export function routes(options: RouteOptions) {
                     description: "Endpoint to upload an asset using Raurus Rest API",
                     tags: ["Operations"],
                 },
-                body: UploadAssetBodySchema,
+                body: m.UploadAssetBodySchema,
                 response: {
-                    200: UploadAssetResponseSchema,
-                    400: ErrorResponseSchema,
-                    401: ErrorResponseSchema,
+                    200: m.UploadAssetResponseSchema,
+                    400: m.ErrorResponseSchema,
+                    401: m.ErrorResponseSchema,
                 },
             }
         );

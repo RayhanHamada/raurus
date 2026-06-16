@@ -16,20 +16,23 @@ src/
 
 ## Key Concepts
 
-- **Metadata Adapter** — `RuntimeMetadataAdapter` and `RuntimeMetadataAdapterFactory` define the placeholder-to-asset metadata contract
-- **Storage Adapter** — `RuntimeStorageAdapter` and `RuntimeStorageAdapterFactory` own asset upload, presigned URL generation, and deletion
+- **Domain types** — `RaurusMetadata` is a discriminated union keyed by `type` (`"photo" | "text" | "video"`); photo and video variants carry an `assetKey` while text carries a `text` string. `RaurusMetadataType` is the string literal union of those types.
 - **Asset type** — `RaurusAsset` is the shared upload input type (`ArrayBuffer | File | Blob`)
+- **Common adapter** — `CommonRuntimeAdapter` declares `checkConnection(): Promise<{ ok: boolean; message?: string }>` and is extended by both `RuntimeMetadataAdapter` and `RuntimeStorageAdapter`
+- **Metadata Adapter** — `RuntimeMetadataAdapter` extends `CommonRuntimeAdapter` and defines `getMetadataByPlaceholderId`, optional `bulkGetMetadataByPlaceholderIds`, and `upsertContentMetadata` (overloaded for `PhotoMetadata | VideoMetadata` with `assetKey` and for `TextMetadata` with `text`)
+- **Storage Adapter** — `RuntimeStorageAdapter` extends `CommonRuntimeAdapter`; currently exposes the optional `createPresignedUploadUrl(assetKey, expiresIn?)` method
 - **Base configs** — `RuntimeMetadataAdapterBaseConfig` and `RuntimeStorageAdapterBaseConfig` are empty interfaces that adapter implementations extend to define their own config options
 - Factory types use generics over these base configs to preserve concrete adapter configuration types through composition
-- Adapter methods that may not be supported by all implementations (`createPresignedUploadUrl`, `uploadAsset`, `deleteAsset`) are declared optional
+- Methods not required for all adapter implementations (`bulkGetMetadataByPlaceholderIds`, `createPresignedUploadUrl`) are declared optional
 
 ## Package Standards
 
 - Keep all domain types in `@raurus/core` — implementations belong in separate packages
 - Prefix adapter contracts and factories with `Runtime` (e.g. `RuntimeMetadataAdapter`, `RuntimeStorageAdapterFactory`)
-- Use interfaces for adapter contracts, types for factory functions
+- Use interfaces for adapter contracts, types for factory functions and discriminated unions
 - Provide empty base config interfaces that adapter packages extend
-- Re-export public types through `src/index.ts`
+- Place new shared domain models (and their literal-union companions) in `src/types.ts` and re-export them through `src/index.ts`
+- The `oxlint-disable typescript/unified-signatures` directive at the top of `types.ts` is intentional — keep it; it preserves the `upsertContentMetadata` overload pair for photo/video vs. text metadata
 
 ## Workflow
 
@@ -42,4 +45,5 @@ src/
 
 - This package is currently type-only — all runtime logic lives in other packages
 - The current public surface is a single root entry point that re-exports `src/types.ts`
-- When adding a new adapter concept, follow the existing factory pattern: `BaseConfig` interface → `Adapter` interface → `Factory` type
+- When adding a new adapter concept, follow the existing factory pattern: `BaseConfig` interface → `Adapter` interface (extending `CommonRuntimeAdapter`) → `Factory` type
+- When adding a new metadata variant to `RaurusMetadata`, update `RaurusMetadataType` and add a corresponding `upsertContentMetadata` overload
