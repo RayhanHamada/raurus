@@ -20,7 +20,7 @@ src/
 - **Domain types** — `RaurusMetadata` is a discriminated union keyed by `type` (`"photo" | "text" | "video"`); photo and video variants carry an `assetKey` while text carries a `text` string. `RaurusMetadataType` is the string literal union of those types.
 - **Asset type** — `RaurusAsset` is the shared upload input type (`ArrayBuffer | File | Blob`)
 - **Adapter result** — `AdapterMethodResult<T>` is a discriminated union of `Success<T> | Failure` and is the return shape of every adapter method. It is exported so adapter implementers can type-check their return values.
-- **Common adapter** — `CommonRuntimeAdapter` declares `checkConnection(): Promise<{ ok: boolean; message?: string }>` and is extended by both `RuntimeMetadataAdapter` and `RuntimeStorageAdapter`
+- **Common adapter** — `CommonRuntimeAdapter` declares `checkConnection(): Promise<AdapterMethodResult<null>>` and is extended by both `RuntimeMetadataAdapter` and `RuntimeStorageAdapter`
 - **Metadata Adapter** — `RuntimeMetadataAdapter` extends `CommonRuntimeAdapter` and defines `getMetadataByPlaceholderId`, optional `bulkGetMetadataByPlaceholderIds`, and `upsertContentMetadata` (overloaded for `PhotoMetadata | VideoMetadata` with `assetKey` and for `TextMetadata` with `text`)
 - **Storage Adapter** — `RuntimeStorageAdapter` extends `CommonRuntimeAdapter`; currently exposes the optional `createPresignedUploadUrl(assetKey, expiresIn?)` method
 - **Base configs** — `RuntimeMetadataAdapterBaseConfig` and `RuntimeStorageAdapterBaseConfig` are empty interfaces that adapter implementations extend to define their own config options
