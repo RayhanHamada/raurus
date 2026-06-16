@@ -12,8 +12,10 @@ src/
 ├── adapters/
 │   ├── example-metadata-adapter/
 │   │   └── index.ts       # In-memory metadata adapter (dev/testing reference)
-│   └── example-storage-adapter/
-│       └── index.ts       # In-memory storage adapter (dev/testing reference)
+│   ├── example-storage-adapter/
+│   │   └── index.ts       # In-memory storage adapter (dev/testing reference)
+│   └── s3mini-storage-adapter/
+│       └── index.ts       # S3-compatible storage adapter backed by s3mini
 └── runtime/
     ├── index.ts          # Named export: raurus (alias for createRuntime) + CreateRuntimeOptions
     ├── models.ts         # Elysia TypeSystem schemas (t.Object, t.String, etc.)
