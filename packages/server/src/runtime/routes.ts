@@ -36,7 +36,7 @@ export function routes(options: RouteOptions) {
 
         .get(
             "/presigned-url",
-            async ({ status, opts, query: { assetKey } }) => {
+            async ({ status, opts, query: { assetKey, expiresIn } }) => {
                 if (!opts.storage.createPresignedUploadUrl) {
                     return status(400, {
                         message: "Error",
@@ -44,11 +44,20 @@ export function routes(options: RouteOptions) {
                     });
                 }
 
-                const url = await opts.storage.createPresignedUploadUrl(assetKey);
+                const result = await opts.storage.createPresignedUploadUrl(assetKey, expiresIn);
+
+                if (!result.ok) {
+                    return status(400, {
+                        message: "Error",
+                        error: "Failed to create presigned URL",
+                    });
+                }
 
                 return status(200, {
                     message: "OK",
-                    data: { url },
+                    data: {
+                        url: result.data.url,
+                    },
                 });
             },
             {

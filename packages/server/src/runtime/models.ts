@@ -7,6 +7,7 @@ export const HealthCheckResponseSchema = t.Object({
 
 export const PresignedUrlQuerySchema = t.Object({
     assetKey: t.String({ minLength: 1 }),
+    expiresIn: t.Optional(t.Number({ minimum: 60, examples: [3600] })),
 });
 
 export const UploadAssetBodySchema = t.Object({

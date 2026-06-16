@@ -1,5 +1,16 @@
 // oxlint-disable typescript/unified-signatures
 
+interface Success<T> {
+    ok: true;
+    data: T;
+}
+interface Failure {
+    ok: false;
+    error: Error;
+}
+
+type AdapterMethodResult<T> = Success<T> | Failure;
+
 export type PhotoMetadata = "photo";
 export type TextMetadata = "text";
 export type VideoMetadata = "video";
@@ -50,12 +61,17 @@ export interface CommonRuntimeAdapter {
  */
 export interface RuntimeMetadataAdapter extends CommonRuntimeAdapter {
     /**
+     * A unique identifier for the metadata adapter, following the format "{adapter-name}-metadata-adapter". This identifier is used to distinguish between different metadata adapter implementations and can be utilized for logging, debugging, or other purposes where identifying the specific adapter in use is necessary.
+     */
+    id: `${Lowercase<string>}-metadata-adapter`;
+
+    /**
      * Retrieves metadata associated with a given placeholder ID. If no metadata is found for the provided placeholder ID, the method returns null.
      *
      * @param placeholderId The placeholder ID for which to retrieve metadata.
      * @returns A promise that resolves to the retrieved metadata as a RaurusMetadata object, or null if no metadata is found for the provided placeholder ID.
      */
-    getMetadataByPlaceholderId(placeholderId: string): Promise<RaurusMetadata | null>;
+    getMetadataByPlaceholderId(placeholderId: string): Promise<AdapterMethodResult<RaurusMetadata | null>>;
 
     /**
      * Retrieves metadata for multiple placeholder IDs in a single operation. This method allows for efficient retrieval of metadata associated with multiple placeholder IDs, reducing the number of individual calls needed to fetch metadata for each ID. The method takes an array of placeholder IDs as input and returns a promise that resolves to an array of RaurusMetadata objects corresponding to the provided placeholder IDs. If no metadata is found for a particular placeholder ID, it will not be included in the returned array.
@@ -63,7 +79,7 @@ export interface RuntimeMetadataAdapter extends CommonRuntimeAdapter {
      * @param placeholderIds An array of placeholder IDs for which to retrieve metadata.
      * @returns A promise that resolves to an array of RaurusMetadata objects corresponding to the provided placeholder IDs. If no metadata is found for a particular placeholder ID, it will not be included in the returned array.
      */
-    bulkGetMetadataByPlaceholderIds?(placeholderIds: string[]): Promise<RaurusMetadata[]>;
+    bulkGetMetadataByPlaceholderIds?(placeholderIds: string[]): Promise<AdapterMethodResult<RaurusMetadata[]>>;
 
     /**
      * Upserts metadata for a given placeholder ID and asset key. This method allows for both inserting new metadata and updating existing metadata associated with a placeholder ID. The method takes a placeholder ID, a type indicating the kind of metadata (photo or video), and an asset key depending on the type of metadata being upserted. The method returns a promise that resolves when the upsert operation is complete.
@@ -71,7 +87,11 @@ export interface RuntimeMetadataAdapter extends CommonRuntimeAdapter {
      * @param type The type of metadata being upserted, which can be "photo" or "video".
      * @param assetKey The asset key associated with the metadata, required for "photo" and "video" types.
      */
-    upsertContentMetadata(placeholderId: string, type: PhotoMetadata | VideoMetadata, assetKey: string): Promise<void>;
+    upsertContentMetadata(
+        placeholderId: string,
+        type: PhotoMetadata | VideoMetadata,
+        assetKey: string
+    ): Promise<AdapterMethodResult<null>>;
 
     /**
      * Upserts text metadata for a given placeholder ID. This method is specifically designed for upserting text metadata, allowing for the insertion or updating of text content associated with a placeholder ID. The method takes a placeholder ID, a type indicating that the metadata is of type "text", and the text content to be upserted. The method returns a promise that resolves when the upsert operation is complete.
@@ -79,7 +99,7 @@ export interface RuntimeMetadataAdapter extends CommonRuntimeAdapter {
      * @param type The type of metadata being upserted, which must be "text" for this method.
      * @param text The text content associated with the metadata to be upserted.
      */
-    upsertContentMetadata(placeholderId: string, type: TextMetadata, text: string): Promise<void>;
+    upsertContentMetadata(placeholderId: string, type: TextMetadata, text: string): Promise<AdapterMethodResult<null>>;
 }
 
 /**
@@ -87,13 +107,18 @@ export interface RuntimeMetadataAdapter extends CommonRuntimeAdapter {
  */
 export interface RuntimeStorageAdapter extends CommonRuntimeAdapter {
     /**
+     * A unique identifier for the storage adapter, following the format "{adapter-name}-storage-adapter". This identifier is used to distinguish between different storage adapter implementations and can be utilized for logging, debugging, or other purposes where identifying the specific adapter in use is necessary.
+     */
+    id: `${Lowercase<string>}-storage-adapter`;
+
+    /**
      * Generates a presigned URL for uploading an asset directly to the storage service.
      *
      * @param assetKey The asset key for which to generate the presigned upload URL.
      * @param expiresIn Optional expiration time in seconds for the presigned URL. If not provided, a default expiration time will be used.
      * @returns A promise that resolves to the generated presigned upload URL as a string.
      */
-    createPresignedUploadUrl?(assetKey: string, expiresIn?: number): Promise<string>;
+    createPresignedUploadUrl?(assetKey: string, expiresIn?: number): Promise<AdapterMethodResult<{ url: string }>>;
 }
 
 /**

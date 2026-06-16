@@ -20,6 +20,7 @@
         ".": "./dist/index.mjs",
         "./adapters/example-metadata-adapter": "./dist/adapters/example-metadata-adapter/index.mjs",
         "./adapters/example-storage-adapter": "./dist/adapters/example-storage-adapter/index.mjs",
+        "./adapters/s3mini-storage-adapter": "./dist/adapters/s3mini-storage-adapter/index.mjs",
         "./runtime": "./dist/runtime/index.mjs",
         "./package.json": "./package.json"
     },

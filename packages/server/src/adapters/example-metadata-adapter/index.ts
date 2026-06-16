@@ -1,9 +1,4 @@
-import type {
-    RaurusMetadata,
-    RuntimeMetadataAdapter,
-    RuntimeMetadataAdapterBaseConfig,
-    RuntimeMetadataAdapterFactory,
-} from "@raurus/core";
+import type { RaurusMetadata, RuntimeMetadataAdapterBaseConfig, RuntimeMetadataAdapterFactory } from "@raurus/core";
 
 interface MemoryMetadataAdapterConfig extends RuntimeMetadataAdapterBaseConfig {}
 
@@ -11,23 +6,32 @@ export const createMemoryMetadataAdapter: RuntimeMetadataAdapterFactory<MemoryMe
     const store = new Map<RaurusMetadata["placeholderId"], RaurusMetadata>();
 
     return {
+        id: "memory-metadata-adapter",
+
         async checkConnection() {
             return { ok: true };
         },
         async getMetadataByPlaceholderId(placeholderId) {
-            return store.get(placeholderId) ?? null;
+            return { ok: true, data: store.get(placeholderId) ?? null };
         },
         async bulkGetMetadataByPlaceholderIds(placeholderIds) {
-            return placeholderIds
+            const filteredMetadata = placeholderIds
                 .map((id) => store.get(id))
                 .filter((metadata): metadata is RaurusMetadata => !!metadata);
+
+            return {
+                ok: true,
+                data: filteredMetadata,
+            };
         },
         async upsertContentMetadata(placeholderId, type, assetKeyOrText) {
             if (type === "photo" || type === "video") {
                 store.set(placeholderId, { placeholderId, type, assetKey: assetKeyOrText });
-            } else if (type === "text") {
-                store.set(placeholderId, { placeholderId, type, text: assetKeyOrText });
+                return { ok: true, data: null };
             }
+
+            store.set(placeholderId, { placeholderId, type, text: assetKeyOrText });
+            return { ok: true, data: null };
         },
-    } satisfies RuntimeMetadataAdapter;
+    };
 };
