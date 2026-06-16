@@ -2,7 +2,7 @@
 
 ## Package Context
 
-This package is `@raurus/server`, a contract-first, OpenAPI-driven HTTP server built on Elysia with `@elysia/openapi`. It provides a fetch-compatible router, a runtime-generated OpenAPI 3.1 document, and a built-in Scalar API reference.
+This package is `@raurus/server`, a contract-first, OpenAPI-driven HTTP server built on Elysia with `@elysia/openapi`. It provides a fetch-compatible router, a runtime-generated OpenAPI 3.1 document, and a built-in Scalar API reference. It uses `@raurus/logger` for structured logging and never calls `configure()` itself — that is the responsibility of the consuming application.
 
 ## Architecture
 
@@ -27,6 +27,7 @@ tsdown.config.ts          # Build config — entry: ["src/index.ts", "src/runtim
 
 - **Single public export** — `raurus()` from `@raurus/server` is the only entry point. It creates a fetch-compatible runtime from adapter options. `CreateRuntimeOptions` is also exported as a type for consumers.
 - **Route options** — `routes.ts` takes `RouteOptions` with `metadata` and `storage` adapter objects directly, rather than receiving them through Elysia decorate/store.
+- **Logging** — Use `getPackageLogger("server")` from `@raurus/logger` for runtime, route, and adapter logs. The server package only obtains loggers; the consuming app is responsible for calling `configure()` from `@logtape/logtape` once at startup.
 - **Health check route** — `GET /` returns `{ status: "OK", message: "RAURUS_ENDPOINT" }` and is documented under the `Operations` OpenAPI tag. Use it for monitoring and liveness probes.
 - **Inline OpenAPI** — The `@elysia/openapi` plugin is configured inline in `utils.ts` with OpenAPI servers derived from parsing `baseUrl` (a required `string | URL`). When the pathname is `/`, the API prefix defaults to `_raurus`.
 - **Schema modules** — `models.ts` exports plain Elysia TypeSystem schemas. Routes import the whole module as `import * as m from "./models"` and reference members as `m.PresignedUrlQuerySchema` etc. — keep the namespace import convention when adding routes.
@@ -40,6 +41,7 @@ tsdown.config.ts          # Build config — entry: ["src/index.ts", "src/runtim
 - Pass adapter dependencies to `routes()` via `RouteOptions`, not through Elysia state
 - Inline OpenAPI metadata (title, version, servers) in `utils.ts` — no separate config module
 - Export the runtime factory as `raurus` from `src/runtime/index.ts`
+- Use `@raurus/logger` for all logs; create module-level `const log = getPackageLogger("server")` loggers and do not call `configure()` inside this package
 
 ## Workflow
 

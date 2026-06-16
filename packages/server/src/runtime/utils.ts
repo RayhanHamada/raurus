@@ -1,8 +1,11 @@
 import { openapi } from "@elysia/openapi";
 import type { RuntimeMetadataAdapter, RuntimeStorageAdapter } from "@raurus/core";
+import { getPackageLogger } from "@raurus/logger";
 import { Elysia } from "elysia";
 
 import { routes } from "./routes";
+
+const log = getPackageLogger("server");
 
 /**
  * Options for creating a Raurus runtime instance. The `metadataAdapter` and `storageAdapter` are required for the runtime to function properly. The `openapi` option defaults to true if not provided.
@@ -44,12 +47,17 @@ const DEFAULT_RUNTIME_OPTIONS = {
 export function createRuntime(config: CreateRuntimeOptions) {
     const options = { ...DEFAULT_RUNTIME_OPTIONS, ...config };
 
+    log.debug("Creating Raurus runtime", { baseUrl: options.baseUrl.toString(), openapi: options.openapi });
+
     const url = URL.parse(options.baseUrl);
     if (!url) {
+        log.error("Invalid baseUrl provided", { baseUrl: options.baseUrl.toString() });
         throw new Error(`Invalid baseUrl: ${options.baseUrl}`);
     }
 
     const basePath = url.pathname === "/" ? "_raurus" : url.pathname;
+
+    log.info("Raurus runtime initialized", { basePath, origin: url.origin, openapi: options.openapi });
 
     const app = new Elysia({
         name: "raurus.runtime",

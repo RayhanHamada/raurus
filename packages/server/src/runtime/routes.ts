@@ -1,7 +1,10 @@
 import type { RuntimeMetadataAdapter, RuntimeStorageAdapter } from "@raurus/core";
+import { getPackageLogger } from "@raurus/logger";
 import { Elysia } from "elysia";
 
 import * as m from "./models";
+
+const log = getPackageLogger("server");
 
 interface RouteOptions {
     // Define any options needed for route generation here
@@ -17,10 +20,13 @@ export function routes(options: RouteOptions) {
 
         .get(
             "/",
-            async (_) => ({
-                status: "OK",
-                message: "RAURUS_ENDPOINT",
-            }),
+            async (_) => {
+                log.debug("Health check requested");
+                return {
+                    status: "OK",
+                    message: "RAURUS_ENDPOINT",
+                };
+            },
             {
                 detail: {
                     summary: "Health Check",
@@ -37,7 +43,10 @@ export function routes(options: RouteOptions) {
         .get(
             "/presigned-url",
             async ({ status, opts, query: { assetKey, expiresIn } }) => {
+                log.debug("Presigned URL requested", { assetKey, expiresIn });
+
                 if (!opts.storage.createPresignedUploadUrl) {
+                    log.warning("Storage adapter does not support presigned URLs", { adapterId: opts.storage.id });
                     return status(400, {
                         message: "Error",
                         error: "Storage adapter does not support presigned URLs",
@@ -47,12 +56,14 @@ export function routes(options: RouteOptions) {
                 const result = await opts.storage.createPresignedUploadUrl(assetKey, expiresIn);
 
                 if (!result.ok) {
+                    log.error("Failed to create presigned URL", { assetKey, error: result.error.message });
                     return status(400, {
                         message: "Error",
                         error: "Failed to create presigned URL",
                     });
                 }
 
+                log.debug("Presigned URL created", { assetKey });
                 return status(200, {
                     message: "OK",
                     data: {
@@ -78,13 +89,17 @@ export function routes(options: RouteOptions) {
         .post(
             "/upload-asset",
             async ({ status, opts }) => {
+                log.debug("Upload asset requested");
+
                 if (!opts.storage?.createPresignedUploadUrl) {
+                    log.warning("Storage adapter does not support direct asset upload", { adapterId: opts.storage.id });
                     return status(400, {
                         message: "Error",
                         error: "Storage adapter does not support direct asset upload",
                     });
                 }
 
+                log.debug("Upload asset accepted");
                 return status(200, { message: "OK" });
             },
             {

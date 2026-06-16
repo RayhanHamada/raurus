@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { RaurusPackageNames, logTapeConfig } from "./config";
 
-describe(logTapeConfig, () => {
+describe("the LogTape config object", () => {
     it("defines a console sink", () => {
         expect(logTapeConfig.sinks).toBeDefined();
         expect(logTapeConfig.sinks).toHaveProperty("console");

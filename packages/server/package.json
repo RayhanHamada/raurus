@@ -35,6 +35,7 @@
         "@cloudflare/workers-types": "^4.20260615.1",
         "@elysia/openapi": "^1.4.15",
         "@raurus/core": "workspace:*",
+        "@raurus/logger": "workspace:*",
         "elysia": "^1.4.28",
         "s3mini": "^0.9.5"
     },

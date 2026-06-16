@@ -1,6 +1,9 @@
 import type { RuntimeStorageAdapterBaseConfig, RuntimeStorageAdapterFactory } from "@raurus/core";
+import { getPackageLogger } from "@raurus/logger";
 import { S3mini } from "s3mini";
 import type { S3Config } from "s3mini";
+
+const log = getPackageLogger("server");
 
 /**
  * Defines the configuration options for the S3MiniStorageAdapter, which extends both the S3 configuration options and the base configuration for runtime storage adapters. This interface allows for the specification of necessary settings required to connect to an S3-compatible storage service using the S3mini library, as well as any additional configuration options needed for the runtime storage adapter functionality.
@@ -32,9 +35,11 @@ export const s3MiniStorageAdapter: RuntimeStorageAdapterFactory<S3MiniStorageAda
 
                 return { ok };
             } catch (error) {
+                const message = error instanceof Error ? error.message : "Unknown error";
+                log.error("S3mini storage connection check failed", { message });
                 return {
                     ok: false,
-                    message: error instanceof Error ? error.message : "Unknown error",
+                    message,
                 };
             }
         },
