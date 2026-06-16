@@ -42,14 +42,14 @@ export function routes(options: RouteOptions) {
 
         .get(
             "/presigned-url",
-            async ({ status, opts, query: { assetKey, expiresIn } }) => {
+            async ({ status, set, opts, query: { assetKey, expiresIn } }) => {
                 log.debug("Presigned URL requested", { assetKey, expiresIn });
 
                 if (!opts.storage.createPresignedUploadUrl) {
                     log.warning("Storage adapter does not support presigned URLs", { adapterId: opts.storage.id });
-                    return status(400, {
+                    return status(501, {
                         message: "Error",
-                        error: "Storage adapter does not support presigned URLs",
+                        error: "Storage adapter does not support createPresignedUploadUrl",
                     });
                 }
 
@@ -57,10 +57,12 @@ export function routes(options: RouteOptions) {
 
                 if (!result.ok) {
                     log.error("Failed to create presigned URL", { assetKey, error: result.error.message });
-                    return status(400, {
+                    const code = m.failureCodeToStatus(result.code);
+                    set.status = code;
+                    return {
                         message: "Error",
                         error: "Failed to create presigned URL",
-                    });
+                    };
                 }
 
                 log.debug("Presigned URL created", { assetKey });
@@ -73,7 +75,7 @@ export function routes(options: RouteOptions) {
             },
             {
                 detail: {
-                    summary: "Get Presigned URL",
+                    summary: "Get Presigned Upload URL",
                     description:
                         "If implemented, this endpoint would generate a presigned URL for uploading an asset to a storage service.",
                     tags: ["Operations"],
@@ -82,6 +84,105 @@ export function routes(options: RouteOptions) {
                 response: {
                     200: m.PresignedUrlResponseSchema,
                     400: m.ErrorResponseSchema,
+                    501: m.ErrorResponseSchema,
+                },
+            }
+        )
+
+        .get(
+            "/presigned-download-url",
+            async ({ status, set, opts, query: { assetKey, expiresIn } }) => {
+                log.debug("Presigned download URL requested", { assetKey, expiresIn });
+
+                if (!opts.storage.createPresignedDownloadUrl) {
+                    log.warning("Storage adapter does not support presigned download URLs", {
+                        adapterId: opts.storage.id,
+                    });
+                    return status(501, {
+                        message: "Error",
+                        error: "Storage adapter does not support createPresignedDownloadUrl",
+                    });
+                }
+
+                const result = await opts.storage.createPresignedDownloadUrl(assetKey, expiresIn);
+
+                if (!result.ok) {
+                    log.error("Failed to create presigned download URL", {
+                        assetKey,
+                        error: result.error.message,
+                    });
+                    const code = m.failureCodeToStatus(result.code);
+                    set.status = code;
+                    return {
+                        message: "Error",
+                        error: "Failed to create presigned download URL",
+                    };
+                }
+
+                log.debug("Presigned download URL created", { assetKey });
+                return status(200, {
+                    message: "OK",
+                    data: {
+                        url: result.data.url,
+                    },
+                });
+            },
+            {
+                detail: {
+                    summary: "Get Presigned Download URL",
+                    description:
+                        "If implemented, this endpoint would generate a presigned URL for downloading an asset from a storage service.",
+                    tags: ["Operations"],
+                },
+                query: m.PresignedUrlQuerySchema,
+                response: {
+                    200: m.PresignedUrlResponseSchema,
+                    400: m.ErrorResponseSchema,
+                    501: m.ErrorResponseSchema,
+                },
+            }
+        )
+
+        .delete(
+            "/asset/:assetKey",
+            async ({ status, set, opts, params: { assetKey } }) => {
+                log.debug("Delete asset requested", { assetKey });
+
+                if (!opts.storage.deleteAsset) {
+                    log.warning("Storage adapter does not support asset deletion", { adapterId: opts.storage.id });
+                    return status(501, {
+                        message: "Error",
+                        error: "Storage adapter does not support deleteAsset",
+                    });
+                }
+
+                const result = await opts.storage.deleteAsset(assetKey);
+
+                if (!result.ok) {
+                    log.error("Failed to delete asset", { assetKey, error: result.error.message });
+                    const code = m.failureCodeToStatus(result.code);
+                    set.status = code;
+                    return {
+                        message: "Error",
+                        error: "Failed to delete asset",
+                    };
+                }
+
+                log.debug("Asset deleted", { assetKey });
+                return status(200, { message: "OK" });
+            },
+            {
+                detail: {
+                    summary: "Delete Asset",
+                    description: "If implemented, this endpoint would delete an asset from the storage service.",
+                    tags: ["Operations"],
+                },
+                params: m.DeleteAssetParamsSchema,
+                response: {
+                    200: m.DeleteAssetResponseSchema,
+                    400: m.ErrorResponseSchema,
+                    404: m.ErrorResponseSchema,
+                    501: m.ErrorResponseSchema,
                 },
             }
         )
@@ -93,9 +194,9 @@ export function routes(options: RouteOptions) {
 
                 if (!opts.storage?.createPresignedUploadUrl) {
                     log.warning("Storage adapter does not support direct asset upload", { adapterId: opts.storage.id });
-                    return status(400, {
+                    return status(501, {
                         message: "Error",
-                        error: "Storage adapter does not support direct asset upload",
+                        error: "Storage adapter does not support uploadAsset",
                     });
                 }
 
@@ -113,6 +214,7 @@ export function routes(options: RouteOptions) {
                     200: m.UploadAssetResponseSchema,
                     400: m.ErrorResponseSchema,
                     401: m.ErrorResponseSchema,
+                    501: m.ErrorResponseSchema,
                 },
             }
         );

@@ -26,3 +26,7 @@ examples/example-server/
 - `bun run dev` starts the server on port 3000 with hot reload
 - `bun run typecheck` verifies TypeScript compilation
 - Build dependencies first with `bun run build` at the repo root
+
+## Notes
+
+- The `createMemoryStorageAdapter` ships the full storage menu (`uploadAsset`, `createPresignedUploadUrl`, `createPresignedDownloadUrl`, `deleteAsset`) as in-memory stubs, so all four `@raurus/server` storage routes (`POST /upload-asset`, `GET /presigned-url`, `GET /presigned-download-url`, `DELETE /asset/:assetKey`) return `200 OK` against this example. Routes that the in-memory adapter does not implement would return `501 Not Implemented` — none currently do.
