@@ -1,1 +1,1 @@
-export { createRuntime as raurus } from "./utils";
+export { createRuntime as raurus, type CreateRuntimeOptions } from "./utils";
