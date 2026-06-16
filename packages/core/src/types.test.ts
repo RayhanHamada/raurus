@@ -103,7 +103,7 @@ describe("adapter result type", () => {
 describe("common runtime adapter contract", () => {
     it("requires a checkConnection method returning a structured connection status", () => {
         expectTypeOf<CommonRuntimeAdapter["checkConnection"]>().toEqualTypeOf<
-            () => Promise<{ ok: boolean; message?: string }>
+            () => Promise<AdapterMethodResult<null>>
         >();
     });
 });

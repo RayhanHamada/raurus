@@ -27,7 +27,6 @@
     "scripts": {
         "build": "tsdown --config-loader unrun",
         "dev": "tsdown --watch",
-        "test": "vitest run",
         "typecheck": "tsc --noEmit",
         "release": "bumpp"
     },

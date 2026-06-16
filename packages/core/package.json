@@ -23,7 +23,6 @@
     "scripts": {
         "build": "tsdown",
         "dev": "tsdown --watch",
-        "test": "vitest run",
         "typecheck": "tsc --noEmit",
         "release": "bumpp"
     },
@@ -33,6 +32,6 @@
         "bumpp": "^11.1.0",
         "tsdown": "^0.22.0",
         "typescript": "^6.0.3",
-        "vitest": "^4.1.5"
+        "vitest": "^4.1.9"
     }
 }

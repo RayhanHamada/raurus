@@ -11,7 +11,7 @@
         "check": "ultracite check",
         "fix": "ultracite fix",
         "build": "turbo run build",
-        "test": "turbo run test",
+        "test": "vitest run",
         "typecheck": "turbo run typecheck"
     },
     "devDependencies": {
