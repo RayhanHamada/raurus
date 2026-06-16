@@ -9,7 +9,7 @@ interface Failure {
     error: Error;
 }
 
-type AdapterMethodResult<T> = Success<T> | Failure;
+export type AdapterMethodResult<T> = Success<T> | Failure;
 
 export type PhotoMetadata = "photo";
 export type TextMetadata = "text";

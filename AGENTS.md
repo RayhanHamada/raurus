@@ -13,6 +13,7 @@ raurus/
 ├── packages/
 │   ├── core/                # @raurus/core — shared framework types and adapter contracts
 │   ├── server/              # @raurus/server — Elysia + @elysia/openapi runtime, ships example in-memory adapters
+│   ├── logger/              # @raurus/logger — LogTape wrapper: shared getLogger per package + a Config object (no `await configure(...)` inside)
 │   └── tsconfig/            # @raurus/tsconfig — shared TypeScript base configuration
 ├── turbo.json               # Turborepo pipeline config
 └── package.json             # Root workspace config (bun@1.3.14)
