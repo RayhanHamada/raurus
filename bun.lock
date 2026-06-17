@@ -39,6 +39,7 @@
         "@raurus/logger": "workspace:*",
       },
       "devDependencies": {
+        "@raurus/client": "workspace:*",
         "@raurus/tsconfig": "workspace:*",
         "@types/node": "^25.6.2",
         "bumpp": "^11.1.0",

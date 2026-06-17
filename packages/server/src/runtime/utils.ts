@@ -19,12 +19,12 @@ export interface CreateRuntimeOptions {
     /**
      * The metadata adapter to use for the Raurus instance.
      */
-    metadataAdapter: RuntimeMetadataAdapter;
+    metadataAdapter: RuntimeMetadataAdapter | undefined;
 
     /**
      * The storage adapter to use for the Raurus instance.
      */
-    storageAdapter: RuntimeStorageAdapter;
+    storageAdapter: RuntimeStorageAdapter | undefined;
 
     /**
      * Whether to enable OpenAPI documentation. This is optional and defaults to `true`.
@@ -59,10 +59,14 @@ export function createRuntime(config: CreateRuntimeOptions) {
 
     log.info("Raurus runtime initialized", { basePath, origin: url.origin, openapi: options.openapi });
 
-    const app = new Elysia({
-        name: "raurus.runtime",
-        prefix: basePath,
-    })
+    const app = new Elysia({ prefix: basePath })
+        .use(
+            routes({
+                metadata: options.metadataAdapter,
+                storage: options.storageAdapter,
+            })
+        )
+
         .use(
             openapi({
                 enabled: options.openapi,
@@ -76,13 +80,6 @@ export function createRuntime(config: CreateRuntimeOptions) {
                         license: { name: "MIT" },
                     },
                 },
-            })
-        )
-
-        .use(
-            routes({
-                metadata: options.metadataAdapter,
-                storage: options.storageAdapter,
             })
         );
 

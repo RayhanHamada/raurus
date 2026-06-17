@@ -8,15 +8,90 @@ const log = getPackageLogger("server");
 
 interface RouteOptions {
     // Define any options needed for route generation here
-    metadata: RuntimeMetadataAdapter;
-    storage: RuntimeStorageAdapter;
+    metadata?: RuntimeMetadataAdapter | undefined;
+    storage?: RuntimeStorageAdapter | undefined;
 }
 
-export function routes(options: RouteOptions) {
+export function routes({ metadata, storage }: RouteOptions) {
     return new Elysia({ name: "raurus.routes" })
         .derive(() => ({
-            opts: options,
+            options: {
+                metadata,
+                storage,
+            },
         }))
+
+        .macro({
+            checkMetadata(enable: boolean) {
+                return {
+                    async beforeHandle({ options, status }) {
+                        if (!enable) {
+                            return;
+                        }
+
+                        // Check if metadata adapter is configured
+                        if (!options?.metadata) {
+                            log.warning("Metadata adapter is not configured");
+
+                            return status(501, {
+                                message: "Error",
+                                error: "Metadata adapter is not configured",
+                            });
+                        }
+                    },
+
+                    resolve({ options }) {
+                        if (!enable) {
+                            return {
+                                options,
+                            };
+                        }
+
+                        return {
+                            options: {
+                                ...options,
+                                metadata: options?.metadata as RuntimeMetadataAdapter,
+                            },
+                        };
+                    },
+                };
+            },
+
+            checkStorage(enable: boolean) {
+                return {
+                    async beforeHandle({ options, status }) {
+                        if (!enable) {
+                            return;
+                        }
+
+                        // Check if storage adapter is configured
+                        if (!options?.storage) {
+                            log.warning("Storage adapter is not configured");
+
+                            return status(501, {
+                                message: "Error",
+                                error: "Storage adapter is not configured",
+                            });
+                        }
+                    },
+
+                    resolve({ options }) {
+                        if (!enable) {
+                            return {
+                                options,
+                            };
+                        }
+
+                        return {
+                            options: {
+                                ...options,
+                                storage: options?.storage as RuntimeStorageAdapter,
+                            },
+                        };
+                    },
+                };
+            },
+        })
 
         .get(
             "/",
@@ -42,18 +117,19 @@ export function routes(options: RouteOptions) {
 
         .get(
             "/presigned-url",
-            async ({ status, set, opts, query: { assetKey, expiresIn } }) => {
+            async ({ status, set, options, query: { assetKey, expiresIn } }) => {
                 log.debug("Presigned URL requested", { assetKey, expiresIn });
 
-                if (!opts.storage.createPresignedUploadUrl) {
-                    log.warning("Storage adapter does not support presigned URLs", { adapterId: opts.storage.id });
+                if (!options.storage.createPresignedUploadUrl) {
+                    log.warning("Storage adapter does not support presigned URLs", { adapterId: options.storage.id });
+
                     return status(501, {
                         message: "Error",
                         error: "Storage adapter does not support createPresignedUploadUrl",
                     });
                 }
 
-                const result = await opts.storage.createPresignedUploadUrl(assetKey, expiresIn);
+                const result = await options.storage.createPresignedUploadUrl(assetKey, expiresIn);
 
                 if (!result.ok) {
                     log.error("Failed to create presigned URL", { assetKey, error: result.error.message });
@@ -86,33 +162,38 @@ export function routes(options: RouteOptions) {
                     400: m.ErrorResponseSchema,
                     501: m.ErrorResponseSchema,
                 },
+                checkStorage: true,
+                checkMetadata: true,
             }
         )
 
         .get(
             "/presigned-download-url",
-            async ({ status, set, opts, query: { assetKey, expiresIn } }) => {
+            async ({ status, set, options, query: { assetKey, expiresIn } }) => {
                 log.debug("Presigned download URL requested", { assetKey, expiresIn });
 
-                if (!opts.storage.createPresignedDownloadUrl) {
+                if (!options.storage.createPresignedDownloadUrl) {
                     log.warning("Storage adapter does not support presigned download URLs", {
-                        adapterId: opts.storage.id,
+                        adapterId: options.storage.id,
                     });
+
                     return status(501, {
                         message: "Error",
                         error: "Storage adapter does not support createPresignedDownloadUrl",
                     });
                 }
 
-                const result = await opts.storage.createPresignedDownloadUrl(assetKey, expiresIn);
+                const result = await options.storage.createPresignedDownloadUrl(assetKey, expiresIn);
 
                 if (!result.ok) {
                     log.error("Failed to create presigned download URL", {
                         assetKey,
                         error: result.error.message,
                     });
+
                     const code = m.failureCodeToStatus(result.code);
                     set.status = code;
+
                     return {
                         message: "Error",
                         error: "Failed to create presigned download URL",
@@ -120,6 +201,7 @@ export function routes(options: RouteOptions) {
                 }
 
                 log.debug("Presigned download URL created", { assetKey });
+
                 return status(200, {
                     message: "OK",
                     data: {
@@ -140,28 +222,42 @@ export function routes(options: RouteOptions) {
                     400: m.ErrorResponseSchema,
                     501: m.ErrorResponseSchema,
                 },
+
+                checkStorage: true,
             }
         )
 
         .delete(
             "/asset/:assetKey",
-            async ({ status, set, opts, params: { assetKey } }) => {
+            async ({ status, set, options, params: { assetKey } }) => {
+                if (!options.storage) {
+                    log.warning("Storage adapter is not configured");
+
+                    return status(501, {
+                        message: "Error",
+                        error: "Storage adapter is not configured",
+                    });
+                }
+
                 log.debug("Delete asset requested", { assetKey });
 
-                if (!opts.storage.deleteAsset) {
-                    log.warning("Storage adapter does not support asset deletion", { adapterId: opts.storage.id });
+                if (!options.storage.deleteAsset) {
+                    log.warning("Storage adapter does not support asset deletion", { adapterId: options.storage.id });
+
                     return status(501, {
                         message: "Error",
                         error: "Storage adapter does not support deleteAsset",
                     });
                 }
 
-                const result = await opts.storage.deleteAsset(assetKey);
+                const result = await options.storage.deleteAsset(assetKey);
 
                 if (!result.ok) {
                     log.error("Failed to delete asset", { assetKey, error: result.error.message });
+
                     const code = m.failureCodeToStatus(result.code);
                     set.status = code;
+
                     return {
                         message: "Error",
                         error: "Failed to delete asset",
@@ -189,11 +285,23 @@ export function routes(options: RouteOptions) {
 
         .post(
             "/upload-asset",
-            async ({ status, opts }) => {
+            async ({ status, options }) => {
                 log.debug("Upload asset requested");
 
-                if (!opts.storage?.createPresignedUploadUrl) {
-                    log.warning("Storage adapter does not support direct asset upload", { adapterId: opts.storage.id });
+                if (!options.storage) {
+                    log.warning("Storage adapter is not configured");
+
+                    return status(501, {
+                        message: "Error",
+                        error: "Storage adapter is not configured",
+                    });
+                }
+
+                if (!options.storage?.createPresignedUploadUrl) {
+                    log.warning("Storage adapter does not support direct asset upload", {
+                        adapterId: options.storage.id,
+                    });
+
                     return status(501, {
                         message: "Error",
                         error: "Storage adapter does not support uploadAsset",
@@ -201,6 +309,7 @@ export function routes(options: RouteOptions) {
                 }
 
                 log.debug("Upload asset accepted");
+
                 return status(200, { message: "OK" });
             },
             {
