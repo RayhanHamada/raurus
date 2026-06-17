@@ -19,12 +19,12 @@ export interface CreateRuntimeOptions {
     /**
      * The metadata adapter to use for the Raurus instance.
      */
-    metadataAdapter: RuntimeMetadataAdapter | undefined;
+    metadataAdapter?: RuntimeMetadataAdapter | undefined;
 
     /**
      * The storage adapter to use for the Raurus instance.
      */
-    storageAdapter: RuntimeStorageAdapter | undefined;
+    storageAdapter?: RuntimeStorageAdapter | undefined;
 
     /**
      * Whether to enable OpenAPI documentation. This is optional and defaults to `true`.

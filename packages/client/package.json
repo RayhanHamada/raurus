@@ -21,22 +21,26 @@
         "./package.json": "./package.json"
     },
     "scripts": {
-        "build": "tsdown",
+        "build": "tsdown --config-loader unrun",
         "dev": "tsdown --watch",
         "typecheck": "tsc --noEmit",
-        "release": "bumpp"
+        "release": "bumpp",
+        "typegen": "bun --bun ./typegen.ts"
     },
     "dependencies": {
         "@raurus/core": "workspace:*",
-        "@raurus/logger": "workspace:*"
+        "@raurus/logger": "workspace:*",
+        "openapi-fetch": "^0.17.0"
     },
     "devDependencies": {
-        "@raurus/client": "workspace:*",
+        "@raurus/server": "workspace:*",
         "@raurus/tsconfig": "workspace:*",
-        "@types/node": "^25.6.2",
+        "@types/node": "^25.9.3",
         "bumpp": "^11.1.0",
+        "openapi-typescript": "^7.13.0",
         "tsdown": "^0.22.0",
         "typescript": "^6.0.3",
+        "unrun": "^0.3.1",
         "vitest": "^4.1.9"
     }
 }

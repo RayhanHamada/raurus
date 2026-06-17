@@ -5,4 +5,9 @@ export default defineConfig({
     exports: true,
     entry: ["src/index.ts"],
     platform: "neutral",
+    hooks: {
+        async "build:before"() {
+            await import("./typegen");
+        },
+    },
 });

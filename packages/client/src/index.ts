@@ -1,1 +1,1 @@
-export const PACKAGE_NAME = "@raurus/client";
+export * from "./common";

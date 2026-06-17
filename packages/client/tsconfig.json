@@ -6,7 +6,8 @@
         "types": ["node"],
         "paths": {
             "@/*": ["./src/*"]
-        }
+        },
+        "noImplicitReturns": false
     },
-    "include": ["src"]
+    "include": ["src", "typegen.ts"]
 }
