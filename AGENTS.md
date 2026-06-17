@@ -14,6 +14,7 @@ raurus/
 │   ├── core/                # @raurus/core — shared framework types and adapter contracts
 │   ├── server/              # @raurus/server — Elysia + @elysia/openapi runtime, ships example in-memory adapters
 │   ├── client/              # @raurus/client — type-safe SDK wrapping openapi-fetch with server-generated OpenAPI types
+│   ├── react/               # @raurus/react — React 19 component library with React Compiler, tested via vitest-browser + Playwright
 │   ├── logger/              # @raurus/logger — LogTape wrapper: shared getLogger per package + a Config object (no `await configure(...)` inside)
 │   └── tsconfig/            # @raurus/tsconfig — shared TypeScript base configuration
 ├── apps/                   # Reserved for future app packages (currently empty)
@@ -38,7 +39,7 @@ raurus/
 - Use Bun as the package manager — all scripts use `bun run`, not `npm`, `yarn`, or `pnpm`
 - All packages output build artifacts to `dist/`
 - Formatting and linting are handled by oxfmt and oxlint via ultracite presets — do not introduce alternative linters or formatters
-- Extend `@raurus/tsconfig` in every package's `tsconfig.json`
+- Extend `@raurus/tsconfig` in every package's `tsconfig.json` — packages that need incompatible compiler options (e.g. JSX, DOM lib) may extend `@tsconfig/strictest` directly instead
 - Use `tsdown` for building packages, not tsup, rollup, or esbuild directly
 - Every package-level AGENTS.md references this root AGENTS.md
 - **When a task touches one or more packages or examples, update the relevant `packages/<name>/AGENTS.md` or `examples/<name>/AGENTS.md`** to reflect any new conventions, patterns, dependencies, or architectural decisions introduced by the change
