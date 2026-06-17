@@ -13,6 +13,7 @@ raurus/
 ├── packages/
 │   ├── core/                # @raurus/core — shared framework types and adapter contracts
 │   ├── server/              # @raurus/server — Elysia + @elysia/openapi runtime, ships example in-memory adapters
+│   ├── client/              # @raurus/client — type-safe SDK wrapping openapi-fetch with server-generated OpenAPI types
 │   ├── logger/              # @raurus/logger — LogTape wrapper: shared getLogger per package + a Config object (no `await configure(...)` inside)
 │   └── tsconfig/            # @raurus/tsconfig — shared TypeScript base configuration
 ├── apps/                   # Reserved for future app packages (currently empty)

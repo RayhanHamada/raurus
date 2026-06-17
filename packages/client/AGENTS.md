@@ -14,8 +14,9 @@ src/
 │   ├── index.ts        # createApiClient factory + Options interface
 │   └── index.test.ts   # Vitest tests for the factory
 ├── openapi.gen.ts      # Generated OpenAPI types from @raurus/server (do not edit)
-├── typegen.ts          # Regenerates openapi.gen.ts from a live @raurus/server
-└── index.ts            # Public barrel export
+└── index.ts            # Public barrel — re-exports from ./common
+
+typegen.ts              # Sits at the package root — regenerates src/openapi.gen.ts from a live @raurus/server
 ```
 
 - The public surface is the `createApiClient({ baseUrl, headers? })` factory in `src/common/index.ts`
