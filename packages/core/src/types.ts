@@ -61,8 +61,12 @@ export interface CommonRuntimeAdapter {
     checkConnection: () => Promise<AdapterMethodResult<null>>;
 }
 
+export type RaurusMetadataAdapterId = `${Lowercase<string>}-metadata-adapter`;
+export type RaurusStorageAdapterId = `${Lowercase<string>}-storage-adapter`;
+export type RaurusAuthAdapterId = `${Lowercase<string>}-auth-adapter`;
+
 export interface RuntimeMetadataAdapter extends CommonRuntimeAdapter {
-    id: `${Lowercase<string>}-metadata-adapter`;
+    id: RaurusMetadataAdapterId;
 
     getMetadataByPlaceholderId: (placeholderId: string) => Promise<AdapterMethodResult<RaurusMetadata | null>>;
 
@@ -79,7 +83,7 @@ export interface RuntimeMetadataAdapter extends CommonRuntimeAdapter {
 }
 
 export interface RuntimeStorageAdapter extends CommonRuntimeAdapter {
-    id: `${Lowercase<string>}-storage-adapter`;
+    id: RaurusStorageAdapterId;
 
     uploadAsset?: (assetKey: string, asset: RaurusAsset) => Promise<AdapterMethodResult<{ assetKey: string }>>;
 
@@ -96,16 +100,12 @@ export interface RuntimeStorageAdapter extends CommonRuntimeAdapter {
 }
 
 export interface RuntimeAuthAdapter extends CommonRuntimeAdapter {
-    id: `${Lowercase<string>}-auth-adapter`;
+    id: RaurusAuthAdapterId;
 
     authenticate: (password: string) => Promise<AdapterMethodResult<{ token: string }>>;
 
     validateToken: (token: string) => Promise<AdapterMethodResult<{ valid: boolean }>>;
 }
-
-export type RaurusMetadataAdapterId = `${Lowercase<string>}-metadata-adapter`;
-export type RaurusStorageAdapterId = `${Lowercase<string>}-storage-adapter`;
-export type RaurusAuthAdapterId = `${Lowercase<string>}-auth-adapter`;
 
 export type RuntimeMetadataAdapterFactory<
     Config extends RuntimeMetadataAdapterBaseConfig = RuntimeMetadataAdapterBaseConfig,
