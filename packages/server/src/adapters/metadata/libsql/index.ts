@@ -2,6 +2,9 @@ import { createClient } from "@libsql/client";
 import type { RaurusMetadata, RuntimeMetadataAdapterBaseConfig, RuntimeMetadataAdapterFactory } from "@raurus/core";
 
 interface LibsqlMetadataAdapterConfig extends RuntimeMetadataAdapterBaseConfig {
+    /**
+     * @see {@link https://github.com/libsql/libsql-client-ts#supported-urls}
+     */
     url: string;
     authToken?: string;
 }
@@ -28,10 +31,7 @@ function rowToRaurusMetadata(row: MetadataRow): RaurusMetadata {
     };
 }
 
-export const createLibsqlMetadataAdapter: RuntimeMetadataAdapterFactory<
-    LibsqlMetadataAdapterConfig,
-    "libsql-metadata-adapter"
-> = (config) => {
+export const createLibsqlMetadataAdapter: RuntimeMetadataAdapterFactory<LibsqlMetadataAdapterConfig> = (config) => {
     if (!config?.url) {
         throw new Error("Missing required configuration: url");
     }

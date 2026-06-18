@@ -109,15 +109,12 @@ export type RaurusAuthAdapterId = `${Lowercase<string>}-auth-adapter`;
 
 export type RuntimeMetadataAdapterFactory<
     Config extends RuntimeMetadataAdapterBaseConfig = RuntimeMetadataAdapterBaseConfig,
-    AdapterId extends RaurusMetadataAdapterId = RaurusMetadataAdapterId,
-> = (config?: Config) => RuntimeMetadataAdapter & { readonly __adapterId?: AdapterId };
+> = (config?: Config) => RuntimeMetadataAdapter;
 
 export type RuntimeStorageAdapterFactory<
     Config extends RuntimeStorageAdapterBaseConfig = RuntimeStorageAdapterBaseConfig,
-    AdapterId extends RaurusStorageAdapterId = RaurusStorageAdapterId,
-> = (config?: Config) => RuntimeStorageAdapter & { readonly __adapterId?: AdapterId };
+> = (config?: Config) => RuntimeStorageAdapter;
 
-export type RuntimeAuthAdapterFactory<
-    Config extends RuntimeAuthAdapterBaseConfig = RuntimeAuthAdapterBaseConfig,
-    AdapterId extends RaurusAuthAdapterId = RaurusAuthAdapterId,
-> = (config?: Config) => RuntimeAuthAdapter & { readonly __adapterId?: AdapterId };
+export type RuntimeAuthAdapterFactory<Config extends RuntimeAuthAdapterBaseConfig = RuntimeAuthAdapterBaseConfig> = (
+    config?: Config
+) => RuntimeAuthAdapter;

@@ -4,10 +4,7 @@ interface SimplePasswordAuthConfig extends RuntimeAuthAdapterBaseConfig {
     password: string;
 }
 
-export const createSimplePasswordAuth: RuntimeAuthAdapterFactory<
-    SimplePasswordAuthConfig,
-    "simple-password-auth-adapter"
-> = (config) => {
+export const createSimplePasswordAuth: RuntimeAuthAdapterFactory<SimplePasswordAuthConfig> = (config) => {
     if (!config?.password) {
         throw new Error("Password is required for simple password auth adapter");
     }

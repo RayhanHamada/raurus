@@ -26,10 +26,7 @@ function detectContentType(filename: string): string {
     return CONTENT_TYPES[ext] || "application/octet-stream";
 }
 
-export const createLocalStorageAdapter: RuntimeStorageAdapterFactory<
-    LocalStorageAdapterConfig,
-    "local-storage-adapter"
-> = (config) => {
+export const createLocalStorageAdapter: RuntimeStorageAdapterFactory<LocalStorageAdapterConfig> = (config) => {
     if (!config?.basePath) {
         throw new Error("Missing required configuration: basePath");
     }

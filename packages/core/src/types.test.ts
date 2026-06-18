@@ -8,7 +8,6 @@ import type {
     RaurusAsset,
     RaurusMetadata,
     RaurusMetadataType,
-    RaurusStorageAdapterId,
     RuntimeAuthAdapter,
     RuntimeAuthAdapterBaseConfig,
     RuntimeAuthAdapterFactory,
@@ -258,15 +257,6 @@ describe("factory types", () => {
         expectTypeOf(adapter).toMatchTypeOf<RuntimeMetadataAdapter>();
     });
 
-    it("RuntimeMetadataAdapterFactory supports an optional adapter id brand", () => {
-        type FactoryWithBrand = RuntimeMetadataAdapterFactory<
-            RuntimeMetadataAdapterBaseConfig,
-            "memory-metadata-adapter"
-        >;
-        type Returned = ReturnType<FactoryWithBrand>;
-        expectTypeOf<Returned["__adapterId"]>().toEqualTypeOf<"memory-metadata-adapter" | undefined>();
-    });
-
     it("RuntimeStorageAdapterFactory returns a RuntimeStorageAdapter when called with no arguments", () => {
         const factory: RuntimeStorageAdapterFactory = () => makeStorageAdapter();
         const adapter = factory();
@@ -284,10 +274,6 @@ describe("factory types", () => {
         expectTypeOf(adapter).toMatchTypeOf<RuntimeStorageAdapter>();
     });
 
-    it("RaurusStorageAdapterId constrains factory id brands to the storage suffix", () => {
-        expectTypeOf<RaurusStorageAdapterId>().toEqualTypeOf<`${Lowercase<string>}-storage-adapter`>();
-    });
-
     it("RuntimeAuthAdapterFactory returns a RuntimeAuthAdapter when called with no arguments", () => {
         const factory: RuntimeAuthAdapterFactory = () => makeAuthAdapter();
         const adapter = factory();
@@ -303,11 +289,5 @@ describe("factory types", () => {
         const factory: RuntimeAuthAdapterFactory<CustomAuthConfig> = () => makeAuthAdapter();
         const adapter = factory({ password: "admin" });
         expectTypeOf(adapter).toMatchTypeOf<RuntimeAuthAdapter>();
-    });
-
-    it("RuntimeAuthAdapterFactory supports an optional adapter id brand", () => {
-        type FactoryWithBrand = RuntimeAuthAdapterFactory<RuntimeAuthAdapterBaseConfig, "simple-password-auth-adapter">;
-        type Returned = ReturnType<FactoryWithBrand>;
-        expectTypeOf<Returned["__adapterId"]>().toEqualTypeOf<"simple-password-auth-adapter" | undefined>();
     });
 });
