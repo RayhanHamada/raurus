@@ -7,8 +7,11 @@
         "typecheck": "tsc --noEmit"
     },
     "dependencies": {
+        "@raurus/auth-simple-password": "workspace:*",
         "@raurus/core": "workspace:*",
-        "@raurus/server": "workspace:*"
+        "@raurus/metadata-libsql": "workspace:*",
+        "@raurus/server": "workspace:*",
+        "@raurus/storage-local": "workspace:*"
     },
     "devDependencies": {
         "@raurus/tsconfig": "workspace:*",

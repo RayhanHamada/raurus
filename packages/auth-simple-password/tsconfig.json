@@ -1,0 +1,12 @@
+{
+    "extends": ["@raurus/tsconfig"],
+    "compilerOptions": {
+        "target": "esnext",
+        "lib": ["ES2023"],
+        "types": ["node"],
+        "paths": {
+            "@/*": ["./src/*"]
+        }
+    },
+    "include": ["src"]
+}
