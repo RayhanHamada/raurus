@@ -1,13 +1,13 @@
 {
     "name": "@raurus/react",
     "version": "0.0.0",
-    "description": "A starter for creating a React component library with React Compiler.",
-    "homepage": "https://github.com/author/library#readme",
+    "description": "React 19 visual editing component library for Raurus.",
+    "homepage": "https://github.com/RayhanHamada/raurus#readme",
     "bugs": {
-        "url": "https://github.com/author/library/issues"
+        "url": "https://github.com/RayhanHamada/raurus/issues"
     },
     "license": "MIT",
-    "author": "Author Name <author.name@mail.com>",
+    "author": "Muhammad Rayhan Hamada Budiman <rayhanhamada1999@gmail.com>",
     "repository": {
         "type": "git",
         "url": "git+https://github.com/author/library.git"
@@ -33,9 +33,7 @@
     },
     "dependencies": {
         "@bosh-code/tsdown-plugin-inject-css": "^2.0.0",
-        "@bosh-code/tsdown-plugin-tailwindcss": "^1.0.1",
-        "@raurus/client": "workspace:*",
-        "@raurus/core": "workspace:*"
+        "@bosh-code/tsdown-plugin-tailwindcss": "^1.0.1"
     },
     "devDependencies": {
         "@rolldown/plugin-babel": "^0.2.3",

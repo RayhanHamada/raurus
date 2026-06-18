@@ -1,17 +1,10 @@
 import type { CSSProperties } from "react";
 
-import { useRaurus } from "./RaurusProvider";
-import { useContent } from "./useContent";
-
-interface ContentData {
-    type: "photo" | "video";
-    assetKey: string;
-    placeholderId: string;
-}
-
 interface EditableVideoProps {
-    placeholderId: string;
-    fallback?: string;
+    isEditing: boolean;
+    isSelected: boolean;
+    src: string;
+    onClick: () => void;
     className?: string;
     style?: CSSProperties;
     controls?: boolean;
@@ -21,8 +14,10 @@ interface EditableVideoProps {
 }
 
 export function EditableVideo({
-    placeholderId,
-    fallback,
+    isEditing,
+    isSelected,
+    src,
+    onClick,
     className,
     style,
     controls,
@@ -30,14 +25,6 @@ export function EditableVideo({
     muted,
     loop,
 }: EditableVideoProps) {
-    const { baseUrl, isEditing, selectPlaceholder, selectedPlaceholderId } = useRaurus();
-    const { content } = useContent(placeholderId);
-
-    const isSelected = selectedPlaceholderId === placeholderId;
-    const data = content as ContentData | null;
-    const assetKey = data?.type === "video" ? data.assetKey : null;
-    const src = assetKey ? `${baseUrl}/asset-content/${encodeURIComponent(assetKey)}` : fallback;
-
     if (!src) {
         return null;
     }
@@ -56,6 +43,7 @@ export function EditableVideo({
     if (isEditing) {
         return (
             <button
+                type="button"
                 className={`relative inline-block ${className ?? ""}`}
                 style={{
                     border: `2px dashed ${isSelected ? "#3b82f6" : "#9ca3af"}`,
@@ -64,7 +52,7 @@ export function EditableVideo({
                 }}
                 onClick={(e) => {
                     e.stopPropagation();
-                    selectPlaceholder(isSelected ? null : placeholderId);
+                    onClick();
                 }}
             >
                 {videoElement}

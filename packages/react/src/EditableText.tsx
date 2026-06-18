@@ -1,30 +1,24 @@
 import type { CSSProperties } from "react";
 
-import { useRaurus } from "./RaurusProvider";
-import { useContent } from "./useContent";
-
-interface ContentData {
-    type: "text";
-    text: string;
-    placeholderId: string;
-}
-
 interface EditableTextProps {
-    placeholderId: string;
+    isEditing: boolean;
+    isSelected: boolean;
+    text: string;
+    onClick: () => void;
     as?: "h1" | "h2" | "h3" | "p" | "span";
-    fallback?: string;
     className?: string;
     style?: CSSProperties;
 }
 
-export function EditableText({ placeholderId, as: Tag = "p", fallback, className, style }: EditableTextProps) {
-    const { isEditing, selectPlaceholder, selectedPlaceholderId } = useRaurus();
-    const { content } = useContent(placeholderId);
-
-    const isSelected = selectedPlaceholderId === placeholderId;
-    const data = content as ContentData | null;
-    const text = data?.type === "text" ? data.text : fallback;
-
+export function EditableText({
+    isEditing,
+    isSelected,
+    text,
+    onClick,
+    as: Tag = "p",
+    className,
+    style,
+}: EditableTextProps) {
     if (!text) {
         return null;
     }
@@ -40,7 +34,7 @@ export function EditableText({ placeholderId, as: Tag = "p", fallback, className
                 }}
                 onClick={(e) => {
                     e.stopPropagation();
-                    selectPlaceholder(isSelected ? null : placeholderId);
+                    onClick();
                 }}
             >
                 {text}
