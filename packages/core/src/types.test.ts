@@ -219,8 +219,7 @@ describe("storage adapter contract", () => {
     it("getAssetContent is optional and returns data with a content type", () => {
         type GetContent = RuntimeStorageAdapter["getAssetContent"];
         expectTypeOf<GetContent>().toEqualTypeOf<
-            | ((assetKey: string) => Promise<AdapterMethodResult<{ data: ArrayBuffer; contentType: string }>>)
-            | undefined
+            ((assetKey: string) => Promise<AdapterMethodResult<{ data: ArrayBuffer; contentType: string }>>) | undefined
         >();
     });
 });
@@ -232,16 +231,12 @@ describe("auth adapter contract", () => {
 
     it("authenticate accepts a password and returns a token", () => {
         type Auth = RuntimeAuthAdapter["authenticate"];
-        expectTypeOf<Auth>().toEqualTypeOf<
-            (password: string) => Promise<AdapterMethodResult<{ token: string }>>
-        >();
+        expectTypeOf<Auth>().toEqualTypeOf<(password: string) => Promise<AdapterMethodResult<{ token: string }>>>();
     });
 
     it("validateToken accepts a token and returns a validation result", () => {
         type Validate = RuntimeAuthAdapter["validateToken"];
-        expectTypeOf<Validate>().toEqualTypeOf<
-            (token: string) => Promise<AdapterMethodResult<{ valid: boolean }>>
-        >();
+        expectTypeOf<Validate>().toEqualTypeOf<(token: string) => Promise<AdapterMethodResult<{ valid: boolean }>>>();
     });
 });
 
@@ -311,10 +306,7 @@ describe("factory types", () => {
     });
 
     it("RuntimeAuthAdapterFactory supports an optional adapter id brand", () => {
-        type FactoryWithBrand = RuntimeAuthAdapterFactory<
-            RuntimeAuthAdapterBaseConfig,
-            "simple-password-auth-adapter"
-        >;
+        type FactoryWithBrand = RuntimeAuthAdapterFactory<RuntimeAuthAdapterBaseConfig, "simple-password-auth-adapter">;
         type Returned = ReturnType<FactoryWithBrand>;
         expectTypeOf<Returned["__adapterId"]>().toEqualTypeOf<"simple-password-auth-adapter" | undefined>();
     });

@@ -1,5 +1,5 @@
-import type { RaurusMetadata, RuntimeMetadataAdapterBaseConfig, RuntimeMetadataAdapterFactory } from "@raurus/core";
 import { createClient } from "@libsql/client";
+import type { RaurusMetadata, RuntimeMetadataAdapterBaseConfig, RuntimeMetadataAdapterFactory } from "@raurus/core";
 
 interface LibsqlMetadataAdapterConfig extends RuntimeMetadataAdapterBaseConfig {
     url: string;
@@ -18,13 +18,13 @@ function rowToRaurusMetadata(row: MetadataRow): RaurusMetadata {
         return {
             placeholderId: row.placeholder_id,
             type: row.type as "photo" | "video",
-            assetKey: row.asset_key!,
+            assetKey: row.asset_key ?? "",
         };
     }
     return {
         placeholderId: row.placeholder_id,
         type: "text",
-        text: row.text_content!,
+        text: row.text_content ?? "",
     };
 }
 
@@ -32,7 +32,11 @@ export const createLibsqlMetadataAdapter: RuntimeMetadataAdapterFactory<
     LibsqlMetadataAdapterConfig,
     "libsql-metadata-adapter"
 > = (config) => {
-    const c = config!;
+    if (!config?.url) {
+        throw new Error("Missing required configuration: url");
+    }
+
+    const c = config;
     const client = c.authToken ? createClient({ url: c.url, authToken: c.authToken }) : createClient({ url: c.url });
 
     client.execute(`
@@ -53,10 +57,10 @@ export const createLibsqlMetadataAdapter: RuntimeMetadataAdapterFactory<
             try {
                 await client.execute("SELECT 1");
                 return { ok: true, data: null };
-            } catch (err) {
+            } catch (error) {
                 return {
                     ok: false,
-                    error: err instanceof Error ? err : new Error(String(err)),
+                    error: error instanceof Error ? error : new Error(String(error)),
                     code: "CONNECTION" as const,
                 };
             }
@@ -74,10 +78,10 @@ export const createLibsqlMetadataAdapter: RuntimeMetadataAdapterFactory<
                 }
 
                 return { ok: true, data: rowToRaurusMetadata(result.rows[0] as unknown as MetadataRow) };
-            } catch (err) {
+            } catch (error) {
                 return {
                     ok: false,
-                    error: err instanceof Error ? err : new Error(String(err)),
+                    error: error instanceof Error ? error : new Error(String(error)),
                     code: "CONNECTION" as const,
                 };
             }
@@ -103,10 +107,10 @@ export const createLibsqlMetadataAdapter: RuntimeMetadataAdapterFactory<
                     ok: true,
                     data: (result.rows as unknown as MetadataRow[]).map(rowToRaurusMetadata),
                 };
-            } catch (err) {
+            } catch (error) {
                 return {
                     ok: false,
-                    error: err instanceof Error ? err : new Error(String(err)),
+                    error: error instanceof Error ? error : new Error(String(error)),
                     code: "CONNECTION" as const,
                 };
             }
@@ -114,34 +118,28 @@ export const createLibsqlMetadataAdapter: RuntimeMetadataAdapterFactory<
 
         async upsertContentMetadata(placeholderId, type, assetKeyOrText) {
             try {
-                if (type === "photo" || type === "video") {
-                    await client.execute({
-                        sql: `INSERT INTO raurus_metadata (placeholder_id, type, asset_key, updated_at)
-                              VALUES (?, ?, ?, datetime('now'))
-                              ON CONFLICT(placeholder_id) DO UPDATE SET
-                              type = excluded.type,
-                              asset_key = excluded.asset_key,
-                              text_content = NULL,
-                              updated_at = excluded.updated_at`,
-                        args: [placeholderId, type, assetKeyOrText],
-                    });
-                } else {
-                    await client.execute({
-                        sql: `INSERT INTO raurus_metadata (placeholder_id, type, text_content, updated_at)
-                              VALUES (?, ?, ?, datetime('now'))
-                              ON CONFLICT(placeholder_id) DO UPDATE SET
-                              type = excluded.type,
-                              text_content = excluded.text_content,
-                              asset_key = NULL,
-                              updated_at = excluded.updated_at`,
-                        args: [placeholderId, type, assetKeyOrText],
-                    });
-                }
+                const isAsset = type === "photo" || type === "video";
+
+                await client.execute({
+                    sql: `INSERT INTO raurus_metadata (
+                            placeholder_id,
+                            type,
+                            ${isAsset ? "asset_key" : "text_content"},
+                            updated_at
+                        )
+                        VALUES (?, ?, ?, datetime('now'))
+                        ON CONFLICT(placeholder_id) DO UPDATE SET
+                            type = excluded.type,
+                            asset_key = ${isAsset ? "excluded.asset_key" : "NULL"},
+                            text_content = ${isAsset ? "NULL" : "excluded.text_content"},
+                            updated_at = excluded.updated_at`,
+                    args: [placeholderId, type, assetKeyOrText],
+                });
                 return { ok: true, data: null };
-            } catch (err) {
+            } catch (error) {
                 return {
                     ok: false,
-                    error: err instanceof Error ? err : new Error(String(err)),
+                    error: error instanceof Error ? error : new Error(String(error)),
                     code: "CONNECTION" as const,
                 };
             }

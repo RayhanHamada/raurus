@@ -16,9 +16,9 @@ src/
 - **Factory** — `createLibsqlMetadataAdapter({ url: string, authToken?: string })` creates a metadata adapter backed by libsql. The `authToken` is optional (e.g., for local file-based databases).
 - **Auto-schema** — On construction, the adapter runs `CREATE TABLE IF NOT EXISTS raurus_metadata` with columns: `placeholder_id TEXT PRIMARY KEY`, `type TEXT NOT NULL`, `asset_key TEXT`, `text_content TEXT`, `updated_at TEXT NOT NULL DEFAULT (datetime('now'))`.
 - **CRUD operations** — All four required metadata adapter methods are implemented:
-  - `getMetadataByPlaceholderId(id)` → `SELECT` single row, maps to `RaurusMetadata` or `null`
-  - `bulkGetMetadataByPlaceholderIds(ids)` → `SELECT WHERE placeholder_id IN (...)`. Empty array returns all rows.
-  - `upsertContentMetadata` → `INSERT ... ON CONFLICT DO UPDATE SET ...` for both photo/video (asset_key) and text (text_content) variants. When switching type, nulls out the other column.
+    - `getMetadataByPlaceholderId(id)` → `SELECT` single row, maps to `RaurusMetadata` or `null`
+    - `bulkGetMetadataByPlaceholderIds(ids)` → `SELECT WHERE placeholder_id IN (...)`. Empty array returns all rows.
+    - `upsertContentMetadata` → `INSERT ... ON CONFLICT DO UPDATE SET ...` for both photo/video (asset_key) and text (text_content) variants. When switching type, nulls out the other column.
 - **Row mapping** — The internal `rowToRaurusMetadata()` helper maps database rows to the `RaurusMetadata` discriminated union. Photo/video rows expose `assetKey`; text rows expose `text`.
 - **Connection check** — `checkConnection()` executes `SELECT 1` to verify the database is reachable. On failure, returns `code: "CONNECTION"`.
 

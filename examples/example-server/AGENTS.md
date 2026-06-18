@@ -24,19 +24,19 @@ examples/example-server/
 
 ## Routes Available
 
-| Method | Path | Auth | Description |
-|--------|------|------|-------------|
-| `GET` | `/` | Public | Health check |
-| `POST` | `/auth/login` | Public | Login with password → returns token |
-| `GET` | `/auth/verify` | Bearer token | Verify session |
-| `GET` | `/metadata` | Bearer token | List metadata (optional `?placeholderIds`) |
-| `GET` | `/metadata/:placeholderId` | Bearer token | Get single metadata record |
-| `PUT` | `/metadata/:placeholderId` | Bearer token | Upsert metadata (photo/video with assetKey, text with text) |
-| `GET` | `/asset-content/:assetKey` | Public | Stream raw asset content |
-| `POST` | `/upload-asset` | Bearer token | Upload asset file → returns assetKey |
-| `GET` | `/presigned-url` | Bearer token | Get presigned upload URL |
-| `GET` | `/presigned-download-url` | Bearer token | Get presigned download URL |
-| `DELETE` | `/asset/:assetKey` | Bearer token | Delete asset |
+| Method   | Path                       | Auth         | Description                                                 |
+| -------- | -------------------------- | ------------ | ----------------------------------------------------------- |
+| `GET`    | `/`                        | Public       | Health check                                                |
+| `POST`   | `/auth/login`              | Public       | Login with password → returns token                         |
+| `GET`    | `/auth/verify`             | Bearer token | Verify session                                              |
+| `GET`    | `/metadata`                | Bearer token | List metadata (optional `?placeholderIds`)                  |
+| `GET`    | `/metadata/:placeholderId` | Bearer token | Get single metadata record                                  |
+| `PUT`    | `/metadata/:placeholderId` | Bearer token | Upsert metadata (photo/video with assetKey, text with text) |
+| `GET`    | `/asset-content/:assetKey` | Public       | Stream raw asset content                                    |
+| `POST`   | `/upload-asset`            | Bearer token | Upload asset file → returns assetKey                        |
+| `GET`    | `/presigned-url`           | Bearer token | Get presigned upload URL                                    |
+| `GET`    | `/presigned-download-url`  | Bearer token | Get presigned download URL                                  |
+| `DELETE` | `/asset/:assetKey`         | Bearer token | Delete asset                                                |
 
 ## Workflow
 

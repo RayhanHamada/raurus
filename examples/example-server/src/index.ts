@@ -1,6 +1,6 @@
-import { raurus } from "@raurus/server";
 import { createSimplePasswordAuth } from "@raurus/auth-simple-password";
 import { createLibsqlMetadataAdapter } from "@raurus/metadata-libsql";
+import { raurus } from "@raurus/server";
 import { createLocalStorageAdapter } from "@raurus/storage-local";
 
 const server = raurus({

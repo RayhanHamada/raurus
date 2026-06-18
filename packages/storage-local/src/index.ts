@@ -1,5 +1,6 @@
 import { mkdir, readFile, unlink, writeFile } from "node:fs/promises";
-import { dirname, extname } from "node:path";
+import path from "node:path";
+
 import type { RuntimeStorageAdapterBaseConfig, RuntimeStorageAdapterFactory } from "@raurus/core";
 
 interface LocalStorageAdapterConfig extends RuntimeStorageAdapterBaseConfig {
@@ -21,7 +22,7 @@ const CONTENT_TYPES: Record<string, string> = {
 };
 
 function detectContentType(filename: string): string {
-    const ext = extname(filename).toLowerCase();
+    const ext = path.extname(filename).toLowerCase();
     return CONTENT_TYPES[ext] || "application/octet-stream";
 }
 
@@ -29,7 +30,11 @@ export const createLocalStorageAdapter: RuntimeStorageAdapterFactory<
     LocalStorageAdapterConfig,
     "local-storage-adapter"
 > = (config) => {
-    const basePath = config!.basePath;
+    if (!config?.basePath) {
+        throw new Error("Missing required configuration: basePath");
+    }
+
+    const { basePath } = config;
 
     return {
         id: "local-storage-adapter",
@@ -39,10 +44,10 @@ export const createLocalStorageAdapter: RuntimeStorageAdapterFactory<
             try {
                 await mkdir(basePath, { recursive: true });
                 return { ok: true, data: null };
-            } catch (err) {
+            } catch (error) {
                 return {
                     ok: false,
-                    error: err instanceof Error ? err : new Error(String(err)),
+                    error: error instanceof Error ? error : new Error(String(error)),
                     code: "CONNECTION" as const,
                 };
             }
@@ -51,13 +56,13 @@ export const createLocalStorageAdapter: RuntimeStorageAdapterFactory<
         async uploadAsset(assetKey, asset) {
             try {
                 const filePath = `${basePath}/${assetKey}`;
-                await mkdir(dirname(filePath), { recursive: true });
+                await mkdir(path.dirname(filePath), { recursive: true });
                 await writeFile(filePath, new Uint8Array(asset));
                 return { ok: true, data: { assetKey } };
-            } catch (err) {
+            } catch (error) {
                 return {
                     ok: false,
-                    error: err instanceof Error ? err : new Error(String(err)),
+                    error: error instanceof Error ? error : new Error(String(error)),
                     code: "CONNECTION" as const,
                 };
             }
@@ -68,8 +73,8 @@ export const createLocalStorageAdapter: RuntimeStorageAdapterFactory<
                 const filePath = `${basePath}/${assetKey}`;
                 await unlink(filePath);
                 return { ok: true, data: null };
-            } catch (err) {
-                if (err instanceof Error && "code" in err && err.code === "ENOENT") {
+            } catch (error) {
+                if (error instanceof Error && "code" in error && error.code === "ENOENT") {
                     return {
                         ok: false,
                         error: new Error(`Asset not found: ${assetKey}`),
@@ -78,7 +83,7 @@ export const createLocalStorageAdapter: RuntimeStorageAdapterFactory<
                 }
                 return {
                     ok: false,
-                    error: err instanceof Error ? err : new Error(String(err)),
+                    error: error instanceof Error ? error : new Error(String(error)),
                     code: "CONNECTION" as const,
                 };
             }
@@ -96,8 +101,8 @@ export const createLocalStorageAdapter: RuntimeStorageAdapterFactory<
                         contentType,
                     },
                 };
-            } catch (err) {
-                if (err instanceof Error && "code" in err && err.code === "ENOENT") {
+            } catch (error) {
+                if (error instanceof Error && "code" in error && error.code === "ENOENT") {
                     return {
                         ok: false,
                         error: new Error(`Asset not found: ${assetKey}`),
@@ -106,7 +111,7 @@ export const createLocalStorageAdapter: RuntimeStorageAdapterFactory<
                 }
                 return {
                     ok: false,
-                    error: err instanceof Error ? err : new Error(String(err)),
+                    error: error instanceof Error ? error : new Error(String(error)),
                     code: "CONNECTION" as const,
                 };
             }
