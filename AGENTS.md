@@ -9,14 +9,17 @@ Raurus is a TypeScript monorepo building a modular, contract-first web applicati
 ```
 raurus/
 ├── examples/
-│   └── example-server/     # @raurus/example-server — minimal Bun app validating @raurus/server
+│   └── example-server/     # @raurus/example-server — minimal Bun app validating @raurus/server with real adapters
 ├── packages/
 │   ├── core/                # @raurus/core — shared framework types and adapter contracts
 │   ├── server/              # @raurus/server — Elysia + @elysia/openapi runtime, ships example in-memory adapters
 │   ├── client/              # @raurus/client — type-safe SDK wrapping openapi-fetch with server-generated OpenAPI types
-│   ├── react/               # @raurus/react — React 19 component library with React Compiler, tested via vitest-browser + Playwright
-│   ├── logger/              # @raurus/logger — LogTape wrapper: shared getLogger per package + a Config object (no `await configure(...)` inside)
-│   └── tsconfig/            # @raurus/tsconfig — shared TypeScript base configuration
+│   ├── react/               # @raurus/react — React 19 visual editing component library (provider, hooks, editable components)
+│   ├── logger/              # @raurus/logger — LogTape wrapper: shared getLogger per package + a Config object
+│   ├── tsconfig/            # @raurus/tsconfig — shared TypeScript base configuration
+│   ├── auth-simple-password/ # @raurus/auth-simple-password — in-memory password auth adapter
+│   ├── storage-local/       # @raurus/storage-local — Node.js filesystem storage adapter
+│   └── metadata-libsql/     # @raurus/metadata-libsql — libsql-based metadata storage adapter
 ├── apps/                   # Reserved for future app packages (currently empty)
 ├── turbo.json               # Turborepo pipeline config
 └── package.json             # Root workspace config (bun@1.3.14)

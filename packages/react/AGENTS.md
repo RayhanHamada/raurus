@@ -2,7 +2,7 @@
 
 ## Package Context
 
-This package is `@raurus/react`, a React 19 component library compiled with React Compiler. Components are browser-tested via vitest-browser + Playwright, and a Vite playground provides manual development iteration.
+This package is `@raurus/react`, a React 19 component library for the Raurus visual editing system. It provides a React context provider, hooks, and editable UI components for in-page content editing. Components are compiled with React Compiler, styled with Tailwind CSS, and browser-tested via vitest-browser + Playwright.
 
 This file extends the root [AGENTS.md](../../AGENTS.md).
 
@@ -10,39 +10,85 @@ This file extends the root [AGENTS.md](../../AGENTS.md).
 
 ```
 src/
-├── index.ts            # Public barrel — re-exports all components
-├── MyButton.tsx        # Initial starter component
-└── *.tsx              # Component files (colocate with tests)
+├── index.ts              # Public barrel — re-exports all components and hooks
+├── RaurusProvider.tsx     # React context provider (baseUrl, auth state, edit mode, placeholder registry)
+├── useEditMode.ts         # Hook: exposes isEditing, isAuthenticated, enter/exit edit mode, login/logout
+├── useContent.ts          # Hook: fetches and updates metadata for a given placeholderId
+├── EditableImage.tsx      # Editable <img> with dashed highlight border in edit mode
+├── EditableText.tsx       # Editable text element (h1/h2/h3/p/span) with highlight border
+├── EditableVideo.tsx      # Editable <video> with highlight border
+├── LoginButton.tsx        # Floating button (bottom-right, low opacity) + AuthModal (login/logout)
+└── EditOverlay.tsx        # Floating editing panel: placeholder dropdown, media upload, text editing
 
 playground/
-├── index.html          # Vite entry for manual dev testing
+├── index.html             # Vite entry for manual dev testing
 └── src/
-    ├── index.tsx       # Playground app entry
-    ├── App.tsx         # Playground app component
-    └── style.css       # Playground styles
-
-tsdown.config.ts        # Build config with React Compiler babel plugin, CSS injection, and Tailwind
-vite.config.ts          # Vite config for playground dev server + vitest browser testing
+    ├── index.tsx          # Playground app entry
+    ├── App.tsx            # Playground app component
+    └── style.css          # Playground styles
 ```
 
 ## Key Concepts
 
-- **React Compiler** — Components are compiled through the babel plugin (`babel-plugin-react-compiler`) wired in both `tsdown.config.ts` (for production builds) and `vite.config.ts` (for playground and tests). The `reactCompilerPreset()` from `@vitejs/plugin-react` is reused in the tsdown babel plugin chain.
-- **Browser testing** — Vitest runs component tests in a headless Chromium browser via `@vitest/browser-playwright` and `vitest-browser-react`. Tests render components in a real DOM and assertions run against the rendered output.
-- **Playground** — The Vite dev server (`bun run play`) serves `playground/index.html` for manual component iteration. Playground code is not bundled into the library.
-- **Styling** — Tailwind CSS is injected at build time via `@bosh-code/tsdown-plugin-tailwindcss` and `@bosh-code/tsdown-plugin-inject-css`. CSS module declarations are typed via the `css.d.ts` file at the package root.
+- **RaurusProvider** — Wraps the app and provides `baseUrl`, auth state (token in localStorage), editing mode, selected placeholder, and a registry of placeholder IDs. Handles login, token persistence, and edit mode lifecycle.
+- **useEditMode()** — Returns `{ isEditing, isAuthenticated, enterEditMode, exitEditMode, login, logout }`. Call `login(password)` to authenticate, then `enterEditMode()` to activate visual editing.
+- **useContent(placeholderId)** — Returns `{ content, isLoading, error, update }`. Fetches metadata from `GET /metadata/:placeholderId` on mount. `update(data)` calls `PUT /metadata/:placeholderId`.
+- **Editable components** (`EditableImage`, `EditableText`, `EditableVideo`) — In edit mode, render with a dashed border (gray by default, blue when selected). Click to select/deselect. Content falls back to a `fallback` prop when no metadata exists. Asset URLs are constructed as `{baseUrl}/asset-content/{assetKey}`.
+- **LoginButton** — Fixed bottom-right, 20% opacity, reveals on hover. Click opens AuthModal for login. When authenticated, offers enter/exit edit mode and logout.
+- **EditOverlay** — Fixed bottom-left panel. Only visible when `isEditing`. Contains a dropdown of all registered placeholders, a "Replace Media" button (triggers file upload → PUT metadata), and a textarea with "Save Text" button. Supports both image and video uploads.
+- **Styling** — Tailwind CSS classes are statically extracted at build time via `@bosh-code/tsdown-plugin-tailwindcss`. No runtime CSS-in-JS.
+
+## API Surface
+
+```ts
+// Provider
+export { RaurusProvider, useRaurus };
+
+// Hooks
+export { useEditMode };
+export { useContent };
+
+// Components
+export { EditableImage };
+export { EditableText };
+export { EditableVideo };
+export { LoginButton };
+export { EditOverlay };
+```
+
+## Consumer Example
+
+```tsx
+import { RaurusProvider, EditableImage, EditableText, LoginButton, EditOverlay } from "@raurus/react";
+
+function App() {
+    return (
+        <RaurusProvider baseUrl="/_raurus">
+            <main>
+                <EditableImage placeholderId="hero-image" fallback="/default.jpg" />
+                <EditableText placeholderId="headline" as="h1" fallback="Welcome" />
+                <EditableVideo placeholderId="intro-video" />
+            </main>
+            <LoginButton />
+            <EditOverlay />
+        </RaurusProvider>
+    );
+}
+```
 
 ## Conventions
 
-- Colocate test files next to components with the `*.test.tsx` suffix
-- Render components into the DOM using `render()` from `vitest-browser-react` — do not import `@testing-library/react`
-- Run tests headlessly by default; see `vite.config.ts` `browser.headless` for the current mode
-- Keep playground components in `playground/src/` — they are not part of the library surface
-- `tsconfig.json` extends `@tsconfig/strictest` directly, not `@raurus/tsconfig`, because the react package needs DOM lib, JSX, and browser-specific types that differ from the shared base
+- Components use named exports only (no default exports)
+- Props are defined as interfaces co-located in the component file
+- Hooks are thin wrappers around `useRaurus()` context
+- API calls use plain `fetch()` — the `@raurus/client` package is not required by this layer
+- Auth token is stored in `localStorage` under key `raurus_token`
+- Tailwind classes are used inline for styling; no separate CSS files for components
+- `tsconfig.json` extends `@tsconfig/strictest` directly (needs DOM lib, JSX)
 
 ## Dependencies
 
-- **Runtime**: `@raurus/client` (workspace)
+- **Runtime**: `@raurus/core` (workspace) — for type references if needed
 - **Peer**: `react` ^19.2.0, `react-dom` ^19.2.0
 - **Build**: tsdown with `@rolldown/plugin-babel`, `@bosh-code/tsdown-plugin-inject-css`, `@bosh-code/tsdown-plugin-tailwindcss`
 - **Test**: vitest, `@vitest/browser-playwright`, `vitest-browser-react`, `@vitejs/plugin-react`
@@ -57,6 +103,8 @@ vite.config.ts          # Vite config for playground dev server + vitest browser
 
 ## Package Notes
 
-- This package was initialized from a React component library starter template — placeholder metadata (author, repository, homepage) in `package.json` should be updated before publishing
-- The only public entry point is `src/index.ts` — add new components as named exports there
-- CSS for components is processed at build time via Tailwind — no runtime CSS-in-JS
+- The RaurusProvider stores the auth token in `localStorage` — survives page refreshes
+- `isEditing` is distinct from `isAuthenticated` — even with a valid token, the admin must explicitly enter edit mode
+- Editable components register their placeholder IDs on mount — this powers the EditOverlay dropdown
+- Asset serving uses `GET /asset-content/:assetKey` which is a public endpoint (no auth). This lets images and videos display for all visitors without authentication.
+- Text content goes through `PUT /metadata/:placeholderId` with `{ type: "text", text }`. Media goes through file upload first, then metadata update.

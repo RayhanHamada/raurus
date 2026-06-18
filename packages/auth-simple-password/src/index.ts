@@ -8,7 +8,11 @@ export const createSimplePasswordAuth: RuntimeAuthAdapterFactory<
     SimplePasswordAuthConfig,
     "simple-password-auth-adapter"
 > = (config) => {
-    const expectedPassword = config!.password;
+    if (!config?.password) {
+        throw new Error("Password is required for simple password auth adapter");
+    }
+
+    const expectedPassword = config.password;
     const tokens = new Map<string, number>();
 
     return {

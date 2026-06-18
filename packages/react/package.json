@@ -34,7 +34,8 @@
     "dependencies": {
         "@bosh-code/tsdown-plugin-inject-css": "^2.0.0",
         "@bosh-code/tsdown-plugin-tailwindcss": "^1.0.1",
-        "@raurus/client": "workspace:*"
+        "@raurus/client": "workspace:*",
+        "@raurus/core": "workspace:*"
     },
     "devDependencies": {
         "@rolldown/plugin-babel": "^0.2.3",
