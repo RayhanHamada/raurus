@@ -9,6 +9,9 @@ import type {
     RaurusMetadata,
     RaurusMetadataType,
     RaurusStorageAdapterId,
+    RuntimeAuthAdapter,
+    RuntimeAuthAdapterBaseConfig,
+    RuntimeAuthAdapterFactory,
     RuntimeMetadataAdapter,
     RuntimeMetadataAdapterBaseConfig,
     RuntimeMetadataAdapterFactory,
@@ -21,6 +24,7 @@ import type {
 
 const makeMetadataAdapter = (): RuntimeMetadataAdapter => null as unknown as RuntimeMetadataAdapter;
 const makeStorageAdapter = (): RuntimeStorageAdapter => null as unknown as RuntimeStorageAdapter;
+const makeAuthAdapter = (): RuntimeAuthAdapter => null as unknown as RuntimeAuthAdapter;
 
 describe("domain types", () => {
     it("RaurusMetadataType is the union of photo, text, and video literals", () => {
@@ -211,6 +215,34 @@ describe("storage adapter contract", () => {
         type Delete = RuntimeStorageAdapter["deleteAsset"];
         expectTypeOf<Delete>().toEqualTypeOf<((assetKey: string) => Promise<AdapterMethodResult<null>>) | undefined>();
     });
+
+    it("getAssetContent is optional and returns data with a content type", () => {
+        type GetContent = RuntimeStorageAdapter["getAssetContent"];
+        expectTypeOf<GetContent>().toEqualTypeOf<
+            | ((assetKey: string) => Promise<AdapterMethodResult<{ data: Uint8Array; contentType: string }>>)
+            | undefined
+        >();
+    });
+});
+
+describe("auth adapter contract", () => {
+    it("uses a lowercase template literal id", () => {
+        expectTypeOf<RuntimeAuthAdapter["id"]>().toEqualTypeOf<`${Lowercase<string>}-auth-adapter`>();
+    });
+
+    it("authenticate accepts a password and returns a token", () => {
+        type Auth = RuntimeAuthAdapter["authenticate"];
+        expectTypeOf<Auth>().toEqualTypeOf<
+            (password: string) => Promise<AdapterMethodResult<{ token: string }>>
+        >();
+    });
+
+    it("validateToken accepts a token and returns a validation result", () => {
+        type Validate = RuntimeAuthAdapter["validateToken"];
+        expectTypeOf<Validate>().toEqualTypeOf<
+            (token: string) => Promise<AdapterMethodResult<{ valid: boolean }>>
+        >();
+    });
 });
 
 describe("factory types", () => {
@@ -259,5 +291,31 @@ describe("factory types", () => {
 
     it("RaurusStorageAdapterId constrains factory id brands to the storage suffix", () => {
         expectTypeOf<RaurusStorageAdapterId>().toEqualTypeOf<`${Lowercase<string>}-storage-adapter`>();
+    });
+
+    it("RuntimeAuthAdapterFactory returns a RuntimeAuthAdapter when called with no arguments", () => {
+        const factory: RuntimeAuthAdapterFactory = () => makeAuthAdapter();
+        const adapter = factory();
+        expectTypeOf(adapter).toMatchTypeOf<RuntimeAuthAdapter>();
+        const adapterWithConfig = factory({});
+        expectTypeOf(adapterWithConfig).toMatchTypeOf<RuntimeAuthAdapter>();
+    });
+
+    it("RuntimeAuthAdapterFactory accepts a custom config type", () => {
+        interface CustomAuthConfig extends RuntimeAuthAdapterBaseConfig {
+            password: string;
+        }
+        const factory: RuntimeAuthAdapterFactory<CustomAuthConfig> = () => makeAuthAdapter();
+        const adapter = factory({ password: "admin" });
+        expectTypeOf(adapter).toMatchTypeOf<RuntimeAuthAdapter>();
+    });
+
+    it("RuntimeAuthAdapterFactory supports an optional adapter id brand", () => {
+        type FactoryWithBrand = RuntimeAuthAdapterFactory<
+            RuntimeAuthAdapterBaseConfig,
+            "simple-password-auth-adapter"
+        >;
+        type Returned = ReturnType<FactoryWithBrand>;
+        expectTypeOf<Returned["__adapterId"]>().toEqualTypeOf<"simple-password-auth-adapter" | undefined>();
     });
 });
