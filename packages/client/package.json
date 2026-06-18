@@ -1,7 +1,7 @@
 {
-    "name": "@raurus/server",
+    "name": "@raurus/client",
     "version": "0.0.0",
-    "description": "A starter for creating a TypeScript package.",
+    "description": "Type-safe Raurus client SDK",
     "homepage": "https://github.com/RayhanHamada/raurus#readme",
     "bugs": {
         "url": "https://github.com/RayhanHamada/raurus/issues"
@@ -17,34 +17,31 @@
     ],
     "type": "module",
     "exports": {
-        ".": "./dist/index.mjs",
-        "./adapters/example-metadata-adapter": "./dist/adapters/example-metadata-adapter/index.mjs",
-        "./adapters/example-storage-adapter": "./dist/adapters/example-storage-adapter/index.mjs",
-        "./adapters/s3mini-storage-adapter": "./dist/adapters/s3mini-storage-adapter/index.mjs",
-        "./runtime": "./dist/runtime/index.mjs",
+        ".": "./dist/index.js",
         "./package.json": "./package.json"
     },
     "scripts": {
         "build": "tsdown --config-loader unrun",
         "dev": "tsdown --watch",
+        "test": "vitest run",
         "typecheck": "tsc --noEmit",
-        "release": "bumpp"
+        "release": "bumpp",
+        "typegen": "bun --bun ./typegen.ts"
     },
     "dependencies": {
-        "@cloudflare/workers-types": "^4.20260615.1",
-        "@elysia/openapi": "^1.4.15",
         "@raurus/core": "workspace:*",
         "@raurus/logger": "workspace:*",
-        "elysia": "^1.4.28",
-        "s3mini": "^0.9.5"
+        "openapi-fetch": "^0.17.0"
     },
     "devDependencies": {
+        "@raurus/server": "workspace:*",
         "@raurus/tsconfig": "workspace:*",
-        "@types/node": "^25.6.2",
+        "@types/node": "^25.9.3",
         "bumpp": "^11.1.0",
+        "openapi-typescript": "^7.13.0",
         "tsdown": "^0.22.0",
         "typescript": "^6.0.3",
         "unrun": "^0.3.1",
-        "vitest": "^4.1.5"
+        "vitest": "^4.1.9"
     }
 }

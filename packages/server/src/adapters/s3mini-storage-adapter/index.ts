@@ -28,6 +28,7 @@ export const s3MiniStorageAdapter: RuntimeStorageAdapterFactory<S3MiniStorageAda
 
     return {
         id: "s3-mini-storage-adapter",
+        apiVersion: "1",
 
         async checkConnection() {
             try {
@@ -38,6 +39,7 @@ export const s3MiniStorageAdapter: RuntimeStorageAdapterFactory<S3MiniStorageAda
 
                     return {
                         ok: false,
+                        code: "CONNECTION" as const,
                         error: new Error("Bucket does not exist"),
                     };
                 }
@@ -54,6 +56,7 @@ export const s3MiniStorageAdapter: RuntimeStorageAdapterFactory<S3MiniStorageAda
 
                 return {
                     ok: false,
+                    code: "CONNECTION" as const,
                     error: error instanceof Error ? error : new Error("Unknown error"),
                 };
             }
@@ -74,6 +77,53 @@ export const s3MiniStorageAdapter: RuntimeStorageAdapterFactory<S3MiniStorageAda
 
                 return {
                     ok: false,
+                    code: "UPSTREAM" as const,
+                    error: error instanceof Error ? error : new Error("Unknown error"),
+                };
+            }
+        },
+
+        async createPresignedDownloadUrl(assetKey, expiresIn) {
+            try {
+                const url = await client.getPresignedUrl("GET", assetKey, expiresIn);
+                log.info("Generated presigned download URL", { assetKey, expiresIn });
+
+                return {
+                    ok: true,
+                    data: { url },
+                };
+            } catch (error) {
+                const message = error instanceof Error ? error.message : "Unknown error";
+                log.error("Failed to create presigned download URL", { message });
+
+                return {
+                    ok: false,
+                    code: "UPSTREAM" as const,
+                    error: error instanceof Error ? error : new Error("Unknown error"),
+                };
+            }
+        },
+
+        async deleteAsset(assetKey) {
+            try {
+                const deleted = await client.deleteObject(assetKey);
+                if (!deleted) {
+                    log.warning("Delete asset returned false (object may not exist)", { assetKey });
+                    return {
+                        ok: false,
+                        code: "NOT_FOUND" as const,
+                        error: new Error(`Object not found: ${assetKey}`),
+                    };
+                }
+                log.info("Deleted asset", { assetKey });
+                return { ok: true, data: null };
+            } catch (error) {
+                const message = error instanceof Error ? error.message : "Unknown error";
+                log.error("Failed to delete asset", { assetKey, message });
+
+                return {
+                    ok: false,
+                    code: "UPSTREAM" as const,
                     error: error instanceof Error ? error : new Error("Unknown error"),
                 };
             }

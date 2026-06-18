@@ -9,7 +9,6 @@ import oxignore from "./oxignore.json" with { type: "json" };
 
 export default defineConfig({
     extends: [core, react, vitest, vue, next],
-    jsPlugins: ["oxlint-tailwindcss"],
     ignorePatterns: [...oxignore],
     rules: {
         "func-style": ["off"],
@@ -21,8 +20,5 @@ export default defineConfig({
         "typescript/no-empty-interface": "off",
         "typescript/no-empty-object-type": "off",
         "require-await": "off",
-
-        "tailwindcss/enforce-canonical": "error",
-        "tailwindcss/enforce-sort-order": "error",
     },
 });

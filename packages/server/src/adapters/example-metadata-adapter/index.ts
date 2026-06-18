@@ -7,6 +7,7 @@ export const createMemoryMetadataAdapter: RuntimeMetadataAdapterFactory<MemoryMe
 
     return {
         id: "memory-metadata-adapter",
+        apiVersion: "1",
 
         async checkConnection() {
             return { ok: true, data: null };
