@@ -92,7 +92,7 @@ export interface RuntimeStorageAdapter extends CommonRuntimeAdapter {
 
     deleteAsset?: (assetKey: string) => Promise<AdapterMethodResult<null>>;
 
-    getAssetContent?: (assetKey: string) => Promise<AdapterMethodResult<{ data: Uint8Array; contentType: string }>>;
+    getAssetContent?: (assetKey: string) => Promise<AdapterMethodResult<{ data: ArrayBuffer; contentType: string }>>;
 }
 
 export interface RuntimeAuthAdapter extends CommonRuntimeAdapter {

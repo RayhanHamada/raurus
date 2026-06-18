@@ -219,7 +219,7 @@ describe("storage adapter contract", () => {
     it("getAssetContent is optional and returns data with a content type", () => {
         type GetContent = RuntimeStorageAdapter["getAssetContent"];
         expectTypeOf<GetContent>().toEqualTypeOf<
-            | ((assetKey: string) => Promise<AdapterMethodResult<{ data: Uint8Array; contentType: string }>>)
+            | ((assetKey: string) => Promise<AdapterMethodResult<{ data: ArrayBuffer; contentType: string }>>)
             | undefined
         >();
     });

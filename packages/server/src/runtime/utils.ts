@@ -1,5 +1,5 @@
 import { openapi } from "@elysia/openapi";
-import type { RuntimeMetadataAdapter, RuntimeStorageAdapter } from "@raurus/core";
+import type { RuntimeAuthAdapter, RuntimeMetadataAdapter, RuntimeStorageAdapter } from "@raurus/core";
 import { getPackageLogger } from "@raurus/logger";
 import { Elysia } from "elysia";
 
@@ -8,7 +8,7 @@ import { routes } from "./routes";
 const log = getPackageLogger("server");
 
 /**
- * Options for creating a Raurus runtime instance. The `metadataAdapter` and `storageAdapter` are required for the runtime to function properly. The `openapi` option defaults to true if not provided.
+ * Options for creating a Raurus runtime instance. The `metadataAdapter`, `storageAdapter`, and `authAdapter` are optional; routes guard missing adapters and return 501 where appropriate. The `openapi` option defaults to true if not provided.
  */
 export interface CreateRuntimeOptions {
     /**
@@ -25,6 +25,11 @@ export interface CreateRuntimeOptions {
      * The storage adapter to use for the Raurus instance.
      */
     storageAdapter?: RuntimeStorageAdapter | undefined;
+
+    /**
+     * The auth adapter to use for the Raurus instance.
+     */
+    authAdapter?: RuntimeAuthAdapter | undefined;
 
     /**
      * Whether to enable OpenAPI documentation. This is optional and defaults to `true`.
@@ -64,6 +69,7 @@ export function createRuntime(config: CreateRuntimeOptions) {
             routes({
                 metadata: options.metadataAdapter,
                 storage: options.storageAdapter,
+                auth: options.authAdapter,
             })
         )
 
