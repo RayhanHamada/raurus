@@ -10,15 +10,7 @@ interface EditableImageProps {
     alt?: string;
 }
 
-export function EditableImage({
-    isEditing,
-    isSelected,
-    src,
-    onClick,
-    className,
-    style,
-    alt = "",
-}: EditableImageProps) {
+export function EditableImage({ isEditing, isSelected, src, onClick, className, style, alt = "" }: EditableImageProps) {
     if (!src) {
         return null;
     }

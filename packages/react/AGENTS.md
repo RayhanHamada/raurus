@@ -70,7 +70,10 @@ function App() {
                 onLogin={async (password) => password === "demo"}
                 onEnterEdit={() => setIsEditing(true)}
                 onExitEdit={() => setIsEditing(false)}
-                onLogout={() => { setIsAuthenticated(false); setIsEditing(false); }}
+                onLogout={() => {
+                    setIsAuthenticated(false);
+                    setIsEditing(false);
+                }}
             />
             {isEditing && (
                 <EditOverlay
@@ -82,8 +85,12 @@ function App() {
                     onSelectPlaceholder={setSelectedId}
                     onClose={() => setIsEditing(false)}
                     onReplaceMedia={() => {}}
-                    onFileSelect={(file) => { /* upload file */ }}
-                    onSaveText={(text) => { /* save text */ }}
+                    onFileSelect={(file) => {
+                        /* upload file */
+                    }}
+                    onSaveText={(text) => {
+                        /* save text */
+                    }}
                 />
             )}
         </>

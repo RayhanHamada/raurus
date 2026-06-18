@@ -18,9 +18,15 @@
     "type": "module",
     "exports": {
         ".": "./dist/index.mjs",
-        "./adapters/example-metadata-adapter": "./dist/adapters/example-metadata-adapter/index.mjs",
-        "./adapters/example-storage-adapter": "./dist/adapters/example-storage-adapter/index.mjs",
-        "./adapters/s3mini-storage-adapter": "./dist/adapters/s3mini-storage-adapter/index.mjs",
+        "./adapters/auth": "./dist/adapters/auth/index.mjs",
+        "./adapters/auth/simple-password": "./dist/adapters/auth/simple-password/index.mjs",
+        "./adapters/metadata": "./dist/adapters/metadata/index.mjs",
+        "./adapters/metadata/libsql": "./dist/adapters/metadata/libsql/index.mjs",
+        "./adapters/metadata/memory": "./dist/adapters/metadata/memory/index.mjs",
+        "./adapters/storage": "./dist/adapters/storage/index.mjs",
+        "./adapters/storage/local": "./dist/adapters/storage/local/index.mjs",
+        "./adapters/storage/memory": "./dist/adapters/storage/memory/index.mjs",
+        "./adapters/storage/s3mini": "./dist/adapters/storage/s3mini/index.mjs",
         "./runtime": "./dist/runtime/index.mjs",
         "./package.json": "./package.json"
     },
@@ -33,6 +39,7 @@
     "dependencies": {
         "@cloudflare/workers-types": "^4.20260615.1",
         "@elysia/openapi": "^1.4.15",
+        "@libsql/client": "^0.14.0",
         "@raurus/core": "workspace:*",
         "@raurus/logger": "workspace:*",
         "elysia": "^1.4.28",

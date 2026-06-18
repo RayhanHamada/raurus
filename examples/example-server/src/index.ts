@@ -1,7 +1,7 @@
-import { createSimplePasswordAuth } from "@raurus/auth-simple-password";
-import { createLibsqlMetadataAdapter } from "@raurus/metadata-libsql";
 import { raurus } from "@raurus/server";
-import { createLocalStorageAdapter } from "@raurus/storage-local";
+import { createSimplePasswordAuth } from "@raurus/server/adapters/auth";
+import { createLibsqlMetadataAdapter } from "@raurus/server/adapters/metadata";
+import { createLocalStorageAdapter } from "@raurus/server/adapters/storage";
 
 const server = raurus({
     baseUrl: "http://localhost:3000",

@@ -1,6 +1,6 @@
 # Example: Server
 
-`@raurus/example-server` lives in `examples/example-server/`. It is a minimal Bun app that boots the `@raurus/server` runtime with real adapter implementations: `@raurus/auth-simple-password` for authentication, `@raurus/metadata-libsql` for metadata storage, and `@raurus/storage-local` for asset storage. It validates that the server package and adapter packages build, start, and serve endpoints correctly.
+`@raurus/example-server` lives in `examples/example-server/`. It is a minimal Bun app that boots the `@raurus/server` runtime with real adapter implementations: `simple-password` (auth), `libsql` (metadata), and `local` (storage) — all imported from `@raurus/server/adapters/<category>`. It validates that the server package and its built-in adapters build, start, and serve endpoints correctly.
 
 ## Architecture
 
@@ -14,9 +14,9 @@ examples/example-server/
 
 ## Key Concepts
 
-- Imports `createSimplePasswordAuth` from `@raurus/auth-simple-password` — password `"admin123"`, in-memory token storage
-- Imports `createLibsqlMetadataAdapter` from `@raurus/metadata-libsql` — local SQLite file at `./data.db`
-- Imports `createLocalStorageAdapter` from `@raurus/storage-local` — local filesystem storage at `./uploads`
+- Imports `createSimplePasswordAuth` from `@raurus/server/adapters/auth` — password `"admin123"`, in-memory token storage
+- Imports `createLibsqlMetadataAdapter` from `@raurus/server/adapters/metadata` — local SQLite file at `./data.db`
+- Imports `createLocalStorageAdapter` from `@raurus/server/adapters/storage` — local filesystem storage at `./uploads`
 - Imports `raurus` from `@raurus/server` — the single public factory for creating a fetch-compatible runtime
 - Passes `baseUrl: "http://localhost:3000"` plus `metadataAdapter`, `storageAdapter`, and `authAdapter` to `raurus()`; because the URL pathname is `/`, the runtime derives its API base path as `_raurus`, so endpoints are served under `http://localhost:3000/_raurus/...`
 - Exports a default Bun server object `{ port: 3000, fetch }` where `fetch` comes from `server.fetch`

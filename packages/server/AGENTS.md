@@ -10,19 +10,31 @@ This package is `@raurus/server`, a contract-first, OpenAPI-driven HTTP server b
 src/
 ├── index.ts             # Public barrel — exports raurus and CreateRuntimeOptions from src/runtime/
 ├── adapters/
-│   ├── example-metadata-adapter/
-│   │   └── index.ts       # In-memory metadata adapter (dev/testing reference)
-│   ├── example-storage-adapter/
-│   │   └── index.ts       # In-memory storage adapter (dev/testing reference)
-│   └── s3mini-storage-adapter/
-│       └── index.ts       # S3-compatible storage adapter backed by s3mini
+│   ├── auth/
+│   │   ├── index.ts              # Barrel: re-exports all auth adapters
+│   │   └── simple-password/
+│   │       └── index.ts          # In-memory password-based auth adapter
+│   ├── metadata/
+│   │   ├── index.ts              # Barrel: re-exports all metadata adapters
+│   │   ├── memory/
+│   │   │   └── index.ts          # In-memory metadata adapter (dev/testing reference)
+│   │   └── libsql/
+│   │       └── index.ts          # libsql-based metadata storage adapter
+│   └── storage/
+│       ├── index.ts              # Barrel: re-exports all storage adapters
+│       ├── memory/
+│       │   └── index.ts          # In-memory storage adapter (dev/testing reference)
+│       ├── local/
+│       │   └── index.ts          # Node.js filesystem storage adapter
+│       └── s3mini/
+│           └── index.ts          # S3-compatible storage adapter backed by s3mini
 └── runtime/
     ├── index.ts          # Named export: raurus (alias for createRuntime) + CreateRuntimeOptions
     ├── models.ts         # Elysia TypeSystem schemas (t.Object, t.String, etc.) + failureCodeToStatus mapper
     ├── routes.ts         # Route plugin — composable Elysia instance taking adapter options
     └── utils.ts          # createRuntime() — inline OpenAPI config, route composition, fetch handle
 
-tsdown.config.ts          # Build config — entry: ["src/index.ts", "src/runtime/index.ts", "src/adapters/*/index.ts"]
+tsdown.config.ts          # Build config — entry: ["src/index.ts", "src/runtime/index.ts", "src/adapters/*/{index.ts,*/index.ts}"]
 ```
 
 ## Key Concepts
@@ -62,14 +74,17 @@ tsdown.config.ts          # Build config — entry: ["src/index.ts", "src/runtim
 
 ## Package Notes
 
-- Build uses tsdown with entries `src/index.ts`, `src/runtime/index.ts`, and `src/adapters/*/index.ts` — new adapter subdirectories are auto-picked up
-- Each adapter subdirectory under `src/adapters/` must have a corresponding `exports` entry in `package.json` (e.g. `"./adapters/example-metadata-adapter": "./dist/adapters/example-metadata-adapter/index.mjs"`)
+- Build uses tsdown with entries `src/index.ts`, `src/runtime/index.ts`, and `src/adapters/*/{index.ts,*/index.ts}` — category barrel exports and individual adapters are auto-picked up
+- Each adapter subdirectory under `src/adapters/<category>/` must have a corresponding `exports` entry in `package.json` (e.g. `"./adapters/storage/local": "./dist/adapters/storage/local/index.mjs"`)
+- Category barrels (`src/adapters/auth/index.ts`, `src/adapters/metadata/index.ts`, `src/adapters/storage/index.ts`) re-export all adapters in that category — consumers can import individual adapters or the category barrel
 - Adapters extend the base config interfaces from `@raurus/core` (`RuntimeMetadataAdapterBaseConfig`, `RuntimeStorageAdapterBaseConfig`, `RuntimeAuthAdapterBaseConfig`) and use factory types for type safety
-- Example adapters (`example-metadata-adapter`, `example-storage-adapter`) provide in-memory Map-based implementations for development and testing — imported via `@raurus/server/adapters/example-metadata-adapter` and `@raurus/server/adapters/example-storage-adapter`
+- Metadata adapters (`memory`, `libsql`) are under `src/adapters/metadata/` — imported via `@raurus/server/adapters/metadata` (barrel) or `@raurus/server/adapters/metadata/memory` / `@raurus/server/adapters/metadata/libsql` (individual)
+- Storage adapters (`memory`, `local`, `s3mini`) are under `src/adapters/storage/` — imported via `@raurus/server/adapters/storage` (barrel) or `@raurus/server/adapters/storage/memory` / `@raurus/server/adapters/storage/local` / `@raurus/server/adapters/storage/s3mini` (individual)
+- Auth adapters are under `src/adapters/auth/` — imported via `@raurus/server/adapters/auth` (barrel) or `@raurus/server/adapters/auth/simple-password` (individual)
 - All adapters must implement `checkConnection()` from `CommonRuntimeAdapter` (returns `AdapterMethodResult<null>` — i.e. `{ ok: true, data: null }` on success or `{ ok: false, error: Error, code?: FailureCode }` on failure) and must declare `apiVersion: "1"`
 - `RuntimeMetadataAdapter.bulkGetMetadataByPlaceholderIds` is **required**; example and reference adapters must implement it
 - `RuntimeStorageAdapter` exposes a five-method menu (`uploadAsset`, `createPresignedUploadUrl`, `createPresignedDownloadUrl`, `deleteAsset`, `getAssetContent`) — all optional, but the route layer treats a missing method as `501 Not Implemented` rather than `400`
 - `RuntimeAuthAdapter` exposes `authenticate(password)` and `validateToken(token)`. The `checkAuth` macro reads the `Authorization` header and calls `validateToken`; routes that need auth set `checkAuth: true` in their config.
 - The `GET /asset-content/:assetKey` route is intentionally public (no `checkAuth`) so media assets can render for all visitors without authentication
 - `RaurusAsset` from `@raurus/core` is `ArrayBuffer` only; the `POST /upload-asset` route reads the file body via `.arrayBuffer()`, generates a UUID-based asset key, calls `storage.uploadAsset()`, and returns `{ assetKey }`
-- The `s3mini-storage-adapter` implements the full menu: `createPresignedUploadUrl` and `createPresignedDownloadUrl` use `client.getPresignedUrl("PUT"|"GET", key, expiresIn)`, and `deleteAsset` uses `client.deleteObject(key)` (returning `code: "NOT_FOUND"` when s3mini reports the object was not removed)
+- The `s3mini` storage adapter implements the full menu: `createPresignedUploadUrl` and `createPresignedDownloadUrl` use `client.getPresignedUrl("PUT"|"GET", key, expiresIn)`, and `deleteAsset` uses `client.deleteObject(key)` (returning `code: "NOT_FOUND"` when s3mini reports the object was not removed)
