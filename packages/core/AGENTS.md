@@ -26,8 +26,8 @@ src/
 - **Storage Adapter** — `RuntimeStorageAdapter` extends `CommonRuntimeAdapter` and exposes a five-method menu, all optional: `uploadAsset(assetKey, RaurusAsset)`, `createPresignedUploadUrl(assetKey, expiresIn?)`, `createPresignedDownloadUrl(assetKey, expiresIn?)`, `deleteAsset(assetKey)`, and `getAssetContent(assetKey)` (returns `{ data: ArrayBuffer; contentType: string }`). Each method returns `AdapterMethodResult<...>`.
 - **Auth Adapter** — `RuntimeAuthAdapter` extends `CommonRuntimeAdapter` and defines `id` (template literal `${Lowercase<string>}-auth-adapter`), `authenticate(password)`, and `validateToken(token)`. `authenticate` returns `{ token: string }` on success; `validateToken` returns `{ valid: boolean }`.
 - **Base configs** — `RuntimeMetadataAdapterBaseConfig`, `RuntimeStorageAdapterBaseConfig`, and `RuntimeAuthAdapterBaseConfig` are empty interfaces that adapter implementations extend to define their own config options.
-- **Factory types** — `RuntimeMetadataAdapterFactory`, `RuntimeStorageAdapterFactory`, and `RuntimeAuthAdapterFactory` are generic over `Config` (preserving concrete adapter configuration types through composition) and over an optional `AdapterId` brand. The brand is a phantom `__adapterId` property on the factory's return value that lets TypeScript refuse cross-adapter assignment; the default is the open template so existing factories are unaffected.
-- **Adapter id helpers** — `RaurusMetadataAdapterId`, `RaurusStorageAdapterId`, and `RaurusAuthAdapterId` are the open template literal types used to constrain the factory's brand.
+- **Factory types** — `RuntimeMetadataAdapterFactory`, `RuntimeStorageAdapterFactory`, and `RuntimeAuthAdapterFactory` are generic over `Config` (preserving concrete adapter configuration types through composition). They return the corresponding adapter interface directly — no phantom brand.
+- **Adapter id helpers** — `RaurusMetadataAdapterId`, `RaurusStorageAdapterId`, and `RaurusAuthAdapterId` are named template literal types used on each adapter interface's `id` field (e.g. `RuntimeMetadataAdapter.id: RaurusMetadataAdapterId`). They are `export`ed so consumers can reference them without re-declaring the pattern.
 
 ## Package Standards
 
@@ -49,7 +49,7 @@ src/
 - When adding a new public type, add a focused `it(...)` block in `src/types.test.ts` that pins its shape, narrowing, and (where relevant) callable signature
 - Use module-scope helper factories (e.g. `makeMetadataAdapter`) inside type tests rather than re-declaring fake adapters per case
 - Avoid naming `describe(...)` blocks after imported symbols — the `vitest/prefer-describe-function-title` rule flags matches against imported names
-- The new `FailureCode`, `apiVersion`, `RaurusAsset = ArrayBuffer`, `bulkGetMetadataByPlaceholderIds` (required), the three new storage methods, and the factory `__adapterId` brand are all pinned in `src/types.test.ts`; keep the assertions in sync when changing the public surface
+- The new `FailureCode`, `apiVersion`, `RaurusAsset = ArrayBuffer`, `bulkGetMetadataByPlaceholderIds` (required), the three new storage methods, and the adapter template literal `id` types are all pinned in `src/types.test.ts`; keep the assertions in sync when changing the public surface
 
 ## Workflow
 
