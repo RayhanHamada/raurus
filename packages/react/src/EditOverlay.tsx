@@ -64,6 +64,7 @@ export function EditOverlay({
                     <span className="text-sm font-semibold text-gray-900">Editor</span>
                 </div>
                 <button
+                    aria-label="close editor"
                     type="button"
                     onClick={onClose}
                     className="w-8 h-8 rounded-lg bg-gray-100 text-gray-400 hover:bg-gray-200 hover:text-gray-600 flex items-center justify-center transition-colors"
@@ -90,8 +91,13 @@ export function EditOverlay({
 
             {selectedPlaceholderId ? (
                 <div>
-                    <label className="block text-xs font-medium text-gray-500 mb-1.5">Selected element</label>
-                    <div className="bg-gray-50 rounded-lg px-3 py-2 text-xs font-mono text-gray-700 mb-4 truncate border border-gray-100">
+                    <label htmlFor="selected-element" className="block text-xs font-medium text-gray-500 mb-1.5">
+                        Selected element
+                    </label>
+                    <div
+                        id="selected-element"
+                        className="bg-gray-50 rounded-lg px-3 py-2 text-xs font-mono text-gray-700 mb-4 truncate border border-gray-100"
+                    >
                         {selectedPlaceholderId}
                     </div>
                     {previewSrc && (
@@ -140,8 +146,11 @@ export function EditOverlay({
                     </div>
 
                     <div className="mb-4">
-                        <label className="block text-xs font-medium text-gray-500 mb-1.5">Text content</label>
+                        <label htmlFor="text-content" className="block text-xs font-medium text-gray-500 mb-1.5">
+                            Text content
+                        </label>
                         <textarea
+                            id="text-content"
                             value={text}
                             onChange={(e) => setText(e.target.value)}
                             placeholder="Enter text content..."

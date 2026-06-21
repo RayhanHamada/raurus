@@ -46,10 +46,8 @@ function AuthModal({
     const buttonClass = "flex-1 py-2.5 px-4 rounded-xl text-sm font-medium transition-colors";
 
     return (
-        <div
+        <button
             className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
-            role="dialog"
-            aria-modal="true"
             onClick={(e) => e.target === e.currentTarget && onClose()}
         >
             <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-sm mx-4 ring-1 ring-black/5">
@@ -179,7 +177,7 @@ function AuthModal({
                     </>
                 )}
             </div>
-        </div>
+        </button>
     );
 }
 

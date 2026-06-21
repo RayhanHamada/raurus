@@ -9,7 +9,7 @@ import oxignore from "./oxignore.json" with { type: "json" };
 
 export default defineConfig({
     extends: [core, react, vitest, vue, next],
-    ignorePatterns: [...oxignore],
+    ignorePatterns: [...oxignore, "**/playground/**/*"],
     rules: {
         "func-style": ["off"],
         "sort-keys": "off",
