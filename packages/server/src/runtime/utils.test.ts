@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
-import { createMemoryMetadataAdapter } from "@/adapters/example-metadata-adapter";
-import { createMemoryStorageAdapter } from "@/adapters/example-storage-adapter";
+import { createMemoryMetadataAdapter } from "@/adapters/metadata/memory";
+import { createMemoryStorageAdapter } from "@/adapters/storage/memory";
 
 import { createRuntime } from "./utils";
 

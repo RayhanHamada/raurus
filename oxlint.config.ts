@@ -9,7 +9,7 @@ import oxignore from "./oxignore.json" with { type: "json" };
 
 export default defineConfig({
     extends: [core, react, vitest, vue, next],
-    ignorePatterns: [...oxignore],
+    ignorePatterns: [...oxignore, "**/playground/**/*"],
     rules: {
         "func-style": ["off"],
         "sort-keys": "off",
@@ -20,5 +20,16 @@ export default defineConfig({
         "typescript/no-empty-interface": "off",
         "typescript/no-empty-object-type": "off",
         "require-await": "off",
+        "jsx-a11y/media-has-caption": "off",
+        "no-shadow": "off",
     },
+    overrides: [
+        {
+            files: ["packages/react/src/**/*.tsx"],
+            rules: {
+                "react/jsx-no-useless-fragment": "off",
+                "nextjs/no-img-element": "off",
+            },
+        },
+    ],
 });

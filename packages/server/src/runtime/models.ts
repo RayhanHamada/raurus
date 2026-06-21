@@ -34,11 +34,78 @@ export const DeleteAssetResponseSchema = t.Object({
 
 export const UploadAssetResponseSchema = t.Object({
     message: t.Literal("OK"),
+    data: t.Object({
+        assetKey: t.String(),
+    }),
 });
 
 export const ErrorResponseSchema = t.Object({
     message: t.Literal("Error"),
     error: t.String(),
+});
+
+export const LoginBodySchema = t.Object({
+    password: t.String({ minLength: 1 }),
+});
+
+export const LoginResponseSchema = t.Object({
+    message: t.Literal("OK"),
+    data: t.Object({
+        token: t.String(),
+    }),
+});
+
+export const VerifySessionResponseSchema = t.Object({
+    message: t.Literal("OK"),
+    data: t.Object({
+        valid: t.Literal(true),
+    }),
+});
+
+export const MetadataResponseSchema = t.Union([
+    t.Object({
+        placeholderId: t.String(),
+        type: t.Literal("photo"),
+        assetKey: t.String(),
+    }),
+    t.Object({
+        placeholderId: t.String(),
+        type: t.Literal("text"),
+        text: t.String(),
+    }),
+    t.Object({
+        placeholderId: t.String(),
+        type: t.Literal("video"),
+        assetKey: t.String(),
+    }),
+]);
+
+export const MetadataListResponseSchema = t.Object({
+    message: t.Literal("OK"),
+    data: t.Array(MetadataResponseSchema),
+});
+
+export const MetadataListQuerySchema = t.Object({
+    placeholderIds: t.Optional(t.String()),
+});
+
+export const MetadataParamsSchema = t.Object({
+    placeholderId: t.String({ minLength: 1 }),
+});
+
+export const UpsertMetadataBodySchema = t.Union([
+    t.Object({
+        type: t.Union([t.Literal("photo"), t.Literal("video")]),
+        assetKey: t.String(),
+    }),
+    t.Object({
+        type: t.Literal("text"),
+        text: t.String(),
+    }),
+]);
+
+export const AssetContentParamsSchema = t.Object({
+    assetKey: t.String({ minLength: 1 }),
 });
 
 /**

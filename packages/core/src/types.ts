@@ -54,13 +54,19 @@ export interface RuntimeMetadataAdapterBaseConfig {}
 
 export interface RuntimeStorageAdapterBaseConfig {}
 
+export interface RuntimeAuthAdapterBaseConfig {}
+
 export interface CommonRuntimeAdapter {
     apiVersion: "1";
     checkConnection: () => Promise<AdapterMethodResult<null>>;
 }
 
+export type RaurusMetadataAdapterId = `${Lowercase<string>}-metadata-adapter`;
+export type RaurusStorageAdapterId = `${Lowercase<string>}-storage-adapter`;
+export type RaurusAuthAdapterId = `${Lowercase<string>}-auth-adapter`;
+
 export interface RuntimeMetadataAdapter extends CommonRuntimeAdapter {
-    id: `${Lowercase<string>}-metadata-adapter`;
+    id: RaurusMetadataAdapterId;
 
     getMetadataByPlaceholderId: (placeholderId: string) => Promise<AdapterMethodResult<RaurusMetadata | null>>;
 
@@ -77,7 +83,7 @@ export interface RuntimeMetadataAdapter extends CommonRuntimeAdapter {
 }
 
 export interface RuntimeStorageAdapter extends CommonRuntimeAdapter {
-    id: `${Lowercase<string>}-storage-adapter`;
+    id: RaurusStorageAdapterId;
 
     uploadAsset?: (assetKey: string, asset: RaurusAsset) => Promise<AdapterMethodResult<{ assetKey: string }>>;
 
@@ -89,17 +95,26 @@ export interface RuntimeStorageAdapter extends CommonRuntimeAdapter {
     ) => Promise<AdapterMethodResult<{ url: string }>>;
 
     deleteAsset?: (assetKey: string) => Promise<AdapterMethodResult<null>>;
+
+    getAssetContent?: (assetKey: string) => Promise<AdapterMethodResult<{ data: ArrayBuffer; contentType: string }>>;
 }
 
-export type RaurusMetadataAdapterId = `${Lowercase<string>}-metadata-adapter`;
-export type RaurusStorageAdapterId = `${Lowercase<string>}-storage-adapter`;
+export interface RuntimeAuthAdapter extends CommonRuntimeAdapter {
+    id: RaurusAuthAdapterId;
+
+    authenticate: (password: string) => Promise<AdapterMethodResult<{ token: string }>>;
+
+    validateToken: (token: string) => Promise<AdapterMethodResult<{ valid: boolean }>>;
+}
 
 export type RuntimeMetadataAdapterFactory<
     Config extends RuntimeMetadataAdapterBaseConfig = RuntimeMetadataAdapterBaseConfig,
-    AdapterId extends RaurusMetadataAdapterId = RaurusMetadataAdapterId,
-> = (config?: Config) => RuntimeMetadataAdapter & { readonly __adapterId?: AdapterId };
+> = (config?: Config) => RuntimeMetadataAdapter;
 
 export type RuntimeStorageAdapterFactory<
     Config extends RuntimeStorageAdapterBaseConfig = RuntimeStorageAdapterBaseConfig,
-    AdapterId extends RaurusStorageAdapterId = RaurusStorageAdapterId,
-> = (config?: Config) => RuntimeStorageAdapter & { readonly __adapterId?: AdapterId };
+> = (config?: Config) => RuntimeStorageAdapter;
+
+export type RuntimeAuthAdapterFactory<Config extends RuntimeAuthAdapterBaseConfig = RuntimeAuthAdapterBaseConfig> = (
+    config?: Config
+) => RuntimeAuthAdapter;
