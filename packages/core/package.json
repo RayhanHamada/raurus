@@ -30,7 +30,7 @@
         "@raurus/tsconfig": "workspace:*",
         "@types/node": "^25.6.2",
         "bumpp": "^11.1.0",
-        "tsdown": "^0.22.0",
+        "tsdown": "^0.22.3",
         "typescript": "^6.0.3",
         "vitest": "^4.1.9"
     }

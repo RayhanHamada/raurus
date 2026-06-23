@@ -4,9 +4,9 @@ Minimal Vite + React 19 + Tailwind CSS v4 example used to validate and demonstra
 
 ## Components
 
-| Component | Purpose |
-|---|---|
-| `App` | Root component — composes feature demos |
+| Component            | Purpose                                                                                                                                          |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `App`                | Root component — composes feature demos                                                                                                          |
 | `SelectableEditable` | Two-click contentEditable: first click selects the element (visual highlight), second click enables editing with caret. Click outside deselects. |
 
 ## Conventions

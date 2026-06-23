@@ -35,21 +35,23 @@
         "release": "bumpp"
     },
     "dependencies": {
-        "@cloudflare/workers-types": "^4.20260615.1",
         "@elysia/openapi": "^1.4.15",
-        "@libsql/client": "^0.14.0",
         "@raurus/core": "workspace:*",
         "@raurus/logger": "workspace:*",
-        "elysia": "^1.4.28",
+        "elysia": "^1.4.29",
         "s3mini": "^0.9.5"
     },
     "devDependencies": {
         "@raurus/tsconfig": "workspace:*",
         "@types/node": "^25.6.2",
         "bumpp": "^11.1.0",
-        "tsdown": "^0.22.0",
+        "tsdown": "^0.22.3",
         "typescript": "^6.0.3",
         "unrun": "^0.3.1",
         "vitest": "^4.1.5"
+    },
+    "peerDependencies": {
+        "@cloudflare/workers-types": "^4.20260623.1",
+        "@libsql/client": "^0.17.4"
     }
 }
