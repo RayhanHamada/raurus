@@ -253,6 +253,4 @@ describe("factory types", () => {
         const adapter = factory({ bucket: "media" });
         expectTypeOf(adapter).toMatchTypeOf<RuntimeStorageAdapter>();
     });
-
-
 });

@@ -81,3 +81,4 @@ tsdown.config.ts          # Build config — entry: ["src/index.ts", "src/runtim
 - The `GET /asset-content/:assetKey` route is intentionally public so media assets can render for all visitors
 - `RaurusAsset` from `@raurus/core` is `ArrayBuffer` only; the `POST /upload-asset` route reads the file body via `.arrayBuffer()`, generates a UUID-based asset key, calls `storage.uploadAsset()`, and returns `{ assetKey }`
 - The `s3mini` storage adapter implements the full menu: `createPresignedUploadUrl` and `createPresignedDownloadUrl` use `client.getPresignedUrl("PUT"|"GET", key, expiresIn)`, and `deleteAsset` uses `client.deleteObject(key)` (returning `code: "NOT_FOUND"` when s3mini reports the object was not removed)
+  Object(key)`(returning`code: "NOT_FOUND"` when s3mini reports the object was not removed)

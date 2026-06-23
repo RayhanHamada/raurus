@@ -44,4 +44,4 @@ src/
 - `@raurus/server` is a consumer of this package; add it to `RaurusPackageNames` if it ever needs its own dedicated log level entry (it is already covered by the `server` entry)
 - The `developmentLogLevels` / `productionLogLevels` maps default every package to `debug` in dev and `info` in prod; override per package by mutating these exports before passing `logTapeConfig` to `configure()`
 - `process.env.NODE_ENV` is read at module evaluation time. If you need runtime reconfiguration, build your own `Config` by spreading `logTapeConfig` and overriding `loggers`
- `loggers`
+  `loggers`

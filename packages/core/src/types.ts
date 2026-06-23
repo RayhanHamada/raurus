@@ -94,4 +94,3 @@ export type RuntimeDatabaseAdapterFactory<
 export type RuntimeStorageAdapterFactory<
     Config extends RuntimeStorageAdapterBaseConfig = RuntimeStorageAdapterBaseConfig,
 > = (config?: Config) => RuntimeStorageAdapter;
-

@@ -351,8 +351,7 @@ export function routes({ metadata, storage }: RouteOptions) {
                 {
                     detail: {
                         summary: "Get Presigned Upload URL",
-                        description:
-                            "Generate a presigned URL for uploading an asset to a storage service.",
+                        description: "Generate a presigned URL for uploading an asset to a storage service.",
                         tags: ["Operations"],
                     },
                     query: m.PresignedUrlQuerySchema,
@@ -410,8 +409,7 @@ export function routes({ metadata, storage }: RouteOptions) {
                 {
                     detail: {
                         summary: "Get Presigned Download URL",
-                        description:
-                            "Generate a presigned URL for downloading an asset from a storage service.",
+                        description: "Generate a presigned URL for downloading an asset from a storage service.",
                         tags: ["Operations"],
                     },
                     query: m.PresignedUrlQuerySchema,

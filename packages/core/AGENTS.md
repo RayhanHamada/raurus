@@ -64,4 +64,4 @@ src/
 - When adding a new adapter concept, follow the existing factory pattern: `BaseConfig` interface → `Adapter` interface (extending `CommonRuntimeAdapter`) → `Factory` type
 - When adding a new metadata variant to `RaurusMetadata`, add a new `*MetadataType` alias, extend `RaurusMetadataType`, extend the `RaurusMetadata` union, and add a corresponding `upsertContentMetadata` overload on `RuntimeDatabaseAdapter`
 - When adding a new `FailureCode` value, document the HTTP status mapping guidance for `@raurus/server`'s `failureCodeToStatus` helper
-Status` helper
+  Status` helper
