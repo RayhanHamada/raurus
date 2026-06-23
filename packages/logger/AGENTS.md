@@ -11,7 +11,7 @@ The package is intentionally small and flat:
 ```
 src/
 ├── config.ts         # logTapeConfig (Config) + per-package level tables
-├── get-logger.ts     # getLogger / getPackageLogger factories
+├── get-logger.ts     # getLogger factory
 ├── index.ts          # Public barrel export
 ├── config.test.ts    # Vitest tests for the config object
 └── get-logger.test.ts# Vitest tests for the logger factories
@@ -19,7 +19,7 @@ src/
 
 ## Key Concepts
 
-- **Categories** — Every log is namespaced under the `["raurus", <packageName>]` category. Use `getPackageLogger("<name>")` to grab a logger for a known package, or `getLogger(...subPath)` to add a deeper sub-category.
+- **Categories** — Every log is namespaced under the `["raurus", <packageName>]` category. Use `getLogger("<name>")` to grab a logger for a package, or `getLogger("<name>", "subCategory")` to add a deeper sub-category.
 - **`logTapeConfig`** — A ready-to-use `Config` object that consumers pass to LogTape's `configure()` function. It defines a `console` sink (with `ansiColorFormatter`), one logger per package in `RaurusPackageNames`, and a `noDebugFromOthers` filter.
 - **Library philosophy** — Per the LogTape guidance, this package **never calls `configure()` itself**. The consuming application is responsible for wiring up LogTape once at startup. The package only provides loggers and a config object.
 
@@ -44,3 +44,4 @@ src/
 - `@raurus/server` is a consumer of this package; add it to `RaurusPackageNames` if it ever needs its own dedicated log level entry (it is already covered by the `server` entry)
 - The `developmentLogLevels` / `productionLogLevels` maps default every package to `debug` in dev and `info` in prod; override per package by mutating these exports before passing `logTapeConfig` to `configure()`
 - `process.env.NODE_ENV` is read at module evaluation time. If you need runtime reconfiguration, build your own `Config` by spreading `logTapeConfig` and overriding `loggers`
+ `loggers`

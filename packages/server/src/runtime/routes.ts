@@ -1,10 +1,10 @@
 import type { RuntimeAuthAdapter, RuntimeDatabaseAdapter, RuntimeStorageAdapter } from "@raurus/core";
-import { getPackageLogger } from "@raurus/logger";
+import { getLogger } from "@raurus/logger";
 import { Elysia } from "elysia";
 
 import * as m from "./models";
 
-const log = getPackageLogger("server");
+const log = getLogger("server");
 
 interface RouteOptions {
     metadata?: RuntimeDatabaseAdapter | undefined;

@@ -1,11 +1,11 @@
 import { openapi } from "@elysia/openapi";
 import type { RuntimeAuthAdapter, RuntimeDatabaseAdapter, RuntimeStorageAdapter } from "@raurus/core";
-import { getPackageLogger } from "@raurus/logger";
+import { getLogger } from "@raurus/logger";
 import { Elysia } from "elysia";
 
 import { routes } from "./routes";
 
-const log = getPackageLogger("server");
+const log = getLogger("server");
 
 /**
  * Options for creating a Raurus runtime instance. The `metadataAdapter`, `storageAdapter`, and `authAdapter` are optional; routes guard missing adapters and return 501 where appropriate. The `openapi` option defaults to true if not provided.

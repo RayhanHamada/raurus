@@ -41,7 +41,7 @@ tsdown.config.ts          # Build config — entry: ["src/index.ts", "src/runtim
 
 - **Single public export** — `raurus()` from `@raurus/server` is the only entry point. It creates a fetch-compatible runtime from adapter options. `CreateRuntimeOptions` is also exported as a type for consumers.
 - **Route options** — `routes.ts` takes `RouteOptions` with optional `metadata`, `storage`, and `auth` adapter objects. All three are optional on `CreateRuntimeOptions`; individual routes guard with the `checkMetadata` / `checkStorage` / `checkAuth` Elysia macros and return appropriate errors when the relevant adapter is missing (`501` for missing metadata/storage adapter, `401` for missing/invalid auth).
-- **Logging** — Use `getPackageLogger("server")` from `@raurus/logger` for runtime, route, and adapter logs. The server package only obtains loggers; the consuming app is responsible for calling `configure()` from `@logtape/logtape` once at startup.
+- **Logging** — Use `getLogger("server")` from `@raurus/logger` for runtime, route, and adapter logs. The server package only obtains loggers; the consuming app is responsible for calling `configure()` from `@logtape/logtape` once at startup.
 - **Health check route** — `GET /` returns `{ status: "OK", message: "RAURUS_ENDPOINT" }` and is documented under the `Operations` OpenAPI tag. Use it for monitoring and liveness probes.
 - **Inline OpenAPI** — The `@elysia/openapi` plugin is configured inline in `utils.ts` with OpenAPI servers derived from parsing `baseUrl` (a required `string | URL`). When the pathname is `/`, the API prefix defaults to `_raurus`. The `openapi` option on `CreateRuntimeOptions` (defaults to `true`) toggles the plugin on/off.
 - **Schema modules** — `models.ts` exports plain Elysia TypeSystem schemas plus a `failureCodeToStatus(code?: FailureCode): number` helper. Routes import the whole module as `import * as m from "./models"` and reference members as `m.SchemaName` etc. — keep the namespace import convention when adding routes.
@@ -61,7 +61,7 @@ tsdown.config.ts          # Build config — entry: ["src/index.ts", "src/runtim
 - Pass adapter dependencies to `routes()` via `RouteOptions`, not through Elysia state — `metadata` (typed as `RuntimeDatabaseAdapter`), `storage`, and `auth` are all optional; routes guard missing adapters with the `checkMetadata` / `checkStorage` / `checkAuth` macros
 - Inline OpenAPI metadata (title, version, servers) in `utils.ts` — no separate config module
 - Export the runtime factory as `raurus` from `src/runtime/index.ts`
-- Use `@raurus/logger` for all logs; create module-level `const log = getPackageLogger("server")` loggers and do not call `configure()` inside this package
+- Use `@raurus/logger` for all logs; create module-level `const log = getLogger("server")` loggers and do not call `configure()` inside this package
 - When a route hits a storage adapter method that the adapter does not implement, return `status(501, { message: "Error", error: "Storage adapter does not support <methodName>" })` — never return `400` for a missing method
 - When a route's underlying adapter call returns `Failure`, log the `error.message` and respond with `status(failureCodeToStatus(result.code), { message: "Error", error: <safe summary> })`
 

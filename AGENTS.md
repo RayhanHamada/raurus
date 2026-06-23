@@ -15,7 +15,7 @@ raurus/
 │   ├── server/              # @raurus/server — Elysia + @elysia/openapi runtime, ships built-in adapters
 │   ├── client/              # @raurus/client — type-safe SDK wrapping openapi-fetch with server-generated OpenAPI types
 │   ├── react/               # @raurus/react — React 19 visual editing component library (provider, hooks, editable components)
-│   ├── logger/              # @raurus/logger — LogTape wrapper: shared getLogger per package + a Config object
+│   ├── logger/              # @raurus/logger — LogTape wrapper: getLogger factory + a Config object
 │   └── tsconfig/            # @raurus/tsconfig — shared TypeScript base configuration
 ├── apps/                   # Reserved for future app packages (currently empty)
 ├── turbo.json               # Turborepo pipeline config
