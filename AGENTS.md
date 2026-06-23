@@ -9,7 +9,8 @@ Raurus is a TypeScript monorepo building a modular, contract-first web applicati
 ```
 raurus/
 ├── examples/
-│   └── example-server/     # @raurus/example-server — minimal Bun app validating @raurus/server with real adapters
+│   ├── example-server/        # @raurus/example-server — minimal Bun app validating @raurus/server with real adapters
+│   └── mvp-editable-field/    # @raurus/mvp-editable-field — Vite + React 19 + Tailwind CSS v4 example demoing editable content
 ├── packages/
 │   ├── core/                # @raurus/core — shared framework types and adapter contracts
 │   ├── server/              # @raurus/server — Elysia + @elysia/openapi runtime, ships built-in adapters
