@@ -8,7 +8,7 @@ import ts from "typescript";
 const BLOB = ts.factory.createTypeReferenceNode(ts.factory.createIdentifier("Blob")); // `Blob`
 const NULL = ts.factory.createLiteralTypeNode(ts.factory.createNull()); // `null`
 
-const OUTPUT = path.resolve(process.cwd(), "src", "openapi.gen.ts");
+const OUTPUT = path.resolve(process.cwd(), "src", "fetch", "openapi.gen.ts");
 const BASE_URL = "http://api.example.com";
 const JSON_PATH = "/_raurus/openapi/json";
 

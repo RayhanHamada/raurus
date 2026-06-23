@@ -2,7 +2,7 @@
 import createClient from "openapi-fetch";
 import type { HeadersOptions } from "openapi-fetch";
 
-import type { paths } from "@/openapi.gen";
+import type { paths } from "./openapi.gen";
 
 export interface Options {
     baseUrl: string;
