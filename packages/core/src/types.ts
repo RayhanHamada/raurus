@@ -1,4 +1,7 @@
 // oxlint-disable typescript/unified-signatures
+import type { FAILURE_CODES, METADATA_TYPES } from "./constants";
+
+export type FailureCode = (typeof FAILURE_CODES)[keyof typeof FAILURE_CODES];
 
 export interface Success<T> {
     ok: true;
@@ -13,23 +16,11 @@ export interface Failure {
 
 export type AdapterMethodResult<T> = Success<T> | Failure;
 
-export type FailureCode =
-    | "NOT_IMPLEMENTED"
-    | "NOT_FOUND"
-    | "CONFLICT"
-    | "CONFIGURATION"
-    | "CONNECTION"
-    | "PERMISSION"
-    | "RATE_LIMIT"
-    | "UPSTREAM"
-    | "INVALID_INPUT"
-    | "UNKNOWN";
-
 export type RaurusAsset = ArrayBuffer;
 
-export type PhotoMetadataType = "photo";
-export type TextMetadataType = "text";
-export type VideoMetadataType = "video";
+export type PhotoMetadataType = typeof METADATA_TYPES.PHOTO;
+export type TextMetadataType = typeof METADATA_TYPES.TEXT;
+export type VideoMetadataType = typeof METADATA_TYPES.VIDEO;
 
 export type RaurusMetadataType = PhotoMetadataType | TextMetadataType | VideoMetadataType;
 
@@ -54,8 +45,6 @@ export interface RuntimeDatabaseAdapterBaseConfig {}
 
 export interface RuntimeStorageAdapterBaseConfig {}
 
-export interface RuntimeAuthAdapterBaseConfig {}
-
 export interface CommonRuntimeAdapter {
     apiVersion: "1";
     checkConnection: () => Promise<AdapterMethodResult<null>>;
@@ -63,7 +52,6 @@ export interface CommonRuntimeAdapter {
 
 export type RaurusDatabaseAdapterId = `${Lowercase<string>}-database-adapter`;
 export type RaurusStorageAdapterId = `${Lowercase<string>}-storage-adapter`;
-export type RaurusAuthAdapterId = `${Lowercase<string>}-auth-adapter`;
 
 export interface RuntimeDatabaseAdapter extends CommonRuntimeAdapter {
     id: RaurusDatabaseAdapterId;
@@ -99,14 +87,6 @@ export interface RuntimeStorageAdapter extends CommonRuntimeAdapter {
     getAssetContent?: (assetKey: string) => Promise<AdapterMethodResult<{ data: ArrayBuffer; contentType: string }>>;
 }
 
-export interface RuntimeAuthAdapter extends CommonRuntimeAdapter {
-    id: RaurusAuthAdapterId;
-
-    authenticate: (password: string) => Promise<AdapterMethodResult<{ token: string }>>;
-
-    validateToken: (token: string) => Promise<AdapterMethodResult<{ valid: boolean }>>;
-}
-
 export type RuntimeDatabaseAdapterFactory<
     Config extends RuntimeDatabaseAdapterBaseConfig = RuntimeDatabaseAdapterBaseConfig,
 > = (config?: Config) => RuntimeDatabaseAdapter;
@@ -115,6 +95,3 @@ export type RuntimeStorageAdapterFactory<
     Config extends RuntimeStorageAdapterBaseConfig = RuntimeStorageAdapterBaseConfig,
 > = (config?: Config) => RuntimeStorageAdapter;
 
-export type RuntimeAuthAdapterFactory<Config extends RuntimeAuthAdapterBaseConfig = RuntimeAuthAdapterBaseConfig> = (
-    config?: Config
-) => RuntimeAuthAdapter;

@@ -18,8 +18,6 @@
     "type": "module",
     "exports": {
         ".": "./dist/index.mjs",
-        "./adapters/auth": "./dist/adapters/auth/index.mjs",
-        "./adapters/auth/simple-password": "./dist/adapters/auth/simple-password/index.mjs",
         "./adapters/database": "./dist/adapters/database/index.mjs",
         "./adapters/database/libsql": "./dist/adapters/database/libsql/index.mjs",
         "./adapters/database/memory": "./dist/adapters/database/memory/index.mjs",

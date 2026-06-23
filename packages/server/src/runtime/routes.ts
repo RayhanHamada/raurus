@@ -1,25 +1,22 @@
-import type { RuntimeAuthAdapter, RuntimeDatabaseAdapter, RuntimeStorageAdapter } from "@raurus/core";
-import { getLogger } from "@raurus/logger";
+import type { RuntimeDatabaseAdapter, RuntimeStorageAdapter } from "@raurus/core";
 import { Elysia } from "elysia";
 
-import * as m from "./models";
+import { log } from "@/runtime/utils";
 
-const log = getLogger("server");
+import * as m from "./models";
 
 interface RouteOptions {
     metadata?: RuntimeDatabaseAdapter | undefined;
     storage?: RuntimeStorageAdapter | undefined;
-    auth?: RuntimeAuthAdapter | undefined;
 }
 
-export function routes({ metadata, storage, auth }: RouteOptions) {
+export function routes({ metadata, storage }: RouteOptions) {
     return (
         new Elysia({ name: "raurus.routes" })
             .derive(() => ({
                 options: {
                     metadata,
                     storage,
-                    auth,
                 },
             }))
 
@@ -91,60 +88,6 @@ export function routes({ metadata, storage, auth }: RouteOptions) {
                         },
                     };
                 },
-
-                checkAuth(enable: boolean) {
-                    return {
-                        async beforeHandle({ options, status, request }) {
-                            if (!enable) {
-                                return;
-                            }
-
-                            if (!options?.auth) {
-                                log.warning("Auth adapter is not configured");
-
-                                return status(501, {
-                                    message: "Error",
-                                    error: "Auth adapter is not configured",
-                                });
-                            }
-
-                            const header = request.headers.get("authorization");
-                            if (!header || !header.startsWith("Bearer ")) {
-                                log.warning("Missing or invalid authorization header");
-
-                                return status(401, {
-                                    message: "Error",
-                                    error: "Missing or invalid authorization header",
-                                });
-                            }
-
-                            const token = header.slice("Bearer ".length);
-
-                            const result = await options.auth.validateToken(token);
-                            if (!result.ok || !result.data.valid) {
-                                log.warning("Invalid or expired token");
-
-                                return status(401, {
-                                    message: "Error",
-                                    error: "Invalid or expired token",
-                                });
-                            }
-                        },
-
-                        resolve({ options }) {
-                            if (!enable) {
-                                return { options };
-                            }
-
-                            return {
-                                options: {
-                                    ...options,
-                                    auth: options?.auth as RuntimeAuthAdapter,
-                                },
-                            };
-                        },
-                    };
-                },
             })
 
             // Health check (public)
@@ -170,84 +113,11 @@ export function routes({ metadata, storage, auth }: RouteOptions) {
                 }
             )
 
-            // Auth routes
-            .post(
-                "/auth/login",
-                async ({ status, set, options, body: { password } }) => {
-                    log.debug("Login requested");
-
-                    const result = await options.auth.authenticate(password);
-                    if (!result.ok) {
-                        log.error("Authentication failed", { error: result.error.message });
-                        const code = m.failureCodeToStatus(result.code);
-                        set.status = code;
-                        return { message: "Error", error: "Authentication failed" };
-                    }
-
-                    log.debug("Login successful");
-                    return status(200, {
-                        message: "OK",
-                        data: {
-                            token: result.data.token,
-                        },
-                    });
-                },
-                {
-                    detail: {
-                        summary: "Login",
-                        description: "Authenticate with a password and receive a session token.",
-                        tags: ["Auth"],
-                    },
-                    body: m.LoginBodySchema,
-                    response: {
-                        200: m.LoginResponseSchema,
-                        400: m.ErrorResponseSchema,
-                        501: m.ErrorResponseSchema,
-                    },
-                    checkAuth: true,
-                }
-            )
-
-            .get(
-                "/auth/verify",
-                async (_) => {
-                    log.debug("Session verification requested");
-                    return {
-                        message: "OK",
-                        data: {
-                            valid: true as const,
-                        },
-                    };
-                },
-                {
-                    detail: {
-                        summary: "Verify Session",
-                        description: "Verify that the current session token is valid.",
-                        tags: ["Auth"],
-                    },
-                    response: {
-                        200: m.VerifySessionResponseSchema,
-                        401: m.ErrorResponseSchema,
-                        501: m.ErrorResponseSchema,
-                    },
-                    checkAuth: true,
-                }
-            )
-
-            // Metadata routes (auth guarded)
+            // Metadata routes
             .get(
                 "/metadata",
                 async ({ status, set, options, query }) => {
                     log.debug("Metadata list requested");
-
-                    if (!options.metadata) {
-                        log.warning("Metadata adapter is not configured");
-
-                        return status(501, {
-                            message: "Error",
-                            error: "Metadata adapter is not configured",
-                        });
-                    }
 
                     const placeholderIdsRaw = query?.placeholderIds;
                     const placeholderIds = placeholderIdsRaw
@@ -286,26 +156,16 @@ export function routes({ metadata, storage, auth }: RouteOptions) {
                     response: {
                         200: m.MetadataListResponseSchema,
                         400: m.ErrorResponseSchema,
-                        401: m.ErrorResponseSchema,
                         501: m.ErrorResponseSchema,
                     },
-                    checkAuth: true,
+                    checkMetadata: true,
                 }
             )
 
             .get(
                 "/metadata/:placeholderId",
-                async ({ status, set, options, params: { placeholderId } }) => {
+                async ({ set, options, params: { placeholderId } }) => {
                     log.debug("Metadata get requested", { placeholderId });
-
-                    if (!options.metadata) {
-                        log.warning("Metadata adapter is not configured");
-
-                        return status(501, {
-                            message: "Error",
-                            error: "Metadata adapter is not configured",
-                        });
-                    }
 
                     const result = await options.metadata.getMetadata(placeholderId);
 
@@ -340,11 +200,10 @@ export function routes({ metadata, storage, auth }: RouteOptions) {
                     response: {
                         200: m.MetadataResponseSchema,
                         400: m.ErrorResponseSchema,
-                        401: m.ErrorResponseSchema,
                         404: m.ErrorResponseSchema,
                         501: m.ErrorResponseSchema,
                     },
-                    checkAuth: true,
+                    checkMetadata: true,
                 }
             )
 
@@ -391,10 +250,8 @@ export function routes({ metadata, storage, auth }: RouteOptions) {
                     response: {
                         200: m.DeleteAssetResponseSchema,
                         400: m.ErrorResponseSchema,
-                        401: m.ErrorResponseSchema,
                         501: m.ErrorResponseSchema,
                     },
-                    checkAuth: true,
                     checkMetadata: true,
                 }
             )
@@ -447,14 +304,14 @@ export function routes({ metadata, storage, auth }: RouteOptions) {
                     detail: {
                         summary: "Get Asset Content",
                         description:
-                            "Returns the raw content of an asset by its key. Public endpoint — no authentication required so media can be displayed for all visitors.",
+                            "Returns the raw content of an asset by its key. Public endpoint so media can be displayed for all visitors.",
                         tags: ["Operations"],
                     },
                     params: m.AssetContentParamsSchema,
                 }
             )
 
-            // Storage routes (auth guarded)
+            // Storage routes
             .get(
                 "/presigned-url",
                 async ({ status, set, options, query: { assetKey, expiresIn } }) => {
@@ -495,19 +352,16 @@ export function routes({ metadata, storage, auth }: RouteOptions) {
                     detail: {
                         summary: "Get Presigned Upload URL",
                         description:
-                            "Generate a presigned URL for uploading an asset to a storage service. Requires authentication.",
+                            "Generate a presigned URL for uploading an asset to a storage service.",
                         tags: ["Operations"],
                     },
                     query: m.PresignedUrlQuerySchema,
                     response: {
                         200: m.PresignedUrlResponseSchema,
                         400: m.ErrorResponseSchema,
-                        401: m.ErrorResponseSchema,
                         501: m.ErrorResponseSchema,
                     },
-                    checkAuth: true,
                     checkStorage: true,
-                    checkMetadata: true,
                 }
             )
 
@@ -557,17 +411,15 @@ export function routes({ metadata, storage, auth }: RouteOptions) {
                     detail: {
                         summary: "Get Presigned Download URL",
                         description:
-                            "Generate a presigned URL for downloading an asset from a storage service. Requires authentication.",
+                            "Generate a presigned URL for downloading an asset from a storage service.",
                         tags: ["Operations"],
                     },
                     query: m.PresignedUrlQuerySchema,
                     response: {
                         200: m.PresignedUrlResponseSchema,
                         400: m.ErrorResponseSchema,
-                        401: m.ErrorResponseSchema,
                         501: m.ErrorResponseSchema,
                     },
-                    checkAuth: true,
                     checkStorage: true,
                 }
             )
@@ -617,18 +469,16 @@ export function routes({ metadata, storage, auth }: RouteOptions) {
                 {
                     detail: {
                         summary: "Delete Asset",
-                        description: "Delete an asset from the storage service. Requires authentication.",
+                        description: "Delete an asset from the storage service.",
                         tags: ["Operations"],
                     },
                     params: m.DeleteAssetParamsSchema,
                     response: {
                         200: m.DeleteAssetResponseSchema,
                         400: m.ErrorResponseSchema,
-                        401: m.ErrorResponseSchema,
                         404: m.ErrorResponseSchema,
                         501: m.ErrorResponseSchema,
                     },
-                    checkAuth: true,
                 }
             )
 
@@ -695,17 +545,15 @@ export function routes({ metadata, storage, auth }: RouteOptions) {
                     detail: {
                         summary: "Upload Asset",
                         description:
-                            "Upload an asset file. The file is stored via the configured storage adapter and an asset key is returned. Requires authentication.",
+                            "Upload an asset file. The file is stored via the configured storage adapter and an asset key is returned.",
                         tags: ["Operations"],
                     },
                     body: m.UploadAssetBodySchema,
                     response: {
                         200: m.UploadAssetResponseSchema,
                         400: m.ErrorResponseSchema,
-                        401: m.ErrorResponseSchema,
                         501: m.ErrorResponseSchema,
                     },
-                    checkAuth: true,
                 }
             )
     );

@@ -19,46 +19,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/_raurus/auth/login": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Login
-         * @description Authenticate with a password and receive a session token.
-         */
-        post: operations["post_raurusAuthLogin"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/_raurus/auth/verify": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Verify Session
-         * @description Verify that the current session token is valid.
-         */
-        get: operations["get_raurusAuthVerify"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/_raurus/metadata": {
         parameters: {
             query?: never;
@@ -112,7 +72,7 @@ export interface paths {
         };
         /**
          * Get Asset Content
-         * @description Returns the raw content of an asset by its key. Public endpoint — no authentication required so media can be displayed for all visitors.
+         * @description Returns the raw content of an asset by its key. Public endpoint so media can be displayed for all visitors.
          */
         get: operations["get_raurusAsset-contentByAssetKey"];
         put?: never;
@@ -132,7 +92,7 @@ export interface paths {
         };
         /**
          * Get Presigned Upload URL
-         * @description Generate a presigned URL for uploading an asset to a storage service. Requires authentication.
+         * @description Generate a presigned URL for uploading an asset to a storage service.
          */
         get: operations["get_raurusPresigned-url"];
         put?: never;
@@ -152,7 +112,7 @@ export interface paths {
         };
         /**
          * Get Presigned Download URL
-         * @description Generate a presigned URL for downloading an asset from a storage service. Requires authentication.
+         * @description Generate a presigned URL for downloading an asset from a storage service.
          */
         get: operations["get_raurusPresigned-download-url"];
         put?: never;
@@ -175,7 +135,7 @@ export interface paths {
         post?: never;
         /**
          * Delete Asset
-         * @description Delete an asset from the storage service. Requires authentication.
+         * @description Delete an asset from the storage service.
          */
         delete: operations["delete_raurusAssetByAssetKey"];
         options?: never;
@@ -194,7 +154,7 @@ export interface paths {
         put?: never;
         /**
          * Upload Asset
-         * @description Upload an asset file. The file is stored via the configured storage adapter and an asset key is returned. Requires authentication.
+         * @description Upload an asset file. The file is stored via the configured storage adapter and an asset key is returned.
          */
         post: operations["post_raurusUpload-asset"];
         delete?: never;
@@ -235,123 +195,6 @@ export interface operations {
                         status: "OK" | "Error";
                         /** @constant */
                         message: "RAURUS_ENDPOINT";
-                    };
-                };
-            };
-        };
-    };
-    post_raurusAuthLogin: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    password: string;
-                };
-                "application/x-www-form-urlencoded": {
-                    password: string;
-                };
-                "multipart/form-data": {
-                    password: string;
-                };
-            };
-        };
-        responses: {
-            /** @description Response for status 200 */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @constant */
-                        message: "OK";
-                        data: {
-                            token: string;
-                        };
-                    };
-                };
-            };
-            /** @description Response for status 400 */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @constant */
-                        message: "Error";
-                        error: string;
-                    };
-                };
-            };
-            /** @description Response for status 501 */
-            501: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @constant */
-                        message: "Error";
-                        error: string;
-                    };
-                };
-            };
-        };
-    };
-    get_raurusAuthVerify: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Response for status 200 */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @constant */
-                        message: "OK";
-                        data: {
-                            /** @constant */
-                            valid: true;
-                        };
-                    };
-                };
-            };
-            /** @description Response for status 401 */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @constant */
-                        message: "Error";
-                        error: string;
-                    };
-                };
-            };
-            /** @description Response for status 501 */
-            501: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @constant */
-                        message: "Error";
-                        error: string;
                     };
                 };
             };
@@ -398,19 +241,6 @@ export interface operations {
             };
             /** @description Response for status 400 */
             400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @constant */
-                        message: "Error";
-                        error: string;
-                    };
-                };
-            };
-            /** @description Response for status 401 */
-            401: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -474,19 +304,6 @@ export interface operations {
             };
             /** @description Response for status 400 */
             400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @constant */
-                        message: "Error";
-                        error: string;
-                    };
-                };
-            };
-            /** @description Response for status 401 */
-            401: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -589,19 +406,6 @@ export interface operations {
                     };
                 };
             };
-            /** @description Response for status 401 */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @constant */
-                        message: "Error";
-                        error: string;
-                    };
-                };
-            };
             /** @description Response for status 501 */
             501: {
                 headers: {
@@ -669,19 +473,6 @@ export interface operations {
                     };
                 };
             };
-            /** @description Response for status 401 */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @constant */
-                        message: "Error";
-                        error: string;
-                    };
-                };
-            };
             /** @description Response for status 501 */
             501: {
                 headers: {
@@ -737,19 +528,6 @@ export interface operations {
                     };
                 };
             };
-            /** @description Response for status 401 */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @constant */
-                        message: "Error";
-                        error: string;
-                    };
-                };
-            };
             /** @description Response for status 501 */
             501: {
                 headers: {
@@ -790,19 +568,6 @@ export interface operations {
             };
             /** @description Response for status 400 */
             400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @constant */
-                        message: "Error";
-                        error: string;
-                    };
-                };
-            };
-            /** @description Response for status 401 */
-            401: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -883,19 +648,6 @@ export interface operations {
             };
             /** @description Response for status 400 */
             400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @constant */
-                        message: "Error";
-                        error: string;
-                    };
-                };
-            };
-            /** @description Response for status 401 */
-            401: {
                 headers: {
                     [name: string]: unknown;
                 };

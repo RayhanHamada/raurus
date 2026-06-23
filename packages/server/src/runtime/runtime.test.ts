@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { memoryDatabaseAdapter } from "@/adapters/database/memory";
 import { createMemoryStorageAdapter } from "@/adapters/storage/memory";
 
-import { createRuntime } from "./utils";
+import { createRuntime } from "./runtime";
 
 describe(createRuntime, () => {
     it("creates a fetch-compatible runtime", async () => {

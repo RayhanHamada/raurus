@@ -8,9 +8,6 @@ import type {
     RaurusAsset,
     RaurusMetadata,
     RaurusMetadataType,
-    RuntimeAuthAdapter,
-    RuntimeAuthAdapterBaseConfig,
-    RuntimeAuthAdapterFactory,
     RuntimeDatabaseAdapter,
     RuntimeDatabaseAdapterBaseConfig,
     RuntimeDatabaseAdapterFactory,
@@ -23,7 +20,6 @@ import type {
 
 const makeMetadataAdapter = (): RuntimeDatabaseAdapter => null as unknown as RuntimeDatabaseAdapter;
 const makeStorageAdapter = (): RuntimeStorageAdapter => null as unknown as RuntimeStorageAdapter;
-const makeAuthAdapter = (): RuntimeAuthAdapter => null as unknown as RuntimeAuthAdapter;
 
 describe("domain types", () => {
     it("RaurusMetadataType is the union of photo, text, and video literals", () => {
@@ -223,22 +219,6 @@ describe("storage adapter contract", () => {
     });
 });
 
-describe("auth adapter contract", () => {
-    it("uses a lowercase template literal id", () => {
-        expectTypeOf<RuntimeAuthAdapter["id"]>().toEqualTypeOf<`${Lowercase<string>}-auth-adapter`>();
-    });
-
-    it("authenticate accepts a password and returns a token", () => {
-        type Auth = RuntimeAuthAdapter["authenticate"];
-        expectTypeOf<Auth>().toEqualTypeOf<(password: string) => Promise<AdapterMethodResult<{ token: string }>>>();
-    });
-
-    it("validateToken accepts a token and returns a validation result", () => {
-        type Validate = RuntimeAuthAdapter["validateToken"];
-        expectTypeOf<Validate>().toEqualTypeOf<(token: string) => Promise<AdapterMethodResult<{ valid: boolean }>>>();
-    });
-});
-
 describe("factory types", () => {
     it("RuntimeMetadataAdapterFactory returns a RuntimeMetadataAdapter when called with no arguments", () => {
         const factory: RuntimeDatabaseAdapterFactory = () => makeMetadataAdapter();
@@ -274,20 +254,5 @@ describe("factory types", () => {
         expectTypeOf(adapter).toMatchTypeOf<RuntimeStorageAdapter>();
     });
 
-    it("RuntimeAuthAdapterFactory returns a RuntimeAuthAdapter when called with no arguments", () => {
-        const factory: RuntimeAuthAdapterFactory = () => makeAuthAdapter();
-        const adapter = factory();
-        expectTypeOf(adapter).toMatchTypeOf<RuntimeAuthAdapter>();
-        const adapterWithConfig = factory({});
-        expectTypeOf(adapterWithConfig).toMatchTypeOf<RuntimeAuthAdapter>();
-    });
 
-    it("RuntimeAuthAdapterFactory accepts a custom config type", () => {
-        interface CustomAuthConfig extends RuntimeAuthAdapterBaseConfig {
-            password: string;
-        }
-        const factory: RuntimeAuthAdapterFactory<CustomAuthConfig> = () => makeAuthAdapter();
-        const adapter = factory({ password: "admin" });
-        expectTypeOf(adapter).toMatchTypeOf<RuntimeAuthAdapter>();
-    });
 });

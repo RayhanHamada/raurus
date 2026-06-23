@@ -1,0 +1,18 @@
+export const FAILURE_CODES = {
+    NOT_IMPLEMENTED: "NOT_IMPLEMENTED",
+    NOT_FOUND: "NOT_FOUND",
+    CONFLICT: "CONFLICT",
+    CONFIGURATION: "CONFIGURATION",
+    CONNECTION: "CONNECTION",
+    PERMISSION: "PERMISSION",
+    RATE_LIMIT: "RATE_LIMIT",
+    UPSTREAM: "UPSTREAM",
+    INVALID_INPUT: "INVALID_INPUT",
+    UNKNOWN: "UNKNOWN",
+} as const;
+
+export const METADATA_TYPES = {
+    PHOTO: "photo",
+    TEXT: "text",
+    VIDEO: "video",
+} as const;

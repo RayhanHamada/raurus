@@ -44,24 +44,6 @@ export const ErrorResponseSchema = t.Object({
     error: t.String(),
 });
 
-export const LoginBodySchema = t.Object({
-    password: t.String({ minLength: 1 }),
-});
-
-export const LoginResponseSchema = t.Object({
-    message: t.Literal("OK"),
-    data: t.Object({
-        token: t.String(),
-    }),
-});
-
-export const VerifySessionResponseSchema = t.Object({
-    message: t.Literal("OK"),
-    data: t.Object({
-        valid: t.Literal(true),
-    }),
-});
-
 export const MetadataResponseSchema = t.Union([
     t.Object({
         placeholderId: t.String(),
