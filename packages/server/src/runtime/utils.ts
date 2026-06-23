@@ -64,14 +64,9 @@ export function createRuntime(config: CreateRuntimeOptions) {
 
     log.info("Raurus runtime initialized", { basePath, origin: url.origin, openapi: options.openapi });
 
-    const app = new Elysia({ prefix: basePath })
-        .use(
-            routes({
-                metadata: options.metadataAdapter,
-                storage: options.storageAdapter,
-                auth: options.authAdapter,
-            })
-        )
+    const app = new Elysia({
+        prefix: basePath,
+    })
 
         .use(
             openapi({
@@ -86,6 +81,14 @@ export function createRuntime(config: CreateRuntimeOptions) {
                         license: { name: "MIT" },
                     },
                 },
+            })
+        )
+
+        .use(
+            routes({
+                metadata: options.metadataAdapter,
+                storage: options.storageAdapter,
+                auth: options.authAdapter,
             })
         );
 
