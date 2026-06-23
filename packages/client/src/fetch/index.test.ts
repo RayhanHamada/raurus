@@ -1,7 +1,7 @@
 import type { HeadersOptions } from "openapi-fetch";
 import { afterEach, beforeEach, describe, expect, expectTypeOf, it, vi } from "vitest";
 
-import { createApiClient } from "@/common";
+import { createApiClient } from "@/fetch";
 
 const getLastRequest = (fetchMock: ReturnType<typeof vi.fn>): Request => {
     const arg = fetchMock.mock.calls[0]?.[0];
