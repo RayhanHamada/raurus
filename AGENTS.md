@@ -60,4 +60,4 @@ raurus/
 - Each package documents its own conventions in `packages/<name>/AGENTS.md`; examples document theirs in `examples/<name>/AGENTS.md`
 - Ignored paths for linting and formatting are defined in `oxignore.json`
 - Agent skills are locked via `skills-lock.json` and stored in `.agents/skills/`
-- Example/reference adapters live under `packages/server/src/adapters/` (e.g. `example-metadata-adapter`, `example-storage-adapter`) and are exported via `package.json` `exports` entries — real adapter packages (e.g. for Cloudflare, S3) should also be workspace packages, not inlined into apps
+- Example/reference adapters live under `packages/server/src/adapters/` (e.g. database, storage, auth) and are exported via `package.json` `exports` entries — real adapter packages (e.g. for Cloudflare, S3) should also be workspace packages, not inlined into apps

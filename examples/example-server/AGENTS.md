@@ -15,7 +15,7 @@ examples/example-server/
 ## Key Concepts
 
 - Imports `createSimplePasswordAuth` from `@raurus/server/adapters/auth` — password `"admin123"`, in-memory token storage
-- Imports `createLibsqlMetadataAdapter` from `@raurus/server/adapters/metadata` — local SQLite file at `./data.db`
+- Imports `libSqlDatabaseAdapter` from `@raurus/server/adapters/database` — local SQLite file at `./data.db`
 - Imports `createLocalStorageAdapter` from `@raurus/server/adapters/storage` — local filesystem storage at `./uploads`
 - Imports `raurus` from `@raurus/server` — the single public factory for creating a fetch-compatible runtime
 - Passes `baseUrl: "http://localhost:3000"` plus `metadataAdapter`, `storageAdapter`, and `authAdapter` to `raurus()`; because the URL pathname is `/`, the runtime derives its API base path as `_raurus`, so endpoints are served under `http://localhost:3000/_raurus/...`
@@ -46,7 +46,8 @@ examples/example-server/
 
 ## Notes
 
-- `createLibsqlMetadataAdapter` auto-creates the `raurus_metadata` table on first connection
+- `libSqlDatabaseAdapter` auto-creates the `raurus_metadata` table on first connection
 - `createLocalStorageAdapter` auto-creates the `uploads/` directory and any subdirectories on first write
 - `createSimplePasswordAuth` stores tokens in memory only — tokens are lost on restart
 - The `createLocalStorageAdapter` ships all five optional storage methods: `uploadAsset`, `deleteAsset`, `getAssetContent`, `createPresignedUploadUrl`, `createPresignedDownloadUrl`
+dUrl`

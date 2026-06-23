@@ -21,18 +21,18 @@ src/
 - **Asset type** — `RaurusAsset` is `ArrayBuffer`. The previous `ArrayBuffer | File | Blob` union was removed because `File` and `Blob` are DOM types and forced a DOM lib dependency on the server; consumers that have a `File`/`Blob` should call `.arrayBuffer()` first and pass the buffer.
 - **Adapter result** — `AdapterMethodResult<T>` is a discriminated union of `Success<T> | Failure` and is the return shape of every adapter method. `Success<T>`, `Failure`, and `FailureCode` are all exported. `Failure` carries an optional `code: FailureCode` for machine-readable failure classification (e.g. `NOT_FOUND` vs `CONNECTION`); consumers should fall back to `UNKNOWN` when `code` is absent.
 - **Failure codes** — `FailureCode` enumerates `NOT_IMPLEMENTED`, `NOT_FOUND`, `CONFLICT`, `CONFIGURATION`, `CONNECTION`, `PERMISSION`, `RATE_LIMIT`, `UPSTREAM`, `INVALID_INPUT`, and `UNKNOWN`. Adapter implementations should pick the most specific code that applies.
-- **Common adapter** — `CommonRuntimeAdapter` declares `apiVersion: "1"` and `checkConnection(): Promise<AdapterMethodResult<null>>` and is extended by `RuntimeMetadataAdapter`, `RuntimeStorageAdapter`, and `RuntimeAuthAdapter`. `apiVersion` is a string literal so a future v2 can be brandable and survives JSON round-trips.
-- **Metadata Adapter** — `RuntimeMetadataAdapter` extends `CommonRuntimeAdapter` and defines `id` (template literal `${Lowercase<string>}-metadata-adapter`), `getMetadataByPlaceholderId`, `bulkGetMetadataByPlaceholderIds` (now **required**), and the two `upsertContentMetadata` overloads (photo/video with `assetKey`, text with `text`).
+- **Common adapter** — `CommonRuntimeAdapter` declares `apiVersion: "1"` and `checkConnection(): Promise<AdapterMethodResult<null>>` and is extended by `RuntimeDatabaseAdapter`, `RuntimeStorageAdapter`, and `RuntimeAuthAdapter`. `apiVersion` is a string literal so a future v2 can be brandable and survives JSON round-trips.
+- **Database Adapter** — `RuntimeDatabaseAdapter` extends `CommonRuntimeAdapter` and defines `id` (template literal `${Lowercase<string>}-database-adapter`), `getMetadata`, `bulkGetMetadataByPlaceholderIds` (now **required**), and the two `upsertContentMetadata` overloads (photo/video with `assetKey`, text with `text`).
 - **Storage Adapter** — `RuntimeStorageAdapter` extends `CommonRuntimeAdapter` and exposes a five-method menu, all optional: `uploadAsset(assetKey, RaurusAsset)`, `createPresignedUploadUrl(assetKey, expiresIn?)`, `createPresignedDownloadUrl(assetKey, expiresIn?)`, `deleteAsset(assetKey)`, and `getAssetContent(assetKey)` (returns `{ data: ArrayBuffer; contentType: string }`). Each method returns `AdapterMethodResult<...>`.
 - **Auth Adapter** — `RuntimeAuthAdapter` extends `CommonRuntimeAdapter` and defines `id` (template literal `${Lowercase<string>}-auth-adapter`), `authenticate(password)`, and `validateToken(token)`. `authenticate` returns `{ token: string }` on success; `validateToken` returns `{ valid: boolean }`.
-- **Base configs** — `RuntimeMetadataAdapterBaseConfig`, `RuntimeStorageAdapterBaseConfig`, and `RuntimeAuthAdapterBaseConfig` are empty interfaces that adapter implementations extend to define their own config options.
-- **Factory types** — `RuntimeMetadataAdapterFactory`, `RuntimeStorageAdapterFactory`, and `RuntimeAuthAdapterFactory` are generic over `Config` (preserving concrete adapter configuration types through composition). They return the corresponding adapter interface directly — no phantom brand.
-- **Adapter id helpers** — `RaurusMetadataAdapterId`, `RaurusStorageAdapterId`, and `RaurusAuthAdapterId` are named template literal types used on each adapter interface's `id` field (e.g. `RuntimeMetadataAdapter.id: RaurusMetadataAdapterId`). They are `export`ed so consumers can reference them without re-declaring the pattern.
+- **Base configs** — `RuntimeDatabaseAdapterBaseConfig`, `RuntimeStorageAdapterBaseConfig`, and `RuntimeAuthAdapterBaseConfig` are empty interfaces that adapter implementations extend to define their own config options.
+- **Factory types** — `RuntimeDatabaseAdapterFactory`, `RuntimeStorageAdapterFactory`, and `RuntimeAuthAdapterFactory` are generic over `Config` (preserving concrete adapter configuration types through composition). They return the corresponding adapter interface directly — no phantom brand.
+- **Adapter id helpers** — `RaurusDatabaseAdapterId`, `RaurusStorageAdapterId`, and `RaurusAuthAdapterId` are named template literal types used on each adapter interface's `id` field (e.g. `RuntimeDatabaseAdapter.id: RaurusDatabaseAdapterId`). They are `export`ed so consumers can reference them without re-declaring the pattern.
 
 ## Package Standards
 
 - Keep all domain types in `@raurus/core` — implementations belong in separate packages
-- Prefix adapter contracts and factories with `Runtime` (e.g. `RuntimeMetadataAdapter`, `RuntimeStorageAdapterFactory`)
+- Prefix adapter contracts and factories with `Runtime` (e.g. `RuntimeDatabaseAdapter`, `RuntimeStorageAdapterFactory`)
 - Use interfaces for adapter contracts, types for factory functions and discriminated unions
 - Provide empty base config interfaces that adapter packages extend
 - Place new shared domain models (and their literal-union companions) in `src/types.ts` and re-export them through `src/index.ts`
@@ -63,5 +63,6 @@ src/
 - This package is currently type-only — all runtime logic lives in other packages
 - The current public surface is a single root entry point that re-exports `src/types.ts`
 - When adding a new adapter concept, follow the existing factory pattern: `BaseConfig` interface → `Adapter` interface (extending `CommonRuntimeAdapter`) → `Factory` type
-- When adding a new metadata variant to `RaurusMetadata`, add a new `*MetadataType` alias, extend `RaurusMetadataType`, extend the `RaurusMetadata` union, and add a corresponding `upsertContentMetadata` overload
+- When adding a new metadata variant to `RaurusMetadata`, add a new `*MetadataType` alias, extend `RaurusMetadataType`, extend the `RaurusMetadata` union, and add a corresponding `upsertContentMetadata` overload on `RuntimeDatabaseAdapter`
 - When adding a new `FailureCode` value, document the HTTP status mapping guidance for `@raurus/server`'s `failureCodeToStatus` helper
+Status` helper

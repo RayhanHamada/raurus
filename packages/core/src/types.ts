@@ -50,7 +50,7 @@ export type RaurusMetadata = {
       }
 );
 
-export interface RuntimeMetadataAdapterBaseConfig {}
+export interface RuntimeDatabaseAdapterBaseConfig {}
 
 export interface RuntimeStorageAdapterBaseConfig {}
 
@@ -61,14 +61,14 @@ export interface CommonRuntimeAdapter {
     checkConnection: () => Promise<AdapterMethodResult<null>>;
 }
 
-export type RaurusMetadataAdapterId = `${Lowercase<string>}-metadata-adapter`;
+export type RaurusDatabaseAdapterId = `${Lowercase<string>}-database-adapter`;
 export type RaurusStorageAdapterId = `${Lowercase<string>}-storage-adapter`;
 export type RaurusAuthAdapterId = `${Lowercase<string>}-auth-adapter`;
 
-export interface RuntimeMetadataAdapter extends CommonRuntimeAdapter {
-    id: RaurusMetadataAdapterId;
+export interface RuntimeDatabaseAdapter extends CommonRuntimeAdapter {
+    id: RaurusDatabaseAdapterId;
 
-    getMetadataByPlaceholderId: (placeholderId: string) => Promise<AdapterMethodResult<RaurusMetadata | null>>;
+    getMetadata: (placeholderId: string) => Promise<AdapterMethodResult<RaurusMetadata | null>>;
 
     bulkGetMetadataByPlaceholderIds: (placeholderIds: string[]) => Promise<AdapterMethodResult<RaurusMetadata[]>>;
 
@@ -107,9 +107,9 @@ export interface RuntimeAuthAdapter extends CommonRuntimeAdapter {
     validateToken: (token: string) => Promise<AdapterMethodResult<{ valid: boolean }>>;
 }
 
-export type RuntimeMetadataAdapterFactory<
-    Config extends RuntimeMetadataAdapterBaseConfig = RuntimeMetadataAdapterBaseConfig,
-> = (config?: Config) => RuntimeMetadataAdapter;
+export type RuntimeDatabaseAdapterFactory<
+    Config extends RuntimeDatabaseAdapterBaseConfig = RuntimeDatabaseAdapterBaseConfig,
+> = (config?: Config) => RuntimeDatabaseAdapter;
 
 export type RuntimeStorageAdapterFactory<
     Config extends RuntimeStorageAdapterBaseConfig = RuntimeStorageAdapterBaseConfig,

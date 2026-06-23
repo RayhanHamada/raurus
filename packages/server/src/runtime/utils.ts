@@ -1,5 +1,5 @@
 import { openapi } from "@elysia/openapi";
-import type { RuntimeAuthAdapter, RuntimeMetadataAdapter, RuntimeStorageAdapter } from "@raurus/core";
+import type { RuntimeAuthAdapter, RuntimeDatabaseAdapter, RuntimeStorageAdapter } from "@raurus/core";
 import { getPackageLogger } from "@raurus/logger";
 import { Elysia } from "elysia";
 
@@ -19,7 +19,7 @@ export interface CreateRuntimeOptions {
     /**
      * The metadata adapter to use for the Raurus instance.
      */
-    metadataAdapter?: RuntimeMetadataAdapter | undefined;
+    metadataAdapter?: RuntimeDatabaseAdapter | undefined;
 
     /**
      * The storage adapter to use for the Raurus instance.

@@ -1,7 +1,7 @@
 import { createClient } from "@libsql/client";
-import type { RaurusMetadata, RuntimeMetadataAdapterBaseConfig, RuntimeMetadataAdapterFactory } from "@raurus/core";
+import type { RaurusMetadata, RuntimeDatabaseAdapterBaseConfig, RuntimeDatabaseAdapterFactory } from "@raurus/core";
 
-interface LibsqlMetadataAdapterConfig extends RuntimeMetadataAdapterBaseConfig {
+interface LibsqlMetadataAdapterConfig extends RuntimeDatabaseAdapterBaseConfig {
     /**
      * @see {@link https://github.com/libsql/libsql-client-ts#supported-urls}
      */
@@ -31,7 +31,7 @@ function rowToRaurusMetadata(row: MetadataRow): RaurusMetadata {
     };
 }
 
-export const createLibsqlMetadataAdapter: RuntimeMetadataAdapterFactory<LibsqlMetadataAdapterConfig> = (config) => {
+export const libSqlDatabaseAdapter: RuntimeDatabaseAdapterFactory<LibsqlMetadataAdapterConfig> = (config) => {
     if (!config?.url) {
         throw new Error("Missing required configuration: url");
     }
@@ -50,7 +50,7 @@ export const createLibsqlMetadataAdapter: RuntimeMetadataAdapterFactory<LibsqlMe
     `);
 
     return {
-        id: "libsql-metadata-adapter",
+        id: "libsql-database-adapter",
         apiVersion: "1",
 
         async checkConnection() {
@@ -66,7 +66,7 @@ export const createLibsqlMetadataAdapter: RuntimeMetadataAdapterFactory<LibsqlMe
             }
         },
 
-        async getMetadataByPlaceholderId(placeholderId) {
+        async getMetadata(placeholderId) {
             try {
                 const result = await client.execute({
                     sql: "SELECT * FROM raurus_metadata WHERE placeholder_id = ?",

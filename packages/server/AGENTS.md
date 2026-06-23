@@ -14,12 +14,12 @@ src/
 │   │   ├── index.ts              # Barrel: re-exports all auth adapters
 │   │   └── simple-password/
 │   │       └── index.ts          # In-memory password-based auth adapter
-│   ├── metadata/
-│   │   ├── index.ts              # Barrel: re-exports all metadata adapters
+│   ├── database/
+│   │   ├── index.ts              # Barrel: re-exports all database adapters
 │   │   ├── memory/
-│   │   │   └── index.ts          # In-memory metadata adapter (dev/testing reference)
+│   │   │   └── index.ts          # In-memory database adapter (dev/testing reference)
 │   │   └── libsql/
-│   │       └── index.ts          # libsql-based metadata storage adapter
+│   │       └── index.ts          # libsql-based database adapter
 │   └── storage/
 │       ├── index.ts              # Barrel: re-exports all storage adapters
 │       ├── memory/
@@ -58,7 +58,7 @@ tsdown.config.ts          # Build config — entry: ["src/index.ts", "src/runtim
 - Keep runtime logic under `src/runtime/` — `src/index.ts` is a thin barrel that re-exports `raurus` and `CreateRuntimeOptions` from `./runtime`
 - Define schemas in `models.ts` using `t.Object()` / `t.String()` etc. from Elysia's TypeSystem
 - Routes import schemas via `import * as m from "./models"` and reference them as `m.SchemaName` — do not switch to named imports without a reason
-- Pass adapter dependencies to `routes()` via `RouteOptions`, not through Elysia state — `metadata`, `storage`, and `auth` are all optional; routes guard missing adapters with the `checkMetadata` / `checkStorage` / `checkAuth` macros
+- Pass adapter dependencies to `routes()` via `RouteOptions`, not through Elysia state — `metadata` (typed as `RuntimeDatabaseAdapter`), `storage`, and `auth` are all optional; routes guard missing adapters with the `checkMetadata` / `checkStorage` / `checkAuth` macros
 - Inline OpenAPI metadata (title, version, servers) in `utils.ts` — no separate config module
 - Export the runtime factory as `raurus` from `src/runtime/index.ts`
 - Use `@raurus/logger` for all logs; create module-level `const log = getPackageLogger("server")` loggers and do not call `configure()` inside this package
@@ -76,13 +76,13 @@ tsdown.config.ts          # Build config — entry: ["src/index.ts", "src/runtim
 
 - Build uses tsdown with entries `src/index.ts`, `src/runtime/index.ts`, and `src/adapters/*/{index.ts,*/index.ts}` — category barrel exports and individual adapters are auto-picked up
 - Each adapter subdirectory under `src/adapters/<category>/` must have a corresponding `exports` entry in `package.json` (e.g. `"./adapters/storage/local": "./dist/adapters/storage/local/index.mjs"`)
-- Category barrels (`src/adapters/auth/index.ts`, `src/adapters/metadata/index.ts`, `src/adapters/storage/index.ts`) re-export all adapters in that category — consumers can import individual adapters or the category barrel
-- Adapters extend the base config interfaces from `@raurus/core` (`RuntimeMetadataAdapterBaseConfig`, `RuntimeStorageAdapterBaseConfig`, `RuntimeAuthAdapterBaseConfig`) and use factory types for type safety
-- Metadata adapters (`memory`, `libsql`) are under `src/adapters/metadata/` — imported via `@raurus/server/adapters/metadata` (barrel) or `@raurus/server/adapters/metadata/memory` / `@raurus/server/adapters/metadata/libsql` (individual)
+- Category barrels (`src/adapters/auth/index.ts`, `src/adapters/database/index.ts`, `src/adapters/storage/index.ts`) re-export all adapters in that category — consumers can import individual adapters or the category barrel
+- Adapters extend the base config interfaces from `@raurus/core` (`RuntimeDatabaseAdapterBaseConfig`, `RuntimeStorageAdapterBaseConfig`, `RuntimeAuthAdapterBaseConfig`) and use factory types for type safety
+- Database adapters (`memory`, `libsql`) are under `src/adapters/database/` — imported via `@raurus/server/adapters/database` (barrel) or `@raurus/server/adapters/database/memory` / `@raurus/server/adapters/database/libsql` (individual). The `CreateRuntimeOptions` field is named `metadataAdapter` but accepts a `RuntimeDatabaseAdapter`.
 - Storage adapters (`memory`, `local`, `s3mini`) are under `src/adapters/storage/` — imported via `@raurus/server/adapters/storage` (barrel) or `@raurus/server/adapters/storage/memory` / `@raurus/server/adapters/storage/local` / `@raurus/server/adapters/storage/s3mini` (individual)
 - Auth adapters are under `src/adapters/auth/` — imported via `@raurus/server/adapters/auth` (barrel) or `@raurus/server/adapters/auth/simple-password` (individual)
 - All adapters must implement `checkConnection()` from `CommonRuntimeAdapter` (returns `AdapterMethodResult<null>` — i.e. `{ ok: true, data: null }` on success or `{ ok: false, error: Error, code?: FailureCode }` on failure) and must declare `apiVersion: "1"`
-- `RuntimeMetadataAdapter.bulkGetMetadataByPlaceholderIds` is **required**; example and reference adapters must implement it
+- `RuntimeDatabaseAdapter.bulkGetMetadataByPlaceholderIds` is **required**; example and reference adapters must implement it
 - `RuntimeStorageAdapter` exposes a five-method menu (`uploadAsset`, `createPresignedUploadUrl`, `createPresignedDownloadUrl`, `deleteAsset`, `getAssetContent`) — all optional, but the route layer treats a missing method as `501 Not Implemented` rather than `400`
 - `RuntimeAuthAdapter` exposes `authenticate(password)` and `validateToken(token)`. The `checkAuth` macro reads the `Authorization` header and calls `validateToken`; routes that need auth set `checkAuth: true` in their config.
 - The `GET /asset-content/:assetKey` route is intentionally public (no `checkAuth`) so media assets can render for all visitors without authentication

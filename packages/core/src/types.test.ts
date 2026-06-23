@@ -11,9 +11,9 @@ import type {
     RuntimeAuthAdapter,
     RuntimeAuthAdapterBaseConfig,
     RuntimeAuthAdapterFactory,
-    RuntimeMetadataAdapter,
-    RuntimeMetadataAdapterBaseConfig,
-    RuntimeMetadataAdapterFactory,
+    RuntimeDatabaseAdapter,
+    RuntimeDatabaseAdapterBaseConfig,
+    RuntimeDatabaseAdapterFactory,
     RuntimeStorageAdapter,
     RuntimeStorageAdapterBaseConfig,
     RuntimeStorageAdapterFactory,
@@ -21,7 +21,7 @@ import type {
     VideoMetadataType,
 } from "./types";
 
-const makeMetadataAdapter = (): RuntimeMetadataAdapter => null as unknown as RuntimeMetadataAdapter;
+const makeMetadataAdapter = (): RuntimeDatabaseAdapter => null as unknown as RuntimeDatabaseAdapter;
 const makeStorageAdapter = (): RuntimeStorageAdapter => null as unknown as RuntimeStorageAdapter;
 const makeAuthAdapter = (): RuntimeAuthAdapter => null as unknown as RuntimeAuthAdapter;
 
@@ -141,17 +141,17 @@ describe("common runtime adapter contract", () => {
 
 describe("metadata adapter contract", () => {
     it("uses a lowercase template literal id", () => {
-        expectTypeOf<RuntimeMetadataAdapter["id"]>().toEqualTypeOf<`${Lowercase<string>}-metadata-adapter`>();
+        expectTypeOf<RuntimeDatabaseAdapter["id"]>().toEqualTypeOf<`${Lowercase<string>}-database-adapter`>();
     });
 
     it("getMetadataByPlaceholderId returns AdapterMethodResult wrapping RaurusMetadata or null", () => {
-        type GetOne = RuntimeMetadataAdapter["getMetadataByPlaceholderId"];
+        type GetOne = RuntimeDatabaseAdapter["getMetadata"];
         expectTypeOf<Parameters<GetOne>>().toEqualTypeOf<[placeholderId: string]>();
         expectTypeOf<ReturnType<GetOne>>().toEqualTypeOf<Promise<AdapterMethodResult<RaurusMetadata | null>>>();
     });
 
     it("bulkGetMetadataByPlaceholderIds is required", () => {
-        type Bulk = RuntimeMetadataAdapter["bulkGetMetadataByPlaceholderIds"];
+        type Bulk = RuntimeDatabaseAdapter["bulkGetMetadataByPlaceholderIds"];
         expectTypeOf<Bulk>().toEqualTypeOf<
             (placeholderIds: string[]) => Promise<AdapterMethodResult<RaurusMetadata[]>>
         >();
@@ -241,20 +241,20 @@ describe("auth adapter contract", () => {
 
 describe("factory types", () => {
     it("RuntimeMetadataAdapterFactory returns a RuntimeMetadataAdapter when called with no arguments", () => {
-        const factory: RuntimeMetadataAdapterFactory = () => makeMetadataAdapter();
+        const factory: RuntimeDatabaseAdapterFactory = () => makeMetadataAdapter();
         const adapter = factory();
-        expectTypeOf(adapter).toMatchTypeOf<RuntimeMetadataAdapter>();
+        expectTypeOf(adapter).toMatchTypeOf<RuntimeDatabaseAdapter>();
         const adapterWithConfig = factory({});
-        expectTypeOf(adapterWithConfig).toMatchTypeOf<RuntimeMetadataAdapter>();
+        expectTypeOf(adapterWithConfig).toMatchTypeOf<RuntimeDatabaseAdapter>();
     });
 
     it("RuntimeMetadataAdapterFactory accepts a custom config type", () => {
-        interface CustomMetadataConfig extends RuntimeMetadataAdapterBaseConfig {
+        interface CustomMetadataConfig extends RuntimeDatabaseAdapterBaseConfig {
             tableName: string;
         }
-        const factory: RuntimeMetadataAdapterFactory<CustomMetadataConfig> = () => makeMetadataAdapter();
+        const factory: RuntimeDatabaseAdapterFactory<CustomMetadataConfig> = () => makeMetadataAdapter();
         const adapter = factory({ tableName: "items" });
-        expectTypeOf(adapter).toMatchTypeOf<RuntimeMetadataAdapter>();
+        expectTypeOf(adapter).toMatchTypeOf<RuntimeDatabaseAdapter>();
     });
 
     it("RuntimeStorageAdapterFactory returns a RuntimeStorageAdapter when called with no arguments", () => {

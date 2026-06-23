@@ -115,28 +115,24 @@ export const AssetContentParamsSchema = t.Object({
  * type is `number` because the mapped status depends on the runtime
  * `code` value; routes set the status dynamically via `set.status`.
  */
-export const failureCodeToStatus = (code?: FailureCode): number => {
-    switch (code) {
-        case "NOT_IMPLEMENTED": {
-            return 501;
-        }
-        case "NOT_FOUND": {
-            return 404;
-        }
-        case "CONFLICT": {
-            return 409;
-        }
-        case "PERMISSION": {
-            return 401;
-        }
-        case "RATE_LIMIT": {
-            return 429;
-        }
-        case "INVALID_INPUT": {
-            return 400;
-        }
-        default: {
-            return 500;
-        }
+export const failureCodeToStatus = (code?: FailureCode) => {
+    const DEFAULT_STATUS = 500;
+    const statuses = {
+        NOT_IMPLEMENTED: 501,
+        NOT_FOUND: 404,
+        CONFLICT: 409,
+        PERMISSION: 401,
+        RATE_LIMIT: 429,
+        INVALID_INPUT: 400,
+        UPSTREAM: 502,
+        CONFIGURATION: 500,
+        CONNECTION: 503,
+        UNKNOWN: 500,
+    } as const;
+
+    if (!code) {
+        return DEFAULT_STATUS;
     }
+
+    return statuses[code] ?? DEFAULT_STATUS;
 };

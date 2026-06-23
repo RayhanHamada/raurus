@@ -1,11 +1,11 @@
 import { raurus } from "@raurus/server";
 import { createSimplePasswordAuth } from "@raurus/server/adapters/auth";
-import { createLibsqlMetadataAdapter } from "@raurus/server/adapters/metadata";
+import { libSqlDatabaseAdapter } from "@raurus/server/adapters/database";
 import { createLocalStorageAdapter } from "@raurus/server/adapters/storage";
 
 const server = raurus({
     baseUrl: "http://localhost:3000",
-    metadataAdapter: createLibsqlMetadataAdapter({ url: "file:./data.db" }),
+    metadataAdapter: libSqlDatabaseAdapter({ url: "file:./data.db" }),
     storageAdapter: createLocalStorageAdapter({ basePath: "./uploads" }),
     authAdapter: createSimplePasswordAuth({ password: "admin123" }),
 });

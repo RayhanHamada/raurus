@@ -1,4 +1,4 @@
-import type { RuntimeAuthAdapter, RuntimeMetadataAdapter, RuntimeStorageAdapter } from "@raurus/core";
+import type { RuntimeAuthAdapter, RuntimeDatabaseAdapter, RuntimeStorageAdapter } from "@raurus/core";
 import { getPackageLogger } from "@raurus/logger";
 import { Elysia } from "elysia";
 
@@ -7,7 +7,7 @@ import * as m from "./models";
 const log = getPackageLogger("server");
 
 interface RouteOptions {
-    metadata?: RuntimeMetadataAdapter | undefined;
+    metadata?: RuntimeDatabaseAdapter | undefined;
     storage?: RuntimeStorageAdapter | undefined;
     auth?: RuntimeAuthAdapter | undefined;
 }
@@ -51,7 +51,7 @@ export function routes({ metadata, storage, auth }: RouteOptions) {
                             return {
                                 options: {
                                     ...options,
-                                    metadata: options?.metadata as RuntimeMetadataAdapter,
+                                    metadata: options?.metadata as RuntimeDatabaseAdapter,
                                 },
                             };
                         },
@@ -176,25 +176,12 @@ export function routes({ metadata, storage, auth }: RouteOptions) {
                 async ({ status, set, options, body: { password } }) => {
                     log.debug("Login requested");
 
-                    if (!options.auth) {
-                        log.warning("Auth adapter is not configured");
-
-                        return status(501, {
-                            message: "Error",
-                            error: "Auth adapter is not configured",
-                        });
-                    }
-
                     const result = await options.auth.authenticate(password);
-
                     if (!result.ok) {
                         log.error("Authentication failed", { error: result.error.message });
                         const code = m.failureCodeToStatus(result.code);
                         set.status = code;
-                        return {
-                            message: "Error",
-                            error: "Authentication failed",
-                        };
+                        return { message: "Error", error: "Authentication failed" };
                     }
 
                     log.debug("Login successful");
@@ -217,6 +204,7 @@ export function routes({ metadata, storage, auth }: RouteOptions) {
                         400: m.ErrorResponseSchema,
                         501: m.ErrorResponseSchema,
                     },
+                    checkAuth: true,
                 }
             )
 
@@ -319,7 +307,7 @@ export function routes({ metadata, storage, auth }: RouteOptions) {
                         });
                     }
 
-                    const result = await options.metadata.getMetadataByPlaceholderId(placeholderId);
+                    const result = await options.metadata.getMetadata(placeholderId);
 
                     if (!result.ok) {
                         log.error("Failed to get metadata", { placeholderId, error: result.error.message });

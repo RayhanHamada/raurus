@@ -1,18 +1,18 @@
-import type { RaurusMetadata, RuntimeMetadataAdapterBaseConfig, RuntimeMetadataAdapterFactory } from "@raurus/core";
+import type { RaurusMetadata, RuntimeDatabaseAdapterBaseConfig, RuntimeDatabaseAdapterFactory } from "@raurus/core";
 
-interface MemoryMetadataAdapterConfig extends RuntimeMetadataAdapterBaseConfig {}
+interface MemoryMetadataAdapterConfig extends RuntimeDatabaseAdapterBaseConfig {}
 
-export const createMemoryMetadataAdapter: RuntimeMetadataAdapterFactory<MemoryMetadataAdapterConfig> = (_) => {
+export const memoryDatabaseAdapter: RuntimeDatabaseAdapterFactory<MemoryMetadataAdapterConfig> = (_) => {
     const store = new Map<RaurusMetadata["placeholderId"], RaurusMetadata>();
 
     return {
-        id: "memory-metadata-adapter",
+        id: "memory-database-adapter",
         apiVersion: "1",
 
         async checkConnection() {
             return { ok: true, data: null };
         },
-        async getMetadataByPlaceholderId(placeholderId) {
+        async getMetadata(placeholderId) {
             return { ok: true, data: store.get(placeholderId) ?? null };
         },
         async bulkGetMetadataByPlaceholderIds(placeholderIds) {
