@@ -14,22 +14,16 @@ interface RouteOptions {
 export function routes({ database, storage }: RouteOptions) {
     return (
         new Elysia({ name: "raurus.routes" })
-            .derive(() => ({
-                custom: {
-                    database,
-                    storage,
-                },
-            }))
+            .decorate("dependencies", {
+                database,
+                storage,
+            })
 
             .macro({
-                checkDatabase(enable: boolean) {
+                checkDatabase(_: boolean) {
                     return {
-                        async beforeHandle({ custom, status }) {
-                            if (!enable) {
-                                return;
-                            }
-
-                            if (!custom?.database) {
+                        beforeHandle({ dependencies, status }) {
+                            if (!dependencies?.database) {
                                 log.warning("Metadata adapter is not configured");
 
                                 return status(501, {
@@ -39,29 +33,25 @@ export function routes({ database, storage }: RouteOptions) {
                             }
                         },
 
-                        resolve({ custom }) {
-                            if (!enable) {
-                                return { custom };
+                        resolve({ dependencies }) {
+                            if (!dependencies?.database) {
+                                return;
                             }
 
                             return {
-                                custom: {
-                                    ...custom,
-                                    database: custom?.database as RuntimeDatabaseAdapter,
+                                dependencies: {
+                                    ...dependencies,
+                                    database: dependencies.database,
                                 },
                             };
                         },
                     };
                 },
 
-                checkStorage(enable: boolean) {
+                checkStorage(_: boolean) {
                     return {
-                        async beforeHandle({ custom, status }) {
-                            if (!enable) {
-                                return;
-                            }
-
-                            if (!custom?.storage) {
+                        beforeHandle({ dependencies, status }) {
+                            if (!dependencies?.storage) {
                                 log.warning("Storage adapter is not configured");
 
                                 return status(501, {
@@ -71,17 +61,15 @@ export function routes({ database, storage }: RouteOptions) {
                             }
                         },
 
-                        resolve({ custom }) {
-                            if (!enable) {
-                                return {
-                                    custom,
-                                };
+                        resolve({ dependencies }) {
+                            if (!dependencies?.storage) {
+                                return;
                             }
 
                             return {
-                                custom: {
-                                    ...custom,
-                                    storage: custom?.storage as RuntimeStorageAdapter,
+                                dependencies: {
+                                    ...dependencies,
+                                    storage: dependencies.storage,
                                 },
                             };
                         },
@@ -92,14 +80,14 @@ export function routes({ database, storage }: RouteOptions) {
             // Health check (public)
             .get(
                 "/",
-                async ({ custom, status }) => {
+                async ({ dependencies, status }) => {
                     log.debug("Health check requested");
                     return status(200, {
                         status: "OK",
                         message: "RAURUS_ENDPOINT",
                         data: {
-                            database_adapter_id: custom.database?.id ?? null,
-                            storage_adapter_id: custom.storage?.id ?? null,
+                            database_adapter_id: dependencies.database?.id ?? null,
+                            storage_adapter_id: dependencies.storage?.id ?? null,
                         },
                     });
                 },
@@ -118,17 +106,17 @@ export function routes({ database, storage }: RouteOptions) {
 
             .put(
                 "/placeholders/:placeholderId/pathnames/:pathname",
-                async ({ status, set, params, custom, body }) => {
+                async ({ status, set, params, dependencies, body }) => {
                     log.debug("Metadata upsert requested", { placeholderId: params.placeholder_id });
 
                     const { placeholder_id: placeholderId, pathname } = params;
                     const result =
                         body.type === METADATA_TYPES.TEXT
-                            ? await custom.database.upsertContentMetadata(placeholderId, pathname, {
+                            ? await dependencies.database.upsertContentMetadata(placeholderId, pathname, {
                                   type: METADATA_TYPES.TEXT,
                                   text: body.text,
                               })
-                            : await custom.database.upsertContentMetadata(placeholderId, pathname, {
+                            : await dependencies.database.upsertContentMetadata(placeholderId, pathname, {
                                   type: body.type,
                                   assetKey: body.asset_key,
                               });
@@ -169,12 +157,12 @@ export function routes({ database, storage }: RouteOptions) {
             // Storage routes
             .get(
                 "/assets/presigned-upload-url",
-                async ({ status, set, custom, query: { asset_key: assetKey } }) => {
+                async ({ status, set, dependencies, query: { asset_key: assetKey } }) => {
                     log.debug("Presigned URL requested", { assetKey });
 
-                    if (!custom.storage.createPresignedUploadUrl) {
+                    if (!dependencies.storage.createPresignedUploadUrl) {
                         log.warning("Storage adapter does not support presigned URLs", {
-                            adapterId: custom.storage.id,
+                            adapterId: dependencies.storage.id,
                         });
 
                         return status(501, {
@@ -183,7 +171,7 @@ export function routes({ database, storage }: RouteOptions) {
                         });
                     }
 
-                    const result = await custom.storage.createPresignedUploadUrl(assetKey);
+                    const result = await dependencies.storage.createPresignedUploadUrl(assetKey);
 
                     if (!result.ok) {
                         log.error("Failed to create presigned URL", { assetKey, error: result.error.message });
@@ -221,12 +209,12 @@ export function routes({ database, storage }: RouteOptions) {
 
             .delete(
                 "/asset/:assetKey",
-                async ({ status, set, custom, params: { asset_key: assetKey } }) => {
+                async ({ status, set, dependencies, params: { asset_key: assetKey } }) => {
                     log.debug("Delete asset requested", { assetKey });
 
-                    if (!custom.storage.deleteAsset) {
+                    if (!dependencies.storage.deleteAsset) {
                         log.warning("Storage adapter does not support asset deletion", {
-                            adapterId: custom.storage.id,
+                            adapterId: dependencies.storage.id,
                         });
 
                         return status(501, {
@@ -235,7 +223,7 @@ export function routes({ database, storage }: RouteOptions) {
                         });
                     }
 
-                    const result = await custom.storage.deleteAsset(assetKey);
+                    const result = await dependencies.storage.deleteAsset(assetKey);
 
                     if (!result.ok) {
                         log.error("Failed to delete asset", { assetKey, error: result.error.message });
