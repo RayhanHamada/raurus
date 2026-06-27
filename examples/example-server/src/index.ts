@@ -2,6 +2,7 @@ import { raurus } from "@raurus/server";
 
 const server = raurus({
     baseUrl: "http://localhost:3000",
+    debug: true,
 });
 
 console.log(`Raurus server listening on http://localhost:3000`);

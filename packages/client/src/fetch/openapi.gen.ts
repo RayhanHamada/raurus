@@ -199,7 +199,6 @@ export interface operations {
         parameters: {
             query: {
                 assetKey: Record<string, never>;
-                expiresIn?: number;
             };
             header?: never;
             path?: never;

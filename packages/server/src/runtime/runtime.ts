@@ -2,7 +2,7 @@ import { openapi } from "@elysia/openapi";
 import type { RuntimeDatabaseAdapter, RuntimeStorageAdapter } from "@raurus/core";
 import { Elysia } from "elysia";
 
-import { log } from "@/runtime/utils";
+import { initializeLogger, log } from "@/runtime/utils";
 
 import { routes } from "./routes";
 
@@ -31,10 +31,18 @@ export interface CreateRuntimeOptions {
      * @default true
      */
     openapi?: boolean;
+
+    /**
+     * Whether to enable debug logging. This is optional and defaults to `false`.
+     *
+     * @default false
+     */
+    debug?: boolean;
 }
 
 const DEFAULT_RUNTIME_OPTIONS = {
     openapi: true,
+    debug: false,
 } satisfies Partial<CreateRuntimeOptions>;
 
 /**
@@ -45,6 +53,10 @@ const DEFAULT_RUNTIME_OPTIONS = {
  */
 export function createRuntime(config: CreateRuntimeOptions) {
     const options = { ...DEFAULT_RUNTIME_OPTIONS, ...config };
+
+    if (options.debug) {
+        initializeLogger();
+    }
 
     const baseUrlString = options.baseUrl.toString();
     log.debug("Creating Raurus runtime", { baseUrl: baseUrlString, openapi: options.openapi });

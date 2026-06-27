@@ -1,4 +1,4 @@
-import { ansiColorFormatter, getConsoleSink } from "@logtape/logtape";
+import { ansiColorFormatter, configureSync, getConsoleSink } from "@logtape/logtape";
 import type { Config, Filter } from "@logtape/logtape";
 
 /**
@@ -78,3 +78,7 @@ export const logTapeConfig: Config<"console", "noDebugFromOthers"> = {
 };
 
 export type { Config } from "@logtape/logtape";
+
+export function initializeLogger() {
+    configureSync(logTapeConfig);
+}
