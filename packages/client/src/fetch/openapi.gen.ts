@@ -111,6 +111,10 @@ export interface operations {
                         status: "OK" | "Error";
                         /** @constant */
                         message: "RAURUS_ENDPOINT";
+                        data: {
+                            database_adapter_id: (string | null) | null;
+                            storage_adapter_id: (string | null) | null;
+                        };
                     };
                 };
             };
@@ -121,7 +125,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                placeholderId: string;
+                placeholder_id: string;
                 pathname: string;
             };
             cookie?: never;
@@ -130,7 +134,7 @@ export interface operations {
             content: {
                 "application/json": {
                     type: "photo" | "video";
-                    assetKey: string;
+                    asset_key: string;
                 } | {
                     /** @constant */
                     type: "text";
@@ -138,7 +142,7 @@ export interface operations {
                 };
                 "application/x-www-form-urlencoded": {
                     type: "photo" | "video";
-                    assetKey: string;
+                    asset_key: string;
                 } | {
                     /** @constant */
                     type: "text";
@@ -146,7 +150,7 @@ export interface operations {
                 };
                 "multipart/form-data": {
                     type: "photo" | "video";
-                    assetKey: string;
+                    asset_key: string;
                 } | {
                     /** @constant */
                     type: "text";
@@ -198,7 +202,7 @@ export interface operations {
     "get_raurusAssetsPresigned-upload-url": {
         parameters: {
             query: {
-                assetKey: Record<string, never>;
+                asset_key: Record<string, never>;
             };
             header?: never;
             path?: never;
@@ -254,7 +258,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                assetKey: string;
+                asset_key: string;
             };
             cookie?: never;
         };

@@ -1,13 +1,18 @@
+// oxlint-disable no-template-curly-in-string
 import type { FailureCode } from "@raurus/core";
 import { t } from "elysia";
 
 export const HealthCheckResponseSchema = t.Object({
     status: t.Union([t.Literal("OK"), t.Literal("Error")]),
     message: t.Literal("RAURUS_ENDPOINT"),
+    data: t.Object({
+        database_adapter_id: t.Nullable(t.String()),
+        storage_adapter_id: t.Nullable(t.String()),
+    }),
 });
 
 export const PresignedUrlQuerySchema = t.Object({
-    assetKey: t.RegExp(/^(?!\/)(?!.*\/\/)[A-Za-z0-9!_\-.*'()/]+(?:\/[A-Za-z0-9!_\-.*'()/]+)*$/u, {
+    asset_key: t.RegExp(/^(?!\/)(?!.*\/\/)[A-Za-z0-9!_\-.*'()/]+(?:\/[A-Za-z0-9!_\-.*'()/]+)*$/u, {
         examples: ["folder1/file.png", "file.txt", "folder1/folder2/file.jpg"],
     }),
 });
@@ -24,7 +29,7 @@ export const PresignedUrlResponseSchema = t.Object({
 });
 
 export const DeleteAssetParamsSchema = t.Object({
-    assetKey: t.String({ minLength: 1, examples: ["folder1/file.png"] }),
+    asset_key: t.String({ minLength: 1, examples: ["folder1/file.png"] }),
 });
 
 export const DeleteAssetResponseSchema = t.Object({
@@ -34,7 +39,7 @@ export const DeleteAssetResponseSchema = t.Object({
 export const UploadAssetResponseSchema = t.Object({
     message: t.Literal("OK"),
     data: t.Object({
-        assetKey: t.String(),
+        asset_key: t.String(),
     }),
 });
 
@@ -45,19 +50,19 @@ export const ErrorResponseSchema = t.Object({
 
 export const MetadataResponseSchema = t.Union([
     t.Object({
-        placeholderId: t.String(),
+        placeholder_id: t.String(),
         type: t.Literal("photo"),
-        assetKey: t.String(),
+        asset_key: t.String(),
     }),
     t.Object({
-        placeholderId: t.String(),
+        placeholder_id: t.String(),
         type: t.Literal("text"),
         text: t.String(),
     }),
     t.Object({
-        placeholderId: t.String(),
+        placeholder_id: t.String(),
         type: t.Literal("video"),
-        assetKey: t.String(),
+        asset_key: t.String(),
     }),
 ]);
 
@@ -67,18 +72,18 @@ export const MetadataListResponseSchema = t.Object({
 });
 
 export const MetadataListQuerySchema = t.Object({
-    placeholderIds: t.Optional(t.String()),
+    placeholder_ids: t.Optional(t.String()),
 });
 
 export const MetadataParamsSchema = t.Object({
-    placeholderId: t.String({ minLength: 1 }),
+    placeholder_id: t.String({ minLength: 1 }),
     pathname: t.String({ minLength: 1 }),
 });
 
 export const UpsertMetadataBodySchema = t.Union([
     t.Object({
         type: t.Union([t.Literal("photo"), t.Literal("video")]),
-        assetKey: t.String(),
+        asset_key: t.String(),
     }),
     t.Object({
         type: t.Literal("text"),
@@ -87,7 +92,7 @@ export const UpsertMetadataBodySchema = t.Union([
 ]);
 
 export const AssetContentParamsSchema = t.Object({
-    assetKey: t.String({ minLength: 1 }),
+    asset_key: t.String({ minLength: 1 }),
 });
 
 /**

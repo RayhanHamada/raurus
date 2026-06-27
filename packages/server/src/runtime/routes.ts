@@ -92,12 +92,16 @@ export function routes({ database, storage }: RouteOptions) {
             // Health check (public)
             .get(
                 "/",
-                async (_) => {
+                async ({ custom, status }) => {
                     log.debug("Health check requested");
-                    return {
+                    return status(200, {
                         status: "OK",
                         message: "RAURUS_ENDPOINT",
-                    };
+                        data: {
+                            database_adapter_id: custom.database?.id ?? null,
+                            storage_adapter_id: custom.storage?.id ?? null,
+                        },
+                    });
                 },
                 {
                     detail: {
@@ -115,9 +119,9 @@ export function routes({ database, storage }: RouteOptions) {
             .put(
                 "/placeholders/:placeholderId/pathnames/:pathname",
                 async ({ status, set, params, custom, body }) => {
-                    log.debug("Metadata upsert requested", { placeholderId: params.placeholderId });
+                    log.debug("Metadata upsert requested", { placeholderId: params.placeholder_id });
 
-                    const { placeholderId, pathname } = params;
+                    const { placeholder_id: placeholderId, pathname } = params;
                     const result =
                         body.type === METADATA_TYPES.TEXT
                             ? await custom.database.upsertContentMetadata(placeholderId, pathname, {
@@ -126,12 +130,12 @@ export function routes({ database, storage }: RouteOptions) {
                               })
                             : await custom.database.upsertContentMetadata(placeholderId, pathname, {
                                   type: body.type,
-                                  assetKey: body.assetKey,
+                                  assetKey: body.asset_key,
                               });
 
                     if (!result.ok) {
                         log.error("Failed to upsert metadata", {
-                            placeholderId: params.placeholderId,
+                            placeholderId: params.placeholder_id,
                             error: result.error.message,
                         });
                         const code = m.failureCodeToStatus(result.code);
@@ -142,7 +146,7 @@ export function routes({ database, storage }: RouteOptions) {
                         };
                     }
 
-                    log.debug("Metadata upserted", { placeholderId: params.placeholderId });
+                    log.debug("Metadata upserted", { placeholderId: params.placeholder_id });
                     return status(200, { message: "OK" });
                 },
                 {
@@ -165,7 +169,7 @@ export function routes({ database, storage }: RouteOptions) {
             // Storage routes
             .get(
                 "/assets/presigned-upload-url",
-                async ({ status, set, custom, query: { assetKey } }) => {
+                async ({ status, set, custom, query: { asset_key: assetKey } }) => {
                     log.debug("Presigned URL requested", { assetKey });
 
                     if (!custom.storage.createPresignedUploadUrl) {
@@ -217,7 +221,7 @@ export function routes({ database, storage }: RouteOptions) {
 
             .delete(
                 "/asset/:assetKey",
-                async ({ status, set, custom, params: { assetKey } }) => {
+                async ({ status, set, custom, params: { asset_key: assetKey } }) => {
                     log.debug("Delete asset requested", { assetKey });
 
                     if (!custom.storage.deleteAsset) {
