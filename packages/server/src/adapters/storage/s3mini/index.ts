@@ -52,10 +52,10 @@ export const s3MiniStorageAdapter: RuntimeStorageAdapterFactory<S3MiniStorageAda
             }
         },
 
-        async createPresignedUploadUrl(assetKey, expiresIn) {
+        async createPresignedUploadUrl(assetKey) {
             try {
-                const url = await client.getPresignedUrl("PUT", assetKey, expiresIn);
-                log.info("Generated presigned upload URL", { assetKey, expiresIn });
+                const url = await client.getPresignedUrl("PUT", assetKey);
+                log.info("Generated presigned upload URL", { assetKey });
 
                 return {
                     ok: true,
@@ -64,27 +64,6 @@ export const s3MiniStorageAdapter: RuntimeStorageAdapterFactory<S3MiniStorageAda
             } catch (error) {
                 const message = error instanceof Error ? error.message : "Unknown error";
                 log.error("Failed to create presigned upload URL", { message });
-
-                return {
-                    ok: false,
-                    code: "UPSTREAM" as const,
-                    error: error instanceof Error ? error : new Error("Unknown error"),
-                };
-            }
-        },
-
-        async createPresignedDownloadUrl(assetKey, expiresIn) {
-            try {
-                const url = await client.getPresignedUrl("GET", assetKey, expiresIn);
-                log.info("Generated presigned download URL", { assetKey, expiresIn });
-
-                return {
-                    ok: true,
-                    data: { url },
-                };
-            } catch (error) {
-                const message = error instanceof Error ? error.message : "Unknown error";
-                log.error("Failed to create presigned download URL", { message });
 
                 return {
                     ok: false,

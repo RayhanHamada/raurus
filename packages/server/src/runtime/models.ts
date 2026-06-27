@@ -10,7 +10,6 @@ export const PresignedUrlQuerySchema = t.Object({
     assetKey: t.RegExp(/^(?!\/)(?!.*\/\/)[A-Za-z0-9!_\-.*'()/]+(?:\/[A-Za-z0-9!_\-.*'()/]+)*$/u, {
         examples: ["folder1/file.png", "file.txt", "folder1/folder2/file.jpg"],
     }),
-    expiresIn: t.Optional(t.Number({ minimum: 60, examples: [3600] })),
 });
 
 export const UploadAssetBodySchema = t.Object({
@@ -73,6 +72,7 @@ export const MetadataListQuerySchema = t.Object({
 
 export const MetadataParamsSchema = t.Object({
     placeholderId: t.String({ minLength: 1 }),
+    pathname: t.String({ minLength: 1 }),
 });
 
 export const UpsertMetadataBodySchema = t.Union([

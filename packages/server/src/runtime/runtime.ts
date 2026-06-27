@@ -7,7 +7,7 @@ import { log } from "@/runtime/utils";
 import { routes } from "./routes";
 
 /**
- * Options for creating a Raurus runtime instance. The `metadataAdapter` and `storageAdapter` are optional; routes guard missing adapters and return 501 where appropriate. The `openapi` option defaults to true if not provided.
+ * Options for creating a Raurus runtime instance. The `databaseAdapter` and `storageAdapter` are optional; routes guard missing adapters and return 501 where appropriate. The `openapi` option defaults to true if not provided.
  */
 export interface CreateRuntimeOptions {
     /**
@@ -16,9 +16,9 @@ export interface CreateRuntimeOptions {
     baseUrl: string | URL;
 
     /**
-     * The metadata adapter to use for the Raurus instance.
+     * The database adapter to use for the Raurus instance.
      */
-    metadataAdapter?: RuntimeDatabaseAdapter | undefined;
+    databaseAdapter?: RuntimeDatabaseAdapter | undefined;
 
     /**
      * The storage adapter to use for the Raurus instance.
@@ -81,7 +81,7 @@ export function createRuntime(config: CreateRuntimeOptions) {
 
         .use(
             routes({
-                metadata: options.metadataAdapter,
+                database: options.databaseAdapter,
                 storage: options.storageAdapter,
             })
         );

@@ -1,34 +1,13 @@
 import { createClient } from "@libsql/client";
-import type { RaurusMetadata, RuntimeDatabaseAdapterBaseConfig, RuntimeDatabaseAdapterFactory } from "@raurus/core";
+import { FAILURE_CODES } from "@raurus/core";
+import type { RuntimeDatabaseAdapterBaseConfig, RuntimeDatabaseAdapterFactory } from "@raurus/core";
 
-interface LibsqlMetadataAdapterConfig extends RuntimeDatabaseAdapterBaseConfig {
+export interface LibsqlMetadataAdapterConfig extends RuntimeDatabaseAdapterBaseConfig {
     /**
      * @see {@link https://github.com/libsql/libsql-client-ts#supported-urls}
      */
     url: string;
     authToken?: string;
-}
-
-interface MetadataRow {
-    placeholder_id: string;
-    type: string;
-    asset_key: string | null;
-    text_content: string | null;
-}
-
-function rowToRaurusMetadata(row: MetadataRow): RaurusMetadata {
-    if (row.type === "photo" || row.type === "video") {
-        return {
-            placeholderId: row.placeholder_id,
-            type: row.type as "photo" | "video",
-            assetKey: row.asset_key ?? "",
-        };
-    }
-    return {
-        placeholderId: row.placeholder_id,
-        type: "text",
-        text: row.text_content ?? "",
-    };
 }
 
 export const libSqlDatabaseAdapter: RuntimeDatabaseAdapterFactory<LibsqlMetadataAdapterConfig> = (config) => {
@@ -56,93 +35,59 @@ export const libSqlDatabaseAdapter: RuntimeDatabaseAdapterFactory<LibsqlMetadata
         async checkConnection() {
             try {
                 await client.execute("SELECT 1");
-                return { ok: true, data: null };
+                return {
+                    ok: true,
+                    data: null,
+                };
             } catch (error) {
                 return {
                     ok: false,
                     error: error instanceof Error ? error : new Error(String(error)),
-                    code: "CONNECTION" as const,
+                    code: FAILURE_CODES.CONNECTION,
                 };
             }
         },
 
-        async getMetadata(placeholderId) {
+        async upsertContentMetadata(placeholderId, _path, payload) {
+            // Upsert the metadata into the database
+            const { type } = payload;
+            const assetKey = type === "text" ? null : payload.assetKey;
+            const textContent = type === "text" ? payload.text : null;
+
             try {
-                const result = await client.execute({
-                    sql: "SELECT * FROM raurus_metadata WHERE placeholder_id = ?",
-                    args: [placeholderId],
-                });
-
-                if (result.rows.length === 0) {
-                    return { ok: true, data: null };
-                }
-
-                return { ok: true, data: rowToRaurusMetadata(result.rows[0] as unknown as MetadataRow) };
-            } catch (error) {
-                return {
-                    ok: false,
-                    error: error instanceof Error ? error : new Error(String(error)),
-                    code: "CONNECTION" as const,
-                };
-            }
-        },
-
-        async bulkGetMetadataByPlaceholderIds(placeholderIds) {
-            try {
-                if (placeholderIds.length === 0) {
-                    const result = await client.execute("SELECT * FROM raurus_metadata");
-                    return {
-                        ok: true,
-                        data: (result.rows as unknown as MetadataRow[]).map(rowToRaurusMetadata),
-                    };
-                }
-
-                const placeholders = placeholderIds.map(() => "?").join(", ");
-                const result = await client.execute({
-                    sql: `SELECT * FROM raurus_metadata WHERE placeholder_id IN (${placeholders})`,
-                    args: placeholderIds,
-                });
+                client.execute(
+                    `
+                    INSERT INTO raurus_metadata (placeholder_id, type, asset_key, text_content, updated_at)
+                    VALUES (?, ?, ?, ?, datetime('now'))
+                    ON CONFLICT(placeholder_id) DO UPDATE SET
+                        type = excluded.type,
+                        asset_key = excluded.asset_key,
+                        text_content = excluded.text_content,
+                        updated_at = datetime('now')
+                    `,
+                    [placeholderId, type, assetKey, textContent]
+                );
 
                 return {
                     ok: true,
-                    data: (result.rows as unknown as MetadataRow[]).map(rowToRaurusMetadata),
+                    data: null,
                 };
             } catch (error) {
                 return {
                     ok: false,
                     error: error instanceof Error ? error : new Error(String(error)),
-                    code: "CONNECTION" as const,
+                    code: FAILURE_CODES.UPSTREAM,
                 };
             }
         },
 
-        async upsertContentMetadata(placeholderId, type, assetKeyOrText) {
-            try {
-                const isAsset = type === "photo" || type === "video";
+        async listContentMetadataByPath(_path) {
+            // List metadata by path
 
-                await client.execute({
-                    sql: `INSERT INTO raurus_metadata (
-                            placeholder_id,
-                            type,
-                            ${isAsset ? "asset_key" : "text_content"},
-                            updated_at
-                        )
-                        VALUES (?, ?, ?, datetime('now'))
-                        ON CONFLICT(placeholder_id) DO UPDATE SET
-                            type = excluded.type,
-                            asset_key = ${isAsset ? "excluded.asset_key" : "NULL"},
-                            text_content = ${isAsset ? "NULL" : "excluded.text_content"},
-                            updated_at = excluded.updated_at`,
-                    args: [placeholderId, type, assetKeyOrText],
-                });
-                return { ok: true, data: null };
-            } catch (error) {
-                return {
-                    ok: false,
-                    error: error instanceof Error ? error : new Error(String(error)),
-                    code: "CONNECTION" as const,
-                };
-            }
+            return {
+                ok: true,
+                data: [],
+            };
         },
     };
 };

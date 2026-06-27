@@ -20,10 +20,7 @@
         ".": "./dist/index.mjs",
         "./adapters/database": "./dist/adapters/database/index.mjs",
         "./adapters/database/libsql": "./dist/adapters/database/libsql/index.mjs",
-        "./adapters/database/memory": "./dist/adapters/database/memory/index.mjs",
         "./adapters/storage": "./dist/adapters/storage/index.mjs",
-        "./adapters/storage/local": "./dist/adapters/storage/local/index.mjs",
-        "./adapters/storage/memory": "./dist/adapters/storage/memory/index.mjs",
         "./adapters/storage/s3mini": "./dist/adapters/storage/s3mini/index.mjs",
         "./runtime": "./dist/runtime/index.mjs",
         "./package.json": "./package.json"

@@ -1,3 +1,4 @@
+import { METADATA_TYPES } from "@raurus/core";
 import type { RuntimeDatabaseAdapter, RuntimeStorageAdapter } from "@raurus/core";
 import { Elysia } from "elysia";
 
@@ -6,29 +7,29 @@ import { log } from "@/runtime/utils";
 import * as m from "./models";
 
 interface RouteOptions {
-    metadata?: RuntimeDatabaseAdapter | undefined;
+    database?: RuntimeDatabaseAdapter | undefined;
     storage?: RuntimeStorageAdapter | undefined;
 }
 
-export function routes({ metadata, storage }: RouteOptions) {
+export function routes({ database, storage }: RouteOptions) {
     return (
         new Elysia({ name: "raurus.routes" })
             .derive(() => ({
-                options: {
-                    metadata,
+                custom: {
+                    database,
                     storage,
                 },
             }))
 
             .macro({
-                checkMetadata(enable: boolean) {
+                checkDatabase(enable: boolean) {
                     return {
-                        async beforeHandle({ options, status }) {
+                        async beforeHandle({ custom, status }) {
                             if (!enable) {
                                 return;
                             }
 
-                            if (!options?.metadata) {
+                            if (!custom?.database) {
                                 log.warning("Metadata adapter is not configured");
 
                                 return status(501, {
@@ -38,17 +39,15 @@ export function routes({ metadata, storage }: RouteOptions) {
                             }
                         },
 
-                        resolve({ options }) {
+                        resolve({ custom }) {
                             if (!enable) {
-                                return {
-                                    options,
-                                };
+                                return { custom };
                             }
 
                             return {
-                                options: {
-                                    ...options,
-                                    metadata: options?.metadata as RuntimeDatabaseAdapter,
+                                custom: {
+                                    ...custom,
+                                    database: custom?.database as RuntimeDatabaseAdapter,
                                 },
                             };
                         },
@@ -57,12 +56,12 @@ export function routes({ metadata, storage }: RouteOptions) {
 
                 checkStorage(enable: boolean) {
                     return {
-                        async beforeHandle({ options, status }) {
+                        async beforeHandle({ custom, status }) {
                             if (!enable) {
                                 return;
                             }
 
-                            if (!options?.storage) {
+                            if (!custom?.storage) {
                                 log.warning("Storage adapter is not configured");
 
                                 return status(501, {
@@ -72,17 +71,17 @@ export function routes({ metadata, storage }: RouteOptions) {
                             }
                         },
 
-                        resolve({ options }) {
+                        resolve({ custom }) {
                             if (!enable) {
                                 return {
-                                    options,
+                                    custom,
                                 };
                             }
 
                             return {
-                                options: {
-                                    ...options,
-                                    storage: options?.storage as RuntimeStorageAdapter,
+                                custom: {
+                                    ...custom,
+                                    storage: custom?.storage as RuntimeStorageAdapter,
                                 },
                             };
                         },
@@ -113,121 +112,28 @@ export function routes({ metadata, storage }: RouteOptions) {
                 }
             )
 
-            // Metadata routes
-            .get(
-                "/metadata",
-                async ({ status, set, options, query }) => {
-                    log.debug("Metadata list requested");
-
-                    const placeholderIdsRaw = query?.placeholderIds;
-                    const placeholderIds = placeholderIdsRaw
-                        ? placeholderIdsRaw
-                              .split(",")
-                              .map((s: string) => s.trim())
-                              .filter(Boolean)
-                        : [];
-
-                    const result = await options.metadata.bulkGetMetadataByPlaceholderIds(placeholderIds);
-
-                    if (!result.ok) {
-                        log.error("Failed to list metadata", { error: result.error.message });
-                        const code = m.failureCodeToStatus(result.code);
-                        set.status = code;
-                        return {
-                            message: "Error",
-                            error: "Failed to list metadata",
-                        };
-                    }
-
-                    log.debug("Metadata list returned", { count: result.data.length });
-                    return status(200, {
-                        message: "OK",
-                        data: result.data,
-                    });
-                },
-                {
-                    detail: {
-                        summary: "List Metadata",
-                        description:
-                            "List metadata records by placeholder IDs. Provide `placeholderIds` as a comma-separated list.",
-                        tags: ["Metadata"],
-                    },
-                    query: m.MetadataListQuerySchema,
-                    response: {
-                        200: m.MetadataListResponseSchema,
-                        400: m.ErrorResponseSchema,
-                        501: m.ErrorResponseSchema,
-                    },
-                    checkMetadata: true,
-                }
-            )
-
-            .get(
-                "/metadata/:placeholderId",
-                async ({ set, options, params: { placeholderId } }) => {
-                    log.debug("Metadata get requested", { placeholderId });
-
-                    const result = await options.metadata.getMetadata(placeholderId);
-
-                    if (!result.ok) {
-                        log.error("Failed to get metadata", { placeholderId, error: result.error.message });
-                        const code = m.failureCodeToStatus(result.code);
-                        set.status = code;
-                        return {
-                            message: "Error",
-                            error: "Failed to get metadata",
-                        };
-                    }
-
-                    if (result.data === null) {
-                        set.status = 404;
-                        return {
-                            message: "Error",
-                            error: "Metadata not found",
-                        };
-                    }
-
-                    log.debug("Metadata returned", { placeholderId });
-                    return result.data;
-                },
-                {
-                    detail: {
-                        summary: "Get Metadata",
-                        description: "Get a single metadata record by placeholder ID.",
-                        tags: ["Metadata"],
-                    },
-                    params: m.MetadataParamsSchema,
-                    response: {
-                        200: m.MetadataResponseSchema,
-                        400: m.ErrorResponseSchema,
-                        404: m.ErrorResponseSchema,
-                        501: m.ErrorResponseSchema,
-                    },
-                    checkMetadata: true,
-                }
-            )
-
             .put(
-                "/metadata/:placeholderId",
-                async ({ status, set, options, params: { placeholderId }, body }) => {
-                    log.debug("Metadata upsert requested", { placeholderId });
+                "/placeholders/:placeholderId/pathnames/:pathname",
+                async ({ status, set, params, custom, body }) => {
+                    log.debug("Metadata upsert requested", { placeholderId: params.placeholderId });
 
-                    if (!options.metadata) {
-                        log.warning("Metadata adapter is not configured");
-
-                        return status(501, {
-                            message: "Error",
-                            error: "Metadata adapter is not configured",
-                        });
-                    }
-
+                    const { placeholderId, pathname } = params;
                     const result =
-                        body.type === "text"
-                            ? await options.metadata.upsertContentMetadata(placeholderId, body.type, body.text)
-                            : await options.metadata.upsertContentMetadata(placeholderId, body.type, body.assetKey);
+                        body.type === METADATA_TYPES.TEXT
+                            ? await custom.database.upsertContentMetadata(placeholderId, pathname, {
+                                  type: METADATA_TYPES.TEXT,
+                                  text: body.text,
+                              })
+                            : await custom.database.upsertContentMetadata(placeholderId, pathname, {
+                                  type: body.type,
+                                  assetKey: body.assetKey,
+                              });
 
                     if (!result.ok) {
-                        log.error("Failed to upsert metadata", { placeholderId, error: result.error.message });
+                        log.error("Failed to upsert metadata", {
+                            placeholderId: params.placeholderId,
+                            error: result.error.message,
+                        });
                         const code = m.failureCodeToStatus(result.code);
                         set.status = code;
                         return {
@@ -236,7 +142,7 @@ export function routes({ metadata, storage }: RouteOptions) {
                         };
                     }
 
-                    log.debug("Metadata upserted", { placeholderId });
+                    log.debug("Metadata upserted", { placeholderId: params.placeholderId });
                     return status(200, { message: "OK" });
                 },
                 {
@@ -252,74 +158,19 @@ export function routes({ metadata, storage }: RouteOptions) {
                         400: m.ErrorResponseSchema,
                         501: m.ErrorResponseSchema,
                     },
-                    checkMetadata: true,
-                }
-            )
-
-            // Asset content serving (public)
-            .get(
-                "/asset-content/:assetKey",
-                async ({ status, set, options, params: { assetKey } }) => {
-                    log.debug("Asset content requested", { assetKey });
-
-                    if (!options.storage) {
-                        log.warning("Storage adapter is not configured");
-
-                        return status(501, {
-                            message: "Error",
-                            error: "Storage adapter is not configured",
-                        });
-                    }
-
-                    if (!options.storage.getAssetContent) {
-                        log.warning("Storage adapter does not support asset content", {
-                            adapterId: options.storage.id,
-                        });
-
-                        return status(501, {
-                            message: "Error",
-                            error: "Storage adapter does not support getAssetContent",
-                        });
-                    }
-
-                    const result = await options.storage.getAssetContent(assetKey);
-
-                    if (!result.ok) {
-                        log.error("Failed to get asset content", { assetKey, error: result.error.message });
-                        const code = m.failureCodeToStatus(result.code);
-                        set.status = code;
-                        return {
-                            message: "Error",
-                            error: "Failed to get asset content",
-                        };
-                    }
-
-                    set.headers["content-type"] = result.data.contentType;
-                    return new Response(result.data.data, {
-                        status: 200,
-                        headers: { "content-type": result.data.contentType },
-                    });
-                },
-                {
-                    detail: {
-                        summary: "Get Asset Content",
-                        description:
-                            "Returns the raw content of an asset by its key. Public endpoint so media can be displayed for all visitors.",
-                        tags: ["Operations"],
-                    },
-                    params: m.AssetContentParamsSchema,
+                    checkDatabase: true,
                 }
             )
 
             // Storage routes
             .get(
-                "/presigned-url",
-                async ({ status, set, options, query: { assetKey, expiresIn } }) => {
-                    log.debug("Presigned URL requested", { assetKey, expiresIn });
+                "/assets/presigned-upload-url",
+                async ({ status, set, custom, query: { assetKey } }) => {
+                    log.debug("Presigned URL requested", { assetKey });
 
-                    if (!options.storage.createPresignedUploadUrl) {
+                    if (!custom.storage.createPresignedUploadUrl) {
                         log.warning("Storage adapter does not support presigned URLs", {
-                            adapterId: options.storage.id,
+                            adapterId: custom.storage.id,
                         });
 
                         return status(501, {
@@ -328,7 +179,7 @@ export function routes({ metadata, storage }: RouteOptions) {
                         });
                     }
 
-                    const result = await options.storage.createPresignedUploadUrl(assetKey, expiresIn);
+                    const result = await custom.storage.createPresignedUploadUrl(assetKey);
 
                     if (!result.ok) {
                         log.error("Failed to create presigned URL", { assetKey, error: result.error.message });
@@ -364,81 +215,14 @@ export function routes({ metadata, storage }: RouteOptions) {
                 }
             )
 
-            .get(
-                "/presigned-download-url",
-                async ({ status, set, options, query: { assetKey, expiresIn } }) => {
-                    log.debug("Presigned download URL requested", { assetKey, expiresIn });
-
-                    if (!options.storage.createPresignedDownloadUrl) {
-                        log.warning("Storage adapter does not support presigned download URLs", {
-                            adapterId: options.storage.id,
-                        });
-
-                        return status(501, {
-                            message: "Error",
-                            error: "Storage adapter does not support createPresignedDownloadUrl",
-                        });
-                    }
-
-                    const result = await options.storage.createPresignedDownloadUrl(assetKey, expiresIn);
-
-                    if (!result.ok) {
-                        log.error("Failed to create presigned download URL", {
-                            assetKey,
-                            error: result.error.message,
-                        });
-
-                        const code = m.failureCodeToStatus(result.code);
-                        set.status = code;
-
-                        return {
-                            message: "Error",
-                            error: "Failed to create presigned download URL",
-                        };
-                    }
-
-                    log.debug("Presigned download URL created", { assetKey });
-
-                    return status(200, {
-                        message: "OK",
-                        data: {
-                            url: result.data.url,
-                        },
-                    });
-                },
-                {
-                    detail: {
-                        summary: "Get Presigned Download URL",
-                        description: "Generate a presigned URL for downloading an asset from a storage service.",
-                        tags: ["Operations"],
-                    },
-                    query: m.PresignedUrlQuerySchema,
-                    response: {
-                        200: m.PresignedUrlResponseSchema,
-                        400: m.ErrorResponseSchema,
-                        501: m.ErrorResponseSchema,
-                    },
-                    checkStorage: true,
-                }
-            )
-
             .delete(
                 "/asset/:assetKey",
-                async ({ status, set, options, params: { assetKey } }) => {
+                async ({ status, set, custom, params: { assetKey } }) => {
                     log.debug("Delete asset requested", { assetKey });
 
-                    if (!options.storage) {
-                        log.warning("Storage adapter is not configured");
-
-                        return status(501, {
-                            message: "Error",
-                            error: "Storage adapter is not configured",
-                        });
-                    }
-
-                    if (!options.storage.deleteAsset) {
+                    if (!custom.storage.deleteAsset) {
                         log.warning("Storage adapter does not support asset deletion", {
-                            adapterId: options.storage.id,
+                            adapterId: custom.storage.id,
                         });
 
                         return status(501, {
@@ -447,7 +231,7 @@ export function routes({ metadata, storage }: RouteOptions) {
                         });
                     }
 
-                    const result = await options.storage.deleteAsset(assetKey);
+                    const result = await custom.storage.deleteAsset(assetKey);
 
                     if (!result.ok) {
                         log.error("Failed to delete asset", { assetKey, error: result.error.message });
@@ -477,81 +261,7 @@ export function routes({ metadata, storage }: RouteOptions) {
                         404: m.ErrorResponseSchema,
                         501: m.ErrorResponseSchema,
                     },
-                }
-            )
-
-            .post(
-                "/upload-asset",
-                async ({ status, set, options, body }) => {
-                    log.debug("Upload asset requested");
-
-                    if (!options.storage) {
-                        log.warning("Storage adapter is not configured");
-
-                        return status(501, {
-                            message: "Error",
-                            error: "Storage adapter is not configured",
-                        });
-                    }
-
-                    if (!options.storage.uploadAsset) {
-                        log.warning("Storage adapter does not support direct asset upload", {
-                            adapterId: options.storage.id,
-                        });
-
-                        return status(501, {
-                            message: "Error",
-                            error: "Storage adapter does not support uploadAsset",
-                        });
-                    }
-
-                    const { files } = body;
-                    const firstFile = Array.isArray(files) ? files[0] : files;
-                    if (!firstFile) {
-                        log.error("No file provided");
-
-                        return status(400, {
-                            message: "Error",
-                            error: "No file provided",
-                        });
-                    }
-                    const buffer = await firstFile.arrayBuffer();
-                    const ext = firstFile.name.includes(".") ? firstFile.name.split(".").pop() || "bin" : "bin";
-                    const assetKey = `${crypto.randomUUID()}.${ext}`;
-
-                    const result = await options.storage.uploadAsset(assetKey, buffer);
-
-                    if (!result.ok) {
-                        log.error("Failed to upload asset", { assetKey, error: result.error.message });
-                        const code = m.failureCodeToStatus(result.code);
-                        set.status = code;
-                        return {
-                            message: "Error",
-                            error: "Failed to upload asset",
-                        };
-                    }
-
-                    log.debug("Asset uploaded", { assetKey });
-                    return status(200, {
-                        message: "OK",
-                        data: {
-                            assetKey,
-                        },
-                    });
-                },
-                {
-                    detail: {
-                        summary: "Upload Asset",
-                        description:
-                            "Upload an asset file. The file is stored via the configured storage adapter and an asset key is returned.",
-                        tags: ["Operations"],
-                    },
-                    body: m.UploadAssetBodySchema,
-                    response: {
-                        200: m.UploadAssetResponseSchema,
-                        400: m.ErrorResponseSchema,
-                        501: m.ErrorResponseSchema,
-                    },
+                    checkStorage: true,
                 }
             )
     );

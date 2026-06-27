@@ -1,2 +1,1 @@
-export { memoryDatabaseAdapter } from "./memory/index.ts";
-export { libSqlDatabaseAdapter } from "./libsql/index.ts";
+export { libSqlDatabaseAdapter, type LibsqlMetadataAdapterConfig } from "./libsql/index.ts";

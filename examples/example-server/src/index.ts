@@ -1,11 +1,7 @@
 import { raurus } from "@raurus/server";
-import { libSqlDatabaseAdapter } from "@raurus/server/adapters/database";
-import { createLocalStorageAdapter } from "@raurus/server/adapters/storage";
 
 const server = raurus({
     baseUrl: "http://localhost:3000",
-    metadataAdapter: libSqlDatabaseAdapter({ url: "file:./data.db" }),
-    storageAdapter: createLocalStorageAdapter({ basePath: "./uploads" }),
 });
 
 console.log(`Raurus server listening on http://localhost:3000`);

@@ -14,9 +14,7 @@ export interface Failure {
     code?: FailureCode;
 }
 
-export type AdapterMethodResult<T> = Success<T> | Failure;
-
-export type RaurusAsset = ArrayBuffer;
+export type AdapterAPIResult<T> = Success<T> | Failure;
 
 export type PhotoMetadataType = typeof METADATA_TYPES.PHOTO;
 export type TextMetadataType = typeof METADATA_TYPES.TEXT;
@@ -28,16 +26,12 @@ export type RaurusMetadata = {
     placeholderId: string;
 } & (
     | {
-          type: PhotoMetadataType;
+          type: PhotoMetadataType | VideoMetadataType;
           assetKey: string;
       }
     | {
           type: TextMetadataType;
           text: string;
-      }
-    | {
-          type: VideoMetadataType;
-          assetKey: string;
       }
 );
 
@@ -47,7 +41,7 @@ export interface RuntimeStorageAdapterBaseConfig {}
 
 export interface CommonRuntimeAdapter {
     apiVersion: "1";
-    checkConnection: () => Promise<AdapterMethodResult<null>>;
+    checkConnection: () => Promise<AdapterAPIResult<null>>;
 }
 
 export type RaurusDatabaseAdapterId = `${Lowercase<string>}-database-adapter`;
@@ -56,35 +50,29 @@ export type RaurusStorageAdapterId = `${Lowercase<string>}-storage-adapter`;
 export interface RuntimeDatabaseAdapter extends CommonRuntimeAdapter {
     id: RaurusDatabaseAdapterId;
 
-    getMetadata: (placeholderId: string) => Promise<AdapterMethodResult<RaurusMetadata | null>>;
+    upsertContentMetadata: (
+        placeholderId: string,
+        path: string,
+        payload:
+            | {
+                  type: PhotoMetadataType | VideoMetadataType;
+                  assetKey: string;
+              }
+            | {
+                  type: TextMetadataType;
+                  text: string;
+              }
+    ) => Promise<AdapterAPIResult<null>>;
 
-    bulkGetMetadataByPlaceholderIds: (placeholderIds: string[]) => Promise<AdapterMethodResult<RaurusMetadata[]>>;
-
-    upsertContentMetadata: {
-        (
-            placeholderId: string,
-            type: PhotoMetadataType | VideoMetadataType,
-            assetKey: string
-        ): Promise<AdapterMethodResult<null>>;
-        (placeholderId: string, type: TextMetadataType, text: string): Promise<AdapterMethodResult<null>>;
-    };
+    listContentMetadataByPath: (path: string) => Promise<AdapterAPIResult<RaurusMetadata[]>>;
 }
 
 export interface RuntimeStorageAdapter extends CommonRuntimeAdapter {
     id: RaurusStorageAdapterId;
 
-    uploadAsset?: (assetKey: string, asset: RaurusAsset) => Promise<AdapterMethodResult<{ assetKey: string }>>;
+    createPresignedUploadUrl?: (assetKey: string) => Promise<AdapterAPIResult<{ url: string; headers?: Headers }>>;
 
-    createPresignedUploadUrl?: (assetKey: string, expiresIn?: number) => Promise<AdapterMethodResult<{ url: string }>>;
-
-    createPresignedDownloadUrl?: (
-        assetKey: string,
-        expiresIn?: number
-    ) => Promise<AdapterMethodResult<{ url: string }>>;
-
-    deleteAsset?: (assetKey: string) => Promise<AdapterMethodResult<null>>;
-
-    getAssetContent?: (assetKey: string) => Promise<AdapterMethodResult<{ data: ArrayBuffer; contentType: string }>>;
+    deleteAsset?: (assetKey: string) => Promise<AdapterAPIResult<null>>;
 }
 
 export type RuntimeDatabaseAdapterFactory<
