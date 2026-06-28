@@ -106,24 +106,23 @@ export function routes({ database, storage }: RouteOptions) {
 
             .put(
                 "/placeholders/:placeholderId/pathnames/:pathname",
-                async ({ status, set, params, dependencies, body }) => {
-                    log.debug("Metadata upsert requested", { placeholderId: params.placeholder_id });
+                async ({ status, set, params: { pathname, placeholder_id }, dependencies, body }) => {
+                    log.debug("Metadata upsert requested", { placeholder_id });
 
-                    const { placeholder_id: placeholderId, pathname } = params;
                     const result =
                         body.type === METADATA_TYPES.TEXT
-                            ? await dependencies.database.upsertContentMetadata(placeholderId, pathname, {
+                            ? await dependencies.database.upsertContentMetadata(placeholder_id, pathname, {
                                   type: METADATA_TYPES.TEXT,
                                   text: body.text,
                               })
-                            : await dependencies.database.upsertContentMetadata(placeholderId, pathname, {
+                            : await dependencies.database.upsertContentMetadata(placeholder_id, pathname, {
                                   type: body.type,
                                   assetKey: body.asset_key,
                               });
 
                     if (!result.ok) {
                         log.error("Failed to upsert metadata", {
-                            placeholderId: params.placeholder_id,
+                            placeholderId: placeholder_id,
                             error: result.error.message,
                         });
                         const code = m.failureCodeToStatus(result.code);
@@ -134,7 +133,7 @@ export function routes({ database, storage }: RouteOptions) {
                         };
                     }
 
-                    log.debug("Metadata upserted", { placeholderId: params.placeholder_id });
+                    log.debug("Metadata upserted", { placeholder_id });
                     return status(200, { message: "OK" });
                 },
                 {
@@ -157,8 +156,8 @@ export function routes({ database, storage }: RouteOptions) {
             // Storage routes
             .get(
                 "/assets/presigned-upload-url",
-                async ({ status, set, dependencies, query: { asset_key: assetKey } }) => {
-                    log.debug("Presigned URL requested", { assetKey });
+                async ({ status, set, dependencies, query: { asset_key } }) => {
+                    log.debug("Presigned URL requested", { assetKey: asset_key });
 
                     if (!dependencies.storage.createPresignedUploadUrl) {
                         log.warning("Storage adapter does not support presigned URLs", {
@@ -171,10 +170,13 @@ export function routes({ database, storage }: RouteOptions) {
                         });
                     }
 
-                    const result = await dependencies.storage.createPresignedUploadUrl(assetKey);
+                    const result = await dependencies.storage.createPresignedUploadUrl(asset_key);
 
                     if (!result.ok) {
-                        log.error("Failed to create presigned URL", { assetKey, error: result.error.message });
+                        log.error("Failed to create presigned URL", {
+                            asset_key,
+                            error: result.error.message,
+                        });
                         const code = m.failureCodeToStatus(result.code);
                         set.status = code;
                         return {
@@ -183,7 +185,7 @@ export function routes({ database, storage }: RouteOptions) {
                         };
                     }
 
-                    log.debug("Presigned URL created", { assetKey });
+                    log.debug("Presigned URL created", { asset_key });
                     return status(200, {
                         message: "OK",
                         data: {
