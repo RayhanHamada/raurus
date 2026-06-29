@@ -1,1 +1,1 @@
-export * from "./use-raurus-client";
+export * from "./useRaurus";

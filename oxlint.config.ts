@@ -22,6 +22,7 @@ export default defineConfig({
         "require-await": "off",
         "jsx-a11y/media-has-caption": "off",
         "no-shadow": "off",
+        "react/exhaustive-deps": "error",
     },
     overrides: [
         {
