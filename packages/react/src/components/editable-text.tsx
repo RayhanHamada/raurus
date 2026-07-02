@@ -36,16 +36,16 @@ function createEditableTextElement<Tag extends EditableTag>(As: Tag) {
             () =>
                 cn(
                     // Edit mode
-                    "data-raurus-edit-mode:outline data-raurus-edit-mode:outline-dotted data-raurus-edit-mode:outline-zinc-400",
+                    "raurus:data-raurus-edit-mode:outline raurus:data-raurus-edit-mode:outline-dotted raurus:data-raurus-edit-mode:outline-zinc-400",
 
                     // Hover
-                    "data-raurus-edit-mode:hover:outline-blue-400",
+                    "raurus:data-raurus-edit-mode:hover:outline-blue-400",
 
                     // Selected
-                    "data-raurus-selected:outline-2 data-raurus-selected:outline-solid data-raurus-selected:outline-blue-500",
+                    "raurus:data-raurus-selected:outline-2 raurus:data-raurus-selected:outline-solid raurus:data-raurus-selected:outline-blue-500",
 
                     // Editing
-                    "data-raurus-editing:outline-green-500 data-raurus-editing:cursor-text",
+                    "raurus:data-raurus-editing:outline-green-500 raurus:data-raurus-editing:cursor-text",
                     props.className
                 ),
             [props.className]

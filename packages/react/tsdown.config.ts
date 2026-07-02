@@ -6,6 +6,9 @@ export default defineConfig({
     platform: "neutral",
     dts: true,
     exports: true,
+    css: {
+        transformer: "postcss",
+    },
     entry: ["./src/client.ts", "./src/server.ts"],
     plugins: [tailwindPlugin(), injectCssPlugin()],
     deps: {
