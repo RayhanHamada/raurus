@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { FC, PropsWithChildren } from "react";
 
 import type { Data } from "@/common";
@@ -31,6 +31,11 @@ export const RaurusClientProvider: FC<PropsWithChildren<RaurusClientProviderProp
         setEditingId(null);
     }, []);
 
+    const deselect = useCallback(() => {
+        setSelectedId(null);
+        setEditingId(null);
+    }, []);
+
     const startEditing = useCallback((id: string) => {
         setSelectedId(id);
         setEditingId(id);
@@ -42,6 +47,31 @@ export const RaurusClientProvider: FC<PropsWithChildren<RaurusClientProviderProp
 
     const toggleEditMode = () => setEditMode((prev) => !prev);
 
+    const selectedRef = useRef(selectedId);
+    selectedRef.current = selectedId;
+    const editingRef = useRef(editingId);
+    editingRef.current = editingId;
+
+    useEffect(() => {
+        function handleMouseDown(e: globalThis.MouseEvent) {
+            if (!selectedRef.current && !editingRef.current) {
+                return;
+            }
+
+            const target = e.target as HTMLElement | null;
+
+            if (target?.closest("[data-raurus-id]")) {
+                return;
+            }
+
+            setSelectedId(null);
+            setEditingId(null);
+        }
+
+        document.addEventListener("mousedown", handleMouseDown);
+        return () => document.removeEventListener("mousedown", handleMouseDown);
+    }, []);
+
     return (
         <RaurusContext.Provider
             value={{
@@ -51,6 +81,7 @@ export const RaurusClientProvider: FC<PropsWithChildren<RaurusClientProviderProp
 
                 selectedId,
                 select,
+                deselect,
 
                 editingId,
                 toggleEditMode,

@@ -10,6 +10,7 @@ export interface IRaurusContext {
     editingId: string | null;
 
     select: (id: string) => void;
+    deselect: () => void;
     startEditing: (id: string) => void;
     stopEditing: () => void;
 
