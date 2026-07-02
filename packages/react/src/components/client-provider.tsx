@@ -7,7 +7,7 @@ import { RaurusContext } from "@/context";
 export interface RaurusClientProviderProps {
     url: string | URL;
     initialData?: Data[];
-    defaultEditMode?: boolean;
+    editMode?: boolean;
 }
 
 const DEFAULT_INITIAL_DATA = [] as Data[];
@@ -15,10 +15,10 @@ const DEFAULT_EDIT_MODE = false;
 
 export const RaurusClientProvider: FC<PropsWithChildren<RaurusClientProviderProps>> = ({
     children,
-    defaultEditMode = DEFAULT_EDIT_MODE,
+    editMode: _editMode = DEFAULT_EDIT_MODE,
     initialData = DEFAULT_INITIAL_DATA,
 }) => {
-    const [editMode, setEditMode] = useState(defaultEditMode);
+    const [editMode, setEditMode] = useState(_editMode);
     const [selectedId, setSelectedId] = useState<string | null>(null);
     const [editingId, setEditingId] = useState<string | null>(null);
 
