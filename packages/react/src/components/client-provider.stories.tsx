@@ -26,7 +26,7 @@ export const DefaultEditModeOff: Story = {
 };
 
 export const DefaultEditModeOn: Story = {
-    args: { url: "https://example.com", defaultEditMode: true, children: <EditorStatus /> },
+    args: { url: "https://example.com", editMode: true, children: <EditorStatus /> },
     play: async ({ canvas }) => {
         await expect(canvas.getByTestId("edit-mode")).toHaveTextContent("ON");
     },
@@ -35,7 +35,7 @@ export const DefaultEditModeOn: Story = {
 export const WithEditableContent: Story = {
     args: {
         url: "https://example.com",
-        defaultEditMode: false,
+        editMode: false,
         children: <EditableH1 id="provider-story-h1">Provider Wrapped Heading</EditableH1>,
     },
 };

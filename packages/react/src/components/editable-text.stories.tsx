@@ -13,7 +13,10 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const H1: Story = {
-    args: { id: "story-h1", children: "Welcome to Raurus" },
+    args: {
+        id: "story-h1",
+        children: "Welcome to Raurus",
+    },
     play: async ({ canvas }) => {
         const heading = canvas.getByRole("heading", { name: /welcome to raurus/iu });
         await expect(heading).toBeVisible();
@@ -21,22 +24,41 @@ export const H1: Story = {
 };
 
 export const H1EditMode: Story = {
-    args: { id: "story-h1-edit", children: "Edit this heading" },
+    args: {
+        id: "story-h1-edit",
+        children: "Edit this heading",
+    },
     render: (args) => (
-        <RaurusClientProvider url="https://example.com" defaultEditMode>
+        <RaurusClientProvider url="https://example.com" editMode>
             <EditableH1 {...args} />
         </RaurusClientProvider>
     ),
 };
 
 export const Div: Story = {
-    args: { id: "story-div", children: "Some block content here" },
-    render: (args) => <EditableDiv {...args} />,
+    args: {
+        id: "story-div",
+        children: "Some block content here",
+    },
+    render: (args) => (
+        <RaurusClientProvider url="https://example.com" editMode>
+            <EditableDiv {...args} />
+            <br />
+            <EditableDiv id="story2-div">Another editable div</EditableDiv>
+        </RaurusClientProvider>
+    ),
 };
 
 export const Span: Story = {
-    args: { id: "story-span", children: "Inline text content" },
-    render: (args) => <EditableSpan {...args} />,
+    args: {
+        id: "story-span",
+        children: "Inline text content",
+    },
+    render: (args) => (
+        <RaurusClientProvider url="https://example.com" editMode>
+            <EditableSpan {...args} />
+        </RaurusClientProvider>
+    ),
 };
 
 export const CssCheck: Story = {
@@ -45,7 +67,11 @@ export const CssCheck: Story = {
         className: "raurus:text-red-500",
         children: "CssCheck",
     },
-    render: (args) => <EditableH1 {...args} />,
+    render: (args) => (
+        <RaurusClientProvider url="https://example.com" editMode>
+            <EditableH1 {...args} />
+        </RaurusClientProvider>
+    ),
     play: async ({ canvas }) => {
         const heading = canvas.getByRole("heading", { name: /csscheck/iu });
         await expect(getComputedStyle(heading).color).toBe("oklch(0.637 0.237 25.331)");
