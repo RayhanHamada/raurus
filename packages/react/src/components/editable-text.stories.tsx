@@ -23,7 +23,7 @@ export const H1: Story = {
 export const H1EditMode: Story = {
     args: { id: "story-h1-edit", children: "Edit this heading" },
     render: (args) => (
-        <RaurusClientProvider url="https://example.com" defaultEditMode={true}>
+        <RaurusClientProvider url="https://example.com" defaultEditMode>
             <EditableH1 {...args} />
         </RaurusClientProvider>
     ),

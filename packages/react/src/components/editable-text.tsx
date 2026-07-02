@@ -1,5 +1,5 @@
 import cn from "cnfast";
-import { createElement, useCallback, useLayoutEffect, useMemo, useRef } from "react";
+import { createElement, useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
 import type {
     ComponentProps,
     FocusEvent,
@@ -9,6 +9,7 @@ import type {
     MouseEvent,
     MouseEventHandler,
 } from "react";
+import { createPortal } from "react-dom";
 
 import { useRaurus } from "@/hooks";
 
@@ -51,6 +52,21 @@ function createEditableTextElement<Tag extends EditableTag>(As: Tag) {
             [props.className]
         );
         const ref = useRef<HTMLElement>(null);
+        const [hovered, setHovered] = useState(false);
+        const tooltipRef = useRef<HTMLDivElement>(null);
+
+        useLayoutEffect(() => {
+            if (!hovered || !ref.current || !tooltipRef.current) {
+                return;
+            }
+
+            const rect = ref.current.getBoundingClientRect();
+            const tooltip = tooltipRef.current;
+
+            tooltip.style.top = `${rect.top + window.scrollY}px`;
+            tooltip.style.left = `${rect.left + window.scrollX}px`;
+            tooltip.style.transform = "translateY(-100%)";
+        }, [hovered]);
 
         const onClick = useCallback(
             (e: MouseEvent<Element>) => {
@@ -85,6 +101,9 @@ function createEditableTextElement<Tag extends EditableTag>(As: Tag) {
             [ctx, customOnBlur]
         );
 
+        const onMouseEnter = useCallback(() => setHovered(true), []);
+        const onMouseLeave = useCallback(() => setHovered(false), []);
+
         /**
          * Focus when editing begins
          */
@@ -116,20 +135,39 @@ function createEditableTextElement<Tag extends EditableTag>(As: Tag) {
             selection.addRange(range);
         }, [editing]);
 
-        return createElement(As, {
-            ...props,
-            suppressContentEditableWarning: true,
-            ref,
-            className,
-            contentEditable,
-            onClick,
-            onBlur,
+        return (
+            <>
+                {ctx.editMode &&
+                    (hovered || selected || editing) &&
+                    createPortal(
+                        <div
+                            ref={tooltipRef}
+                            className="raurus:fixed raurus:z-50 raurus:pointer-events-none raurus:bg-blue-500 raurus:text-white raurus:text-xs raurus:px-1.5 raurus:py-0.5 raurus:rounded raurus:whitespace-nowrap raurus:font-mono"
+                        >
+                            {props.id}
+                        </div>,
+                        document.body
+                    )}
+                {
+                    createElement(As, {
+                        ...props,
+                        suppressContentEditableWarning: true,
+                        ref,
+                        className,
+                        contentEditable,
+                        onClick,
+                        onBlur,
+                        onMouseEnter,
+                        onMouseLeave,
 
-            "data-raurus-id": props.id,
-            "data-raurus-edit-mode": ctx.editMode || undefined,
-            "data-raurus-selected": selected || undefined,
-            "data-raurus-editing": editing || undefined,
-        }) as JSX.Element;
+                        "data-raurus-id": props.id,
+                        "data-raurus-edit-mode": ctx.editMode || undefined,
+                        "data-raurus-selected": selected || undefined,
+                        "data-raurus-editing": editing || undefined,
+                    }) as JSX.Element
+                }
+            </>
+        );
     }
 
     Component.displayName = `RaurusEditable${As.toUpperCase()}` as const;
