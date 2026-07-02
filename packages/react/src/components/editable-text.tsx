@@ -27,7 +27,7 @@ function createEditableTextElement<Tag extends EditableTag>(As: Tag) {
 
         const selected = ctx.selectedId === props.id;
         const editing = ctx.editMode && ctx.editingId === props.id;
-        const contentEditable = ctx.editMode && props.plainText ? "plaintext-only" : ctx.editMode;
+        const contentEditable = editing && props.plainText ? "plaintext-only" : editing;
 
         const customOnClick = props.onClick as MouseEventHandler<Element> | undefined;
         const customOnBlur = props.onBlur as FocusEventHandler<Element> | undefined;
