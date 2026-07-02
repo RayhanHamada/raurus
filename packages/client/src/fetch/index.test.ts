@@ -100,8 +100,8 @@ describe(createApiClient, () => {
             .mockResolvedValue(Response.json({ message: "Error", error: "Not implemented" }, { status: 501 }));
 
         const client = createApiClient({ baseUrl: "https://api.example.com" });
-        await client.DELETE("/_raurus/asset/{assetKey}", {
-            params: { path: { assetKey: "a key/with spaces" } },
+        await client.DELETE("/_raurus/asset/{asset_key}", {
+            params: { path: { asset_key: "a key/with spaces" } },
         });
 
         const request = getLastRequest(fetchMock);

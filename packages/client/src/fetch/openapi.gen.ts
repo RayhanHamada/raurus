@@ -19,7 +19,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/_raurus/placeholders/{placeholderId}/pathnames/{pathname}": {
+    "/_raurus/placeholders/{placeholder_id}/pathnames/{pathname}": {
         parameters: {
             query?: never;
             header?: never;
@@ -31,7 +31,7 @@ export interface paths {
          * Upsert Metadata
          * @description Create or update a metadata record for a placeholder.
          */
-        put: operations["put_raurusPlaceholdersByPlaceholderIdPathnamesByPathname"];
+        put: operations["put_raurusPlaceholdersByPlaceholder_idPathnamesByPathname"];
         post?: never;
         delete?: never;
         options?: never;
@@ -59,7 +59,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/_raurus/asset/{assetKey}": {
+    "/_raurus/asset/{asset_key}": {
         parameters: {
             query?: never;
             header?: never;
@@ -73,7 +73,7 @@ export interface paths {
          * Delete Asset
          * @description Delete an asset from the storage service.
          */
-        delete: operations["delete_raurusAssetByAssetKey"];
+        delete: operations["delete_raurusAssetByAsset_key"];
         options?: never;
         head?: never;
         patch?: never;
@@ -120,7 +120,7 @@ export interface operations {
             };
         };
     };
-    put_raurusPlaceholdersByPlaceholderIdPathnamesByPathname: {
+    put_raurusPlaceholdersByPlaceholder_idPathnamesByPathname: {
         parameters: {
             query?: never;
             header?: never;
@@ -253,7 +253,7 @@ export interface operations {
             };
         };
     };
-    delete_raurusAssetByAssetKey: {
+    delete_raurusAssetByAsset_key: {
         parameters: {
             query?: never;
             header?: never;

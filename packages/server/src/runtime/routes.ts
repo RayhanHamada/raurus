@@ -105,7 +105,7 @@ export function routes({ database, storage }: RouteOptions) {
             )
 
             .put(
-                "/placeholders/:placeholderId/pathnames/:pathname",
+                "/placeholders/:placeholder_id/pathnames/:pathname",
                 async ({ status, set, params: { pathname, placeholder_id }, dependencies, body }) => {
                     log.debug("Metadata upsert requested", { placeholder_id });
 
@@ -210,9 +210,9 @@ export function routes({ database, storage }: RouteOptions) {
             )
 
             .delete(
-                "/asset/:assetKey",
-                async ({ status, set, dependencies, params: { asset_key: assetKey } }) => {
-                    log.debug("Delete asset requested", { assetKey });
+                "/asset/:asset_key",
+                async ({ status, set, dependencies, params: { asset_key } }) => {
+                    log.debug("Delete asset requested", { assetKey: asset_key });
 
                     if (!dependencies.storage.deleteAsset) {
                         log.warning("Storage adapter does not support asset deletion", {
@@ -225,10 +225,10 @@ export function routes({ database, storage }: RouteOptions) {
                         });
                     }
 
-                    const result = await dependencies.storage.deleteAsset(assetKey);
+                    const result = await dependencies.storage.deleteAsset(asset_key);
 
                     if (!result.ok) {
-                        log.error("Failed to delete asset", { assetKey, error: result.error.message });
+                        log.error("Failed to delete asset", { assetKey: asset_key, error: result.error.message });
 
                         const code = m.failureCodeToStatus(result.code);
                         set.status = code;
@@ -239,7 +239,7 @@ export function routes({ database, storage }: RouteOptions) {
                         };
                     }
 
-                    log.debug("Asset deleted", { assetKey });
+                    log.debug("Asset deleted", { assetKey: asset_key });
                     return status(200, { message: "OK" });
                 },
                 {

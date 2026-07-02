@@ -37,9 +37,9 @@ tsdown.config.ts          # Build config — entry: ["src/index.ts", "src/runtim
 - **Inline OpenAPI** — The `@elysia/openapi` plugin is configured inline in `runtime.ts` with OpenAPI servers derived from parsing `baseUrl` (a required `string | URL`). When the pathname is `/`, the API prefix defaults to `_raurus`. The `openapi` option on `CreateRuntimeOptions` (defaults to `true`) toggles the plugin on/off.
 - **Schema modules** — `models.ts` exports Elysia TypeSystem schemas plus a `failureCodeToStatus(code?: FailureCode): number` helper. Routes import the whole module as `import * as m from "./models"` and reference members as `m.SchemaName` etc. — keep the namespace import convention when adding routes.
 - **Fetch-compatible** — `createRuntime()` returns `{ fetch }`, compatible with Bun, Cloudflare Workers, and other WinterCG runtimes.
-- **Metadata upsert route** — `PUT /placeholders/:placeholderId/pathnames/:pathname` accepts a discriminated body (`{ type: "photo"|"video", assetKey }` or `{ type: "text", text }`) and delegates to `database.upsertContentMetadata()`. Requires the `checkDatabase` macro.
-- **Presigned upload URL route** — `GET /assets/presigned-upload-url?assetKey=...&expiresIn=...` delegates to `storage.createPresignedUploadUrl()`. Returns `501` if the adapter doesn't implement it. Requires the `checkStorage` macro.
-- **Delete asset route** — `DELETE /asset/:assetKey` delegates to `storage.deleteAsset()`. Returns `501` if the adapter doesn't implement it, and `404` when the adapter returns `NOT_FOUND`. Requires the `checkStorage` macro.
+- **Metadata upsert route** — `PUT /placeholders/:placeholder_id/pathnames/:pathname` accepts a discriminated body (`{ type: "photo"|"video", assetKey }` or `{ type: "text", text }`) and delegates to `database.upsertContentMetadata()`. Requires the `checkDatabase` macro.
+- **Presigned upload URL route** — `GET /assets/presigned-upload-url?asset_key=...&expires_in=...` delegates to `storage.createPresignedUploadUrl()`. Returns `501` if the adapter doesn't implement it. Requires the `checkStorage` macro.
+- **Delete asset route** — `DELETE /asset/:asset_key` delegates to `storage.deleteAsset()`. Returns `501` if the adapter doesn't implement it, and `404` when the adapter returns `NOT_FOUND`. Requires the `checkStorage` macro.
 - **Failure code → HTTP status** — `models.ts` exports `failureCodeToStatus` that maps a `@raurus/core` `FailureCode` to an HTTP status (`NOT_FOUND` → 404, `CONFLICT` → 409, `RATE_LIMIT` → 429, `INVALID_INPUT` → 400, `PERMISSION` → 401, `NOT_IMPLEMENTED` → 501, `UPSTREAM` → 502, `CONNECTION` → 503, `CONFIGURATION` → 500, `UNKNOWN` → 500, anything else → 500). Routes use this to translate adapter `Failure` results into consistent HTTP responses without parsing `error.message`.
 - **OpenAPI detail metadata** — Each route inlines `detail: { summary, description, tags }` on the Elysia handler options for `@elysia/openapi` documentation generation. Tags use the `Operations` and `Metadata` groups. When adding a new route, always include a `detail` block.
 
@@ -54,6 +54,7 @@ tsdown.config.ts          # Build config — entry: ["src/index.ts", "src/runtim
 - Use `@raurus/logger` for all logs; create module-level `const log = getLogger("server")` loggers and do not call `configure()` inside this package
 - When a route's underlying adapter call returns `Failure`, log the `error.message` and respond with `status(failureCodeToStatus(result.code), { message: "Error", error: <safe summary> })`
 - When a storage method is not implemented on the adapter (e.g. no `createPresignedUploadUrl` on the adapter), check `if (!custom.storage.<methodName>)` and return `status(501, { message: "Error", error: "Storage adapter does not support <methodName>" })` — never return `400` for a missing method
+- URL path parameters use `snake_case` naming (e.g. `:placeholder_id`, `:asset_key`), not `camelCase` — Elysia maps path params to handler `params` using the literal name from the path
 - Each route should inlines a `detail: { summary, description, tags }` block on the Elysia handler options for `@elysia/openapi` documentation generation
 
 ## Workflow

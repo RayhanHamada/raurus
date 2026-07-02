@@ -29,7 +29,7 @@
         "build": "tsdown",
         "dev": "tsdown --watch",
         "play": "vite",
-        "test": "vitest",
+        "test": "vitest run",
         "typecheck": "tsc --noEmit",
         "release": "bumpp"
     },
