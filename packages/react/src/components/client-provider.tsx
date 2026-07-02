@@ -4,7 +4,7 @@ import type { FC, PropsWithChildren } from "react";
 import type { Data } from "@/common";
 import { RaurusContext } from "@/context";
 
-interface Props {
+export interface RaurusClientProviderProps {
     url: string | URL;
     initialData?: Data[];
     defaultEditMode?: boolean;
@@ -13,7 +13,7 @@ interface Props {
 const DEFAULT_INITIAL_DATA = [] as Data[];
 const DEFAULT_EDIT_MODE = false;
 
-export const RaurusClientProvider: FC<PropsWithChildren<Props>> = ({
+export const RaurusClientProvider: FC<PropsWithChildren<RaurusClientProviderProps>> = ({
     children,
     defaultEditMode = DEFAULT_EDIT_MODE,
     initialData = DEFAULT_INITIAL_DATA,

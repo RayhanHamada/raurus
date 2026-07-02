@@ -62,3 +62,8 @@ src/
 - `@raurus/client` is a workspace dependency — imported for shared types
 - Vitest config uses `@vitejs/plugin-react` with tsconfig path resolution and `passWithNoTests: true`
 - Tests run against a real browser via `@vitest/browser-playwright`
+- Storybook is configured with `@storybook/addon-vitest` for running stories as vitest tests (`npx vitest --project storybook run`)
+- The Storybook preview wraps all stories in `RaurusClientProvider` and imports the project's Tailwind CSS
+- `@tailwindcss/vite` plugin is used in `.storybook/main.ts` `viteFinal` to process Tailwind CSS classes
+- MSW (`msw-storybook-addon`) is installed for mock data needs but no handlers are configured yet
+- Storybook init boilerplate (`src/stories/`) was removed; real stories are colocated with their components

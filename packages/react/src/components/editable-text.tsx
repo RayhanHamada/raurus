@@ -14,13 +14,13 @@ import { useRaurus } from "@/hooks";
 
 type EditableTag = Extract<HTMLElementType, "a" | "div" | "p" | "span" | `h${1 | 2 | 3 | 4 | 5 | 6}`>;
 
-interface OwnProps {
+export interface EditableTextOwnProps {
     id: string;
     plainText?: boolean;
 }
 
 function createEditableTextElement<Tag extends EditableTag>(As: Tag) {
-    type Props = OwnProps & Omit<ComponentProps<Tag>, "contentEditable">;
+    type Props = EditableTextOwnProps & Omit<ComponentProps<Tag>, "contentEditable">;
 
     function Component(props: Props) {
         const ctx = useRaurus();

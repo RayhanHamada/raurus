@@ -31,7 +31,9 @@
         "play": "vite",
         "test": "vitest run",
         "typecheck": "tsc --noEmit",
-        "release": "bumpp"
+        "release": "bumpp",
+        "storybook": "storybook dev -p 6006",
+        "build-storybook": "storybook build"
     },
     "dependencies": {
         "@raurus/client": "workspace:*",
@@ -40,14 +42,25 @@
     "devDependencies": {
         "@bosh-code/tsdown-plugin-inject-css": "^2.0.0",
         "@bosh-code/tsdown-plugin-tailwindcss": "^1.0.1",
+        "@chromatic-com/storybook": "^5.2.1",
         "@raurus/tsconfig": "workspace:*",
+        "@storybook/addon-mcp": "^0.6.0",
+        "@storybook/addon-vitest": "^10.4.6",
+        "@storybook/react-vite": "^10.4.6",
+        "@tailwindcss/vite": "^4.3.2",
         "@tsconfig/strictest": "^2.0.8",
         "@types/node": "^26.0.1",
         "@types/react": "^19.2.14",
         "@types/react-dom": "^19.2.3",
         "@vitejs/plugin-react": "^6.0.1",
         "@vitest/browser-playwright": "^4.1.9",
+        "@vitest/coverage-v8": "4.1.9",
         "bumpp": "^11.1.0",
+        "mockdate": "^3.0.5",
+        "msw": "^2.14.6",
+        "msw-storybook-addon": "^2.0.7",
+        "playwright": "^1.61.1",
+        "storybook": "^10.4.6",
         "tailwindcss": "^4.3.1",
         "tsdown": "^0.22.3",
         "typescript": "^6.0.3",
@@ -58,5 +71,10 @@
     "peerDependencies": {
         "react": "^19.2.0",
         "react-dom": "^19.2.0"
+    },
+    "msw": {
+        "workerDirectory": [
+            "public"
+        ]
     }
 }

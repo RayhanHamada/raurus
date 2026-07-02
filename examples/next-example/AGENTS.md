@@ -47,4 +47,3 @@ examples/next-example/
 - `bun run dev` starts the Next.js dev server
 - `bun run build` builds for production
 - Dependencies on `@raurus/react` and `@raurus/server` use `workspace:*`
-
