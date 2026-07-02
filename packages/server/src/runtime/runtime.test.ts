@@ -16,6 +16,10 @@ describe(createRuntime, () => {
         expect(body).toStrictEqual({
             status: "OK",
             message: "RAURUS_ENDPOINT",
+            data: {
+                database_adapter_id: null,
+                storage_adapter_id: null,
+            },
         });
     });
 });

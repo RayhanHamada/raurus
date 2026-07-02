@@ -118,6 +118,7 @@ function createEditableTextElement<Tag extends EditableTag>(As: Tag) {
 
         return createElement(As, {
             ...props,
+            suppressContentEditableWarning: true,
             ref,
             className,
             contentEditable,
