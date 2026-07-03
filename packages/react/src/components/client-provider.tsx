@@ -1,57 +1,63 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useStore } from "@nanostores/react";
+import { useCallback, useEffect, useLayoutEffect } from "react";
 import type { FC, PropsWithChildren } from "react";
 
 import type { Data } from "@/common";
 import { RaurusContext } from "@/context";
+import { $editMode, $editingId, $placeholders, $selectedId } from "@/state";
 
 export interface RaurusClientProviderProps {
     url: string | URL;
-    editMode?: boolean;
+    enableEdit?: boolean;
 }
 
-const DEFAULT_EDIT_MODE = false;
+const toggleEditMode = () => $editMode.set(!$editMode.get());
+const setEditMode = (mode: boolean) => $editMode.set(mode);
+
+const DEFAULT_PROPS = {
+    enableEdit: true,
+} satisfies Partial<RaurusClientProviderProps>;
 
 export const RaurusClientProvider: FC<PropsWithChildren<RaurusClientProviderProps>> = ({
     children,
-    editMode: _editMode = DEFAULT_EDIT_MODE,
+    enableEdit = DEFAULT_PROPS.enableEdit,
 }) => {
-    const [editMode, setEditMode] = useState(_editMode);
-    const [selectedId, setSelectedId] = useState<string | null>(null);
-    const [editingId, setEditingId] = useState<string | null>(null);
+    useEffect(() => {
+        $editMode.set(enableEdit);
+    }, [enableEdit]);
 
-    const placeholders = useRef(new Map<string, Data>());
+    const editMode = useStore($editMode);
+    const selectedId = useStore($selectedId);
+    const editingId = useStore($editingId);
 
-    const getById = useCallback((id: string) => placeholders.current.get(id), []);
+    const getById = useCallback((id: string) => $placeholders.get()[id], []);
+
+    const upsertPlaceholder = useCallback((id: string, data: Data) => {
+        $placeholders.set({ ...$placeholders.get(), [id]: data });
+    }, []);
 
     const select = useCallback((id: string) => {
-        setSelectedId(id);
-        setEditingId(null);
+        $selectedId.set(id);
+        $editingId.set(null);
     }, []);
 
     const deselect = useCallback(() => {
-        setSelectedId(null);
-        setEditingId(null);
+        $selectedId.set(null);
+        $editingId.set(null);
     }, []);
 
     const startEditing = useCallback((id: string) => {
-        setSelectedId(id);
-        setEditingId(id);
+        $selectedId.set(id);
+        $editingId.set(id);
     }, []);
 
     const stopEditing = useCallback(() => {
-        setEditingId(null);
+        $editingId.set(null);
     }, []);
 
-    const toggleEditMode = () => setEditMode((prev) => !prev);
-
-    const selectedRef = useRef(selectedId);
-    selectedRef.current = selectedId;
-    const editingRef = useRef(editingId);
-    editingRef.current = editingId;
-
-    useEffect(() => {
+    useLayoutEffect(() => {
         function handleMouseDown(e: globalThis.MouseEvent) {
-            if (!selectedRef.current && !editingRef.current) {
+            if (!$selectedId.get() && !$editingId.get()) {
                 return;
             }
 
@@ -61,8 +67,8 @@ export const RaurusClientProvider: FC<PropsWithChildren<RaurusClientProviderProp
                 return;
             }
 
-            setSelectedId(null);
-            setEditingId(null);
+            $selectedId.set(null);
+            $editingId.set(null);
         }
 
         document.addEventListener("mousedown", handleMouseDown);
@@ -82,8 +88,10 @@ export const RaurusClientProvider: FC<PropsWithChildren<RaurusClientProviderProp
 
                 editingId,
                 toggleEditMode,
+                setEditMode,
 
                 getById,
+                upsertPlaceholder,
             }}
         >
             {children}

@@ -1,8 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import { useLayoutEffect } from "react";
 import { expect } from "storybook/test";
 
 import { useRaurus } from "../hooks/useRaurus";
-import { RaurusClientProvider } from "./client-provider";
+import { $editMode } from "../state";
 import { EditableH1 } from "./editable-text";
 
 function EditorStatus() {
@@ -10,32 +11,47 @@ function EditorStatus() {
     return <span data-testid="edit-mode">{ctx.editMode ? "ON" : "OFF"}</span>;
 }
 
+function EditModeOn({ children }: { children: React.ReactNode }) {
+    useLayoutEffect(() => {
+        $editMode.set(true);
+        return () => $editMode.set(false);
+    }, []);
+    return <>{children}</>;
+}
+
 const meta = {
-    component: RaurusClientProvider,
+    component: EditorStatus,
     tags: ["ai-generated"],
-} satisfies Meta<typeof RaurusClientProvider>;
+} satisfies Meta<typeof EditorStatus>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const DefaultEditModeOff: Story = {
-    args: { url: "https://example.com", children: <EditorStatus /> },
+    render: () => <EditorStatus />,
     play: async ({ canvas }) => {
         await expect(canvas.getByTestId("edit-mode")).toHaveTextContent("OFF");
     },
 };
 
 export const DefaultEditModeOn: Story = {
-    args: { url: "https://example.com", editMode: true, children: <EditorStatus /> },
+    render: () => <EditorStatus />,
+    decorators: [
+        (Story) => (
+            <EditModeOn>
+                <Story />
+            </EditModeOn>
+        ),
+    ],
     play: async ({ canvas }) => {
         await expect(canvas.getByTestId("edit-mode")).toHaveTextContent("ON");
     },
 };
 
 export const WithEditableContent: Story = {
-    args: {
-        url: "https://example.com",
-        editMode: false,
-        children: <EditableH1 id="provider-story-h1">Provider Wrapped Heading</EditableH1>,
+    render: () => <EditableH1 id="provider-story-h1">Provider Wrapped Heading</EditableH1>,
+    play: async ({ canvas }) => {
+        const heading = canvas.getByText("Provider Wrapped Heading");
+        await expect(heading).toBeVisible();
     },
 };

@@ -5,6 +5,7 @@ import type { Data } from "@/common";
 export interface IRaurusContext {
     editMode: boolean;
     toggleEditMode: () => void;
+    setEditMode: (mode: boolean) => void;
 
     selectedId: string | null;
     editingId: string | null;
@@ -15,6 +16,7 @@ export interface IRaurusContext {
     stopEditing: () => void;
 
     getById: (id: string) => Data | undefined;
+    upsertPlaceholder: (id: string, data: Data) => void;
 }
 
 export const RaurusContext = createContext<IRaurusContext | null>(null);
