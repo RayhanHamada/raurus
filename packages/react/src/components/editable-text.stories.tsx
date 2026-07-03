@@ -24,12 +24,20 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 function Wrapper({ children }: { children: React.ReactNode }) {
-    return <RaurusClientProvider url="https://example.com" editMode>{children}</RaurusClientProvider>;
+    return (
+        <RaurusClientProvider url="https://example.com" editMode>
+            {children}
+        </RaurusClientProvider>
+    );
 }
 
 export const H1: Story = {
     args: { id: "story-h1" },
-    render: (args) => <Wrapper><EditableH1 {...args}>Welcome to Raurus</EditableH1></Wrapper>,
+    render: (args) => (
+        <Wrapper>
+            <EditableH1 {...args}>Welcome to Raurus</EditableH1>
+        </Wrapper>
+    ),
     play: async ({ canvas }) => {
         const heading = canvas.getByRole("heading", { name: /welcome to raurus/iu });
         await expect(heading).toBeVisible();
@@ -38,27 +46,47 @@ export const H1: Story = {
 
 export const H2: Story = {
     args: { id: "story-h2" },
-    render: (args) => <Wrapper><EditableH2 {...args}>Section Heading</EditableH2></Wrapper>,
+    render: (args) => (
+        <Wrapper>
+            <EditableH2 {...args}>Section Heading</EditableH2>
+        </Wrapper>
+    ),
 };
 
 export const H3: Story = {
     args: { id: "story-h3" },
-    render: (args) => <Wrapper><EditableH3 {...args}>Subsection</EditableH3></Wrapper>,
+    render: (args) => (
+        <Wrapper>
+            <EditableH3 {...args}>Subsection</EditableH3>
+        </Wrapper>
+    ),
 };
 
 export const H4: Story = {
     args: { id: "story-h4" },
-    render: (args) => <Wrapper><EditableH4 {...args}>Smaller Heading</EditableH4></Wrapper>,
+    render: (args) => (
+        <Wrapper>
+            <EditableH4 {...args}>Smaller Heading</EditableH4>
+        </Wrapper>
+    ),
 };
 
 export const H5: Story = {
     args: { id: "story-h5" },
-    render: (args) => <Wrapper><EditableH5 {...args}>Even Smaller</EditableH5></Wrapper>,
+    render: (args) => (
+        <Wrapper>
+            <EditableH5 {...args}>Even Smaller</EditableH5>
+        </Wrapper>
+    ),
 };
 
 export const H6: Story = {
     args: { id: "story-h6" },
-    render: (args) => <Wrapper><EditableH6 {...args}>Tiny Heading</EditableH6></Wrapper>,
+    render: (args) => (
+        <Wrapper>
+            <EditableH6 {...args}>Tiny Heading</EditableH6>
+        </Wrapper>
+    ),
 };
 
 export const Div: Story = {
@@ -94,7 +122,9 @@ export const Link: Story = {
     args: { id: "story-link" },
     render: ({ id }) => (
         <Wrapper>
-            <EditableLink id={id} href="https://example.com">Clickable link</EditableLink>
+            <EditableLink id={id} href="https://example.com">
+                Clickable link
+            </EditableLink>
         </Wrapper>
     ),
 };

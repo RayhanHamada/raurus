@@ -29,7 +29,7 @@ examples/next-example/
 
 ## Key Concepts
 
-- **RaurusClientProvider integration** — The root layout wraps children in `<RaurusClientProvider url="http://localhost:3000" defaultEditMode={true}>`, providing edit-mode state to all pages
+- **RaurusClientProvider integration** — The root layout wraps children in `<RaurusClientProvider url="http://localhost:3000" editMode={true}>`, providing edit-mode state to all pages
 - **Editable components** — Pages import editable components from `@raurus/react/client` and render them with `id` and `className` props
 - **React Compiler** — Next.js config enables `reactCompiler: true` for compile-time optimizations
 - **Fonts** — Uses Geist and Geist Mono via `next/font/google` with CSS variables

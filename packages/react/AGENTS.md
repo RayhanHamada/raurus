@@ -31,8 +31,9 @@ src/
 ## Key Concepts
 
 - **Dual exports** — `@raurus/react/client` for client components and `@raurus/react/server` for server-only utilities. The `"use client"` directive is in `src/client.ts`, not on individual components.
-- **RaurusClientProvider** — Context provider managing `editMode`, `selectedId`, `editingId`, and a `placeholders` map. Accepts `url`, `initialData`, and `defaultEditMode` (defaults to `false`).
-- **Editable text components** — Factory-pattern generated components (`EditableDiv`, `EditableSpan`, `EditableH1`–`EditableH6`, `EditableLink`) created by `createEditableTextElement()`. Each handles select→edit two-click flow, focus management, and visual state via `data-raurus-*` attributes.
+- **RaurusClientProvider** — Context provider managing `editMode`, `selectedId`, `editingId`, and a `placeholders` map. Accepts `url` and `editMode` (defaults to `false`). Deselection is handled globally on mousedown events outside `[data-raurus-id]` elements.
+- **Editable text components** — Factory-pattern generated components (`EditableDiv`, `EditableSpan`, `EditableH1`–`EditableH6`, `EditableLink`) created by `createEditableTextElement()`. Each handles select→edit two-click flow, focus management, hover state, an `IdTooltip` portal overlay showing the component's `id`, and visual state via `data-raurus-*` attributes. The `EditableLink` component prevents default click behavior in edit mode to allow selection without navigation.
+- **IdTooltip** — A portal-rendered tooltip that appears above editable elements on hover, select, or edit (when in edit mode). Uses `useLayoutEffect` for position calculation relative to the target element.
 - **Tailwind v4 prefix** — All Tailwind utilities are prefixed with `raurus:` to avoid collisions with consumer stylesheets. CSS is sourced from `./components/` directory.
 - **cnfast** — Uses `cnfast` for className merging (not clsx/classnames).
 
@@ -42,7 +43,7 @@ src/
 - Components use the `FC<PropsWithChildren<Props>>` pattern from React
 - Context value follows the `IRaurusContext` interface — extend it when adding new state
 - The `useRaurus()` hook throws if called outside `RaurusClientProvider`
-- Editable components carry `data-raurus-id`, `data-raurus-edit-mode`, `data-raurus-selected`, and `data-raurus-editing` data attributes for CSS targeting
+- Editable components carry `data-raurus-id` (always present), `data-raurus-edit-mode`, `data-raurus-selected`, and `data-raurus-editing` data attributes for CSS targeting and DOM queries
 - Use `suppressContentEditableWarning` on contentEditable elements
 - Tailwind classes use the `raurus:` prefix consistently
 
