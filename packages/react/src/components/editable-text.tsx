@@ -112,6 +112,10 @@ function createEditableTextElement<Tag extends EditableTag>(As: Tag) {
 
         const onClick = useCallback<MouseEventHandler<Element>>(
             (e) => {
+                if (ctx.editMode && As === "a") {
+                    e.preventDefault();
+                }
+
                 propsOnClick?.(e);
 
                 if (!ctx.editMode) {
