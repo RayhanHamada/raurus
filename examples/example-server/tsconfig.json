@@ -1,7 +1,0 @@
-{
-    "extends": ["@raurus/tsconfig"],
-    "compilerOptions": {
-        "types": ["bun"]
-    },
-    "include": ["src"]
-}

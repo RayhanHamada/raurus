@@ -26,7 +26,7 @@ const Layout: FC<Props> = ({ children }) => {
     return (
         <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
             <body className="min-h-full flex flex-col">
-                <RaurusClientProvider url="http://localhost:3000" editMode={true}>
+                <RaurusClientProvider url="http://localhost:3000" enableEdit>
                     {children}
                 </RaurusClientProvider>
             </body>
