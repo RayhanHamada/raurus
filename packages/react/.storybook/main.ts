@@ -22,7 +22,6 @@ const config: StorybookConfig = {
         getAbsolutePath("@storybook/addon-mcp"),
     ],
     framework: getAbsolutePath("@storybook/react-vite"),
-    staticDirs: ["../public"],
     async viteFinal(config) {
         config.resolve ??= {};
         config.resolve.alias ??= {

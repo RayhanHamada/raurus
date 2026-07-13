@@ -76,5 +76,4 @@ src/
 - The Storybook preview wraps all stories in `RaurusClientProvider` and imports the project's Tailwind CSS
 - Storybook stories must NOT nest additional `RaurusClientProvider` instances — the global preview decorator already provides one, and nanostores atoms are global singletons
 - `@tailwindcss/vite` plugin is used in `.storybook/main.ts` `viteFinal` to process Tailwind CSS classes
-- MSW (`msw-storybook-addon`) is installed for mock data needs but no handlers are configured yet
 - Storybook init boilerplate (`src/stories/`) was removed; real stories are colocated with their components
