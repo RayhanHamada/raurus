@@ -5,7 +5,7 @@ import react from "ultracite/oxlint/react";
 import vitest from "ultracite/oxlint/vitest";
 import vue from "ultracite/oxlint/vue";
 
-import oxignore from "./oxignore.json" with { type: "json" };
+import oxignore from "./oxcignore.json" with { type: "json" };
 
 export default defineConfig({
     extends: [core, react, vitest, vue, next],
