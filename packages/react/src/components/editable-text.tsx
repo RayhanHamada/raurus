@@ -101,8 +101,8 @@ function createEditableTextElement<Tag extends EditableTag>(As: Tag) {
         const isEditing = ctx.editMode && ctx.editingId === props.id;
         const contentEditable = isEditing && props.plainText ? ("plaintext-only" as const) : isEditing;
 
-        const propsOnClick = props.onClick as MouseEventHandler<Element> | undefined;
-        const propsOnBlur = props.onBlur as FocusEventHandler<Element> | undefined;
+        const propsOnClick = props.onClick as MouseEventHandler<HTMLElement> | undefined;
+        const propsOnBlur = props.onBlur as FocusEventHandler<HTMLElement> | undefined;
 
         const className = useMemo(() => cn(BASE_EDITABLE_CLASSES, props.className), [props.className]);
 
@@ -110,7 +110,7 @@ function createEditableTextElement<Tag extends EditableTag>(As: Tag) {
 
         useEditingFocus(ref, isEditing);
 
-        const onClick = useCallback<MouseEventHandler<Element>>(
+        const onClick = useCallback<MouseEventHandler<HTMLElement>>(
             (e) => {
                 if (ctx.editMode && As === "a") {
                     e.preventDefault();
@@ -134,7 +134,7 @@ function createEditableTextElement<Tag extends EditableTag>(As: Tag) {
             [props.id, ctx, isSelected, isEditing, propsOnClick]
         );
 
-        const onBlur = useCallback<FocusEventHandler<Element>>(
+        const onBlur = useCallback<FocusEventHandler<HTMLElement>>(
             (e) => {
                 propsOnBlur?.(e);
 
@@ -143,8 +143,8 @@ function createEditableTextElement<Tag extends EditableTag>(As: Tag) {
             [ctx, propsOnBlur]
         );
 
-        const onMouseEnter = useCallback<MouseEventHandler<Element>>(() => setHovered(true), []);
-        const onMouseLeave = useCallback<MouseEventHandler<Element>>(() => setHovered(false), []);
+        const onMouseEnter = useCallback<MouseEventHandler<HTMLElement>>(() => setHovered(true), []);
+        const onMouseLeave = useCallback<MouseEventHandler<HTMLElement>>(() => setHovered(false), []);
 
         const editableElement = createElement(As, {
             ...props,
