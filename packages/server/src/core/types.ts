@@ -42,7 +42,30 @@ export interface RuntimeDatabaseAdapterBaseConfig {}
 
 export interface RuntimeStorageAdapterBaseConfig {}
 
-export interface CommonRuntimeAdapter {
+/**
+ * Lifecycle contract that every adapter must implement. `init()` is called
+ * lazily on the first adapter method invocation by the runtime's
+ * `withAutoInit()` wrapper; `close()` releases resources and is exposed via
+ * {@link createRuntime}'s return value.
+ */
+export interface AdapterLifecycle {
+    /**
+     * Idempotent one-time setup (connections, schema migrations,
+     * authentication). Called automatically before the first adapter method
+     * invocation — adapter implementers should never call this directly.
+     * Rejects on persistent failures such as bad credentials or unreachable
+     * hosts.
+     */
+    init: () => Promise<void>;
+
+    /**
+     * Release resources (connections, file handles, etc.). After `close()`,
+     * all subsequent method calls will throw. Irreversible.
+     */
+    close: () => Promise<void>;
+}
+
+export interface CommonRuntimeAdapter extends AdapterLifecycle {
     apiVersion: "1";
     checkConnection: () => Promise<AdapterAPIResult<null>>;
 }

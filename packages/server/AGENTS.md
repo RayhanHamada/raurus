@@ -15,9 +15,10 @@ src/
 │   ├── types.ts              # Domain types, adapter contracts, factories
 │   └── types.test.ts         # Vitest type-level tests
 ├── adapters/
+│   ├── auto-init.ts          # withAutoInit() — lazy-init wrapper for all adapters
 │   ├── database-libsql.ts    # libsql-based database adapter
 │   ├── storage-s3mini.ts     # S3-compatible storage adapter backed by s3mini
-│   └── index.ts              # Barrel: re-exports all adapters
+│   └── index.ts              # Barrel: re-exports all adapters + withAutoInit
 └── runtime/
     ├── index.ts          # Named export: raurus (alias for createRuntime) + CreateRuntimeOptions
     ├── models.ts         # failureCodeToStatus mapper (FailureCode → HTTP status)
@@ -36,7 +37,9 @@ tsdown.config.ts          # Build config — entry: ["src/index.ts", "src/core/i
 - **Context-based dependency injection** — `routes.ts` defines a `ServerContext` interface `{ db: RuntimeDatabaseAdapter; storage: RuntimeStorageAdapter }`. The `implement(contracts).$context<ServerContext>()` threads adapters to every handler via the oRPC context, replacing Elysia's `.decorate()` pattern.
 - **Error handling** — Procedure handlers throw `ORPCError` with a typed error code (`NOT_IMPLEMENTED`, `NOT_FOUND`) and an HTTP status derived from `failureCodeToStatus()`. The `NOT_IMPLEMENTED` error carries `{ name: string }` data as defined in the contract. The `NOT_FOUND` error is defined on the `deleteAsset` contract specifically.
 - **Logging** — Use `getLogger("server")` from `@raurus/logger` for runtime, route, and adapter logs. The server package only obtains loggers; the consuming app is responsible for calling `configure()` from `@logtape/logtape` once at startup.
-- **Fetch-compatible** — `createRuntime()` returns `{ fetch }`, backed by `OpenAPIHandler` from `@orpc/openapi/fetch`, compatible with Bun, Cloudflare Workers, and other WinterCG runtimes.
+- **Fetch-compatible** — `createRuntime()` returns `{ fetch, close }`, backed by `OpenAPIHandler` from `@orpc/openapi/fetch`, compatible with Bun, Cloudflare Workers, and other WinterCG runtimes. The `close()` method gracefully shuts down both adapters. In serverless environments like Cloudflare Workers, there is no automatic shutdown hook — `close()` must be called explicitly by the consumer (e.g., in a scheduled handler or via a custom lifecycle wrapper). `new URL()` is used for baseUrl parsing instead of `URL.parse()` for broad Workers compatibility date support.
+- **Adapter lifecycle** — Every adapter implements `init()` and `close()` from `AdapterLifecycle` (inherited via `CommonRuntimeAdapter`). `init()` runs lazily on the first adapter method invocation via the `withAutoInit()` wrapper in `createRuntime()`. Adapter factories are synchronous and pure — they construct the adapter object but perform no side effects. All setup (connection opening, schema migrations, authentication) goes in `init()`. `close()` releases resources; after `close()`, all subsequent method calls throw.
+- **`withAutoInit()`** — A generic wrapper in `src/adapters/auto-init.ts` that guarantees `init()` runs exactly once, concurrency-safe, with retry-on-failure and a 5-second cooldown. Also poisons the adapter after `close()`. The wrapper is transparent to consumers — routes see the same `RuntimeDatabaseAdapter` / `RuntimeStorageAdapter` interface.
 - **Metadata upsert procedure** — `upsertMetadata` delegates to `db.upsertContentMetadata()`. Throws `ORPCError("NOT_IMPLEMENTED", ...)` on failure.
 - **Presigned upload URL procedure** — `getPresignedUploadUrl` delegates to `storage.createPresignedUploadUrl()`. Throws `ORPCError("NOT_IMPLEMENTED", { status: 501 })` if the storage adapter doesn't implement it.
 - **Delete asset procedure** — `deleteAsset` delegates to `storage.deleteAsset()`. Throws `ORPCError("NOT_FOUND", { status: 404 })` when the adapter returns `NOT_FOUND`, and `ORPCError("NOT_IMPLEMENTED", { status: 501 })` when the adapter doesn't implement deletion.
@@ -69,7 +72,9 @@ tsdown.config.ts          # Build config — entry: ["src/index.ts", "src/core/i
 - All adapters must implement `checkConnection()` from `CommonRuntimeAdapter` (returns `AdapterAPIResult<null>`) and must declare `apiVersion: "1"`
 - `RuntimeDatabaseAdapter` exposes `upsertContentMetadata` and `listContentMetadataByPath` — both required. `upsertContentMetadata` takes a discriminated payload union (`{ type: photo, assetKey } | { type: text, text } | { type: link, link }`).
 - `RuntimeStorageAdapter` exposes a two-method menu (`createPresignedUploadUrl`, `deleteAsset`) — both optional, guarded at the procedure level with `NOT_IMPLEMENTED` ORPCError when absent
-- `createRuntime()` is the runtime factory function defined in `runtime.ts`; it is re-exported as `raurus` from `runtime/index.ts`
+- `createRuntime()` is the runtime factory function defined in `runtime.ts`; it is re-exported as `raurus` from `runtime/index.ts`. The return type includes a `close()` method for graceful shutdown.
+- Adapter factories are synchronous and pure — all setup side effects (connections, schema migrations, authentication) go in `init()`, which is called lazily by `withAutoInit()`. Config validation may still throw synchronously in the factory.
+- `withAutoInit()` in `src/adapters/auto-init.ts` is the single source of truth for adapter lifecycle management. New adapters automatically get lazy init, concurrency safety, retry-on-failure, and close poisoning just by implementing `init()`/`close()`.
 - `utils.ts` exports a module-level `log` logger instance and re-exports `initializeLogger` from `@raurus/logger`
 - The `@raurus/contract` package is a `workspace:*` dependency; contracts are imported via `import { contracts, FAILURE_CODES } from "@raurus/contract"`
 - `@orpc/openapi` is used for the `OpenAPIHandler` import at `@orpc/openapi/fetch`

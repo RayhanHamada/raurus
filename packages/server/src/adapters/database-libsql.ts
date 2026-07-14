@@ -1,8 +1,11 @@
 import { createClient } from "@libsql/client";
 import { METADATA_TYPES } from "@raurus/contract";
+import { getLogger } from "@raurus/logger";
 
 import { FAILURE_CODES } from "@/core";
 import type { RuntimeDatabaseAdapterBaseConfig, RuntimeDatabaseAdapterFactory } from "@/core";
+
+const log = getLogger("server");
 
 export interface LibsqlMetadataAdapterConfig extends RuntimeDatabaseAdapterBaseConfig {
     /**
@@ -20,19 +23,40 @@ export const libSqlDatabaseAdapter: RuntimeDatabaseAdapterFactory<LibsqlMetadata
     const c = config;
     const client = c.authToken ? createClient({ url: c.url, authToken: c.authToken }) : createClient({ url: c.url });
 
-    client.execute(`
-        CREATE TABLE IF NOT EXISTS raurus_metadata (
-            placeholder_id TEXT PRIMARY KEY,
-            type TEXT NOT NULL,
-            asset_key TEXT,
-            text_content TEXT,
-            updated_at TEXT NOT NULL DEFAULT (datetime('now'))
-        )
-    `);
-
     return {
         id: "libsql-database-adapter",
         apiVersion: "1",
+
+        async init() {
+            log.info("Initializing libsql database adapter", { url: c.url });
+
+            // Check whether the metadata table already exists.
+            const result = await client.execute(
+                `SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'raurus_metadata'`
+            );
+            if (result.rows.length > 0) {
+                log.info("libsql database adapter already initialized — skipping");
+                return;
+            }
+
+            // Create the metadata table.
+            await client.execute(`
+                CREATE TABLE IF NOT EXISTS raurus_metadata (
+                    placeholder_id TEXT PRIMARY KEY,
+                    type TEXT NOT NULL,
+                    asset_key TEXT,
+                    text_content TEXT,
+                    updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+                )
+            `);
+
+            log.info("libsql database adapter initialized");
+        },
+
+        async close() {
+            log.info("Closing libsql database adapter");
+            client.close();
+        },
 
         async checkConnection() {
             try {
@@ -55,10 +79,14 @@ export const libSqlDatabaseAdapter: RuntimeDatabaseAdapterFactory<LibsqlMetadata
             let assetKey: string | null = null;
             let textContent: string | null = null;
 
-            if (payload.type === METADATA_TYPES.PHOTO) {
-                assetKey = payload.assetKey;
-            } else if (payload.type === METADATA_TYPES.TEXT) {
-                textContent = payload.text;
+            const { type } = payload;
+
+            if (type === METADATA_TYPES.PHOTO) {
+                ({ assetKey } = payload);
+            } else if (type === METADATA_TYPES.TEXT) {
+                ({ text: textContent } = payload);
+            } else if (type === METADATA_TYPES.LINK) {
+                ({ link: textContent } = payload);
             }
 
             try {
@@ -72,7 +100,7 @@ export const libSqlDatabaseAdapter: RuntimeDatabaseAdapterFactory<LibsqlMetadata
                         text_content = excluded.text_content,
                         updated_at = datetime('now')
                     `,
-                    [placeholderId, payload.type, assetKey, textContent]
+                    [placeholderId, type, assetKey, textContent]
                 );
 
                 return {

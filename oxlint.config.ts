@@ -11,6 +11,7 @@ export default defineConfig({
     extends: [core, react, vitest, vue, next],
     ignorePatterns: [...oxignore, "**/playground/**/*", "**/examples"],
     rules: {
+        "promise/avoid-new": "off",
         "func-style": "off",
         "sort-keys": "off",
         "unicorn/filename-case": "off",

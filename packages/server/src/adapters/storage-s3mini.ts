@@ -21,6 +21,16 @@ export const s3MiniStorageAdapter: RuntimeStorageAdapterFactory<S3MiniStorageAda
         id: "s3-mini-storage-adapter",
         apiVersion: "1",
 
+        async init() {
+            // s3mini requires no explicit initialization — the client is
+            // stateless. Placeholder for future backends (e.g., AWS S3 may
+            // need credential validation / region discovery).
+        },
+
+        async close() {
+            // s3mini has no persistent connections to close.
+        },
+
         async checkConnection() {
             try {
                 const ok = await client.bucketExists();
