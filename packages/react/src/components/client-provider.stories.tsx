@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { useLayoutEffect } from "react";
-import { expect } from "storybook/test";
+import { expect, waitFor } from "storybook/test";
 
 import { useRaurus } from "../hooks/useRaurus";
 import { $editMode } from "../state";
@@ -9,14 +8,6 @@ import { EditableH1 } from "./editable-text";
 function EditorStatus() {
     const ctx = useRaurus();
     return <span data-testid="edit-mode">{ctx.editMode ? "ON" : "OFF"}</span>;
-}
-
-function EditModeOn({ children }: { children: React.ReactNode }) {
-    useLayoutEffect(() => {
-        $editMode.set(true);
-        return () => $editMode.set(false);
-    }, []);
-    return <>{children}</>;
 }
 
 const meta = {
@@ -36,15 +27,11 @@ export const DefaultEditModeOff: Story = {
 
 export const DefaultEditModeOn: Story = {
     render: () => <EditorStatus />,
-    decorators: [
-        (Story) => (
-            <EditModeOn>
-                <Story />
-            </EditModeOn>
-        ),
-    ],
     play: async ({ canvas }) => {
-        await expect(canvas.getByTestId("edit-mode")).toHaveTextContent("ON");
+        $editMode.set(true);
+        await waitFor(async () => {
+            await expect(canvas.getByTestId("edit-mode")).toHaveTextContent("ON");
+        });
     },
 };
 
