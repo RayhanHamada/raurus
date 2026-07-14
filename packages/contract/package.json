@@ -1,0 +1,21 @@
+{
+    "name": "@raurus/contract",
+    "version": "0.0.0",
+    "private": true,
+    "description": "Shared oRPC contracts for the Raurus API",
+    "type": "module",
+    "exports": {
+        ".": "./src/index.ts"
+    },
+    "scripts": {
+        "typecheck": "tsc --noEmit"
+    },
+    "dependencies": {
+        "@orpc/contract": "^1.14.8",
+        "valibot": "^1.4.2"
+    },
+    "devDependencies": {
+        "@raurus/tsconfig": "workspace:*",
+        "typescript": "^7.0.2"
+    }
+}
