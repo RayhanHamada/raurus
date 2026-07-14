@@ -9,12 +9,9 @@ Raurus is a TypeScript monorepo building a modular, contract-first web applicati
 ```
 raurus/
 ├── examples/
-│   ├── example-server/        # @raurus/example-server — minimal Bun app validating @raurus/server with real adapters
-│   ├── mvp-editable-field/    # @raurus/mvp-editable-field — Vite + React 19 + Tailwind CSS v4 example demoing editable content
 │   └── next-example/          # next-example — Next.js 16 + React 19 + Tailwind CSS v4 app integrating @raurus/react
 ├── packages/
-│   ├── server/              # @raurus/server — Elysia + @elysia/openapi runtime, ships built-in adapters and core domain types
-│   ├── client/              # @raurus/client — type-safe SDK wrapping openapi-fetch with server-generated OpenAPI types
+│   ├── server/              # @raurus/server — Elysia runtime with built-in adapters and core domain types
 │   ├── react/               # @raurus/react — React 19 visual editing component library (provider, hooks, editable components)
 │   ├── logger/              # @raurus/logger — LogTape wrapper: getLogger factory + a Config object
 │   └── tsconfig/            # @raurus/tsconfig — shared TypeScript base configuration
@@ -32,7 +29,7 @@ raurus/
 | **oxlint**          | Rust-based linter, configured via `ultracite` presets                  |
 | **oxfmt**           | Rust-based formatter, configured via `ultracite`                       |
 | **vitest**          | Unit testing framework                                                 |
-| **TypeScript 6**    | Type checking with `@tsconfig/strictest` as baseline                   |
+| **TypeScript 7**    | Type checking with `@tsconfig/strictest` as baseline                   |
 | **@changesets/cli** | Versioning and changelog management                                    |
 
 ## Standards
@@ -62,4 +59,4 @@ raurus/
 - Ignored paths for linting and formatting are defined in `oxignore.json`
 - Agent skills are locked via `skills-lock.json` and stored in `.agents/skills/`
 - Domain types and adapter contracts live in `packages/server/src/core/` and are exported via `@raurus/server/core`
-- Example/reference adapters live under `packages/server/src/adapters/` (e.g. database, storage) and are exported via `package.json` `exports` entries — real adapter packages (e.g. for Cloudflare, S3) should also be workspace packages, not inlined into apps
+- Adapters live as flat files under `packages/server/src/adapters/` (e.g. `database-libsql.ts`, `storage-s3mini.ts`) and are exported via a barrel `index.ts` — real adapter packages (e.g. for Cloudflare, S3) should also be workspace packages, not inlined into apps

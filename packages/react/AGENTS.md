@@ -68,7 +68,6 @@ src/
 - Build uses tsdown with two entries (`src/client.ts`, `src/server.ts`), exports mode, and PostCSS CSS transformer
 - `react` and `react-dom` are configured as `neverBundle` deps in tsdown config
 - The `@bosh-code/tsdown-plugin-tailwindcss` and `@bosh-code/tsdown-plugin-inject-css` plugins handle Tailwind v4 compilation and CSS injection in the build output
-- `@raurus/client` is a workspace dependency — imported for shared types
 - `nanostores` (`^1.4.0`), `@nanostores/react` (`^1.1.0`), and `@nanostores/persistent` (`^1.3.4`) manage editing state — all atoms are in `src/state/atoms.ts`
 - Vitest config uses `@vitejs/plugin-react` with tsconfig path resolution and `passWithNoTests: true`
 - Tests run against a real browser via `@vitest/browser-playwright`
