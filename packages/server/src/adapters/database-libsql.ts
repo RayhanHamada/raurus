@@ -1,4 +1,5 @@
 import { createClient } from "@libsql/client";
+import { METADATA_TYPES } from "@raurus/contract";
 
 import { FAILURE_CODES } from "@/core";
 import type { RuntimeDatabaseAdapterBaseConfig, RuntimeDatabaseAdapterFactory } from "@/core";
@@ -51,12 +52,17 @@ export const libSqlDatabaseAdapter: RuntimeDatabaseAdapterFactory<LibsqlMetadata
 
         async upsertContentMetadata(placeholderId, _path, payload) {
             // Upsert the metadata into the database
-            const { type } = payload;
-            const assetKey = type === "text" ? null : payload.assetKey;
-            const textContent = type === "text" ? payload.text : null;
+            let assetKey: string | null = null;
+            let textContent: string | null = null;
+
+            if (payload.type === METADATA_TYPES.PHOTO) {
+                assetKey = payload.assetKey;
+            } else if (payload.type === METADATA_TYPES.TEXT) {
+                textContent = payload.text;
+            }
 
             try {
-                client.execute(
+                await client.execute(
                     `
                     INSERT INTO raurus_metadata (placeholder_id, type, asset_key, text_content, updated_at)
                     VALUES (?, ?, ?, ?, datetime('now'))
@@ -66,7 +72,7 @@ export const libSqlDatabaseAdapter: RuntimeDatabaseAdapterFactory<LibsqlMetadata
                         text_content = excluded.text_content,
                         updated_at = datetime('now')
                     `,
-                    [placeholderId, type, assetKey, textContent]
+                    [placeholderId, payload.type, assetKey, textContent]
                 );
 
                 return {

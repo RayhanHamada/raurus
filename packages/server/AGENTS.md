@@ -2,7 +2,7 @@
 
 ## Package Context
 
-This package is `@raurus/server`, a contract-first HTTP server built on Elysia. It provides a composable Elysia application with routes for metadata and asset management. It uses `@raurus/logger` for structured logging and never calls `configure()` itself — that is the responsibility of the consuming application.
+This package is `@raurus/server`, a contract-first HTTP server built on [oRPC](https://orpc.dev). It implements the shared contracts from `@raurus/contract` using `@orpc/server` and exposes an `OpenAPIHandler`-backed fetch handler. It uses `@raurus/logger` for structured logging and never calls `configure()` itself — that is the responsibility of the consuming application.
 
 ## Architecture
 
@@ -20,9 +20,9 @@ src/
 │   └── index.ts              # Barrel: re-exports all adapters
 └── runtime/
     ├── index.ts          # Named export: raurus (alias for createRuntime) + CreateRuntimeOptions
-    ├── models.ts         # Elysia TypeSystem schemas (t.Object, t.String, etc.) + failureCodeToStatus mapper
-    ├── routes.ts         # Route plugin — composable Elysia instance taking adapter options
-    ├── runtime.ts        # createRuntime() — composes routes, returns { fetch }
+    ├── models.ts         # failureCodeToStatus mapper (FailureCode → HTTP status)
+    ├── routes.ts         # oRPC procedure implementations — wraps @raurus/contract contracts via implement()
+    ├── runtime.ts        # createRuntime() — creates OpenAPIHandler, returns { fetch }
     └── utils.ts          # Logger factory (getLogger("server"))
 
 tsdown.config.ts          # Build config — entry: ["src/index.ts", "src/core/index.ts", "src/runtime/index.ts", "src/adapters/*/{index.ts,*/index.ts}"]
@@ -31,28 +31,26 @@ tsdown.config.ts          # Build config — entry: ["src/index.ts", "src/core/i
 ## Key Concepts
 
 - **Single public export** — `raurus()` from `@raurus/server` is the only entry point. It creates a fetch-compatible runtime from adapter options. `CreateRuntimeOptions` is also exported as a type for consumers.
-- **CreateRuntimeOptions** — `baseUrl: string | URL` (required), `databaseAdapter?: RuntimeDatabaseAdapter`, `storageAdapter?: RuntimeStorageAdapter`, `debug?: boolean` (default `false`). Field names use `databaseAdapter`/`storageAdapter`.
-- **Route composition** — `routes.ts` takes `RouteOptions` with `databaseAdapter` and `storageAdapter` adapter objects. Routes use Elysia `.decorate()` to make adapters available to handlers as `db` and `storage`. Individual methods that may not exist on the adapter (e.g. `createPresignedUploadUrl`, `deleteAsset`) are guarded with a direct truthiness check in the handler, returning `501` when absent.
+- **Contract-first** — Routes are defined in `@raurus/contract` (Valibot schemas + oRPC contracts). The server package implements them via `@orpc/server`'s `implement(contracts).$context<ServerContext>()`. Input validation is handled entirely by the contract layer.
+- **CreateRuntimeOptions** — `baseUrl: string | URL` (required), `databaseAdapter: RuntimeDatabaseAdapter` (required), `storageAdapter: RuntimeStorageAdapter` (required), `debug?: boolean` (default `false`).
+- **Context-based dependency injection** — `routes.ts` defines a `ServerContext` interface `{ db: RuntimeDatabaseAdapter; storage: RuntimeStorageAdapter }`. The `implement(contracts).$context<ServerContext>()` threads adapters to every handler via the oRPC context, replacing Elysia's `.decorate()` pattern.
+- **Error handling** — Procedure handlers throw `ORPCError` with a typed error code (`NOT_IMPLEMENTED`, `NOT_FOUND`) and an HTTP status derived from `failureCodeToStatus()`. The `NOT_IMPLEMENTED` error carries `{ name: string }` data as defined in the contract. The `NOT_FOUND` error is defined on the `deleteAsset` contract specifically.
 - **Logging** — Use `getLogger("server")` from `@raurus/logger` for runtime, route, and adapter logs. The server package only obtains loggers; the consuming app is responsible for calling `configure()` from `@logtape/logtape` once at startup.
-- **Fetch-compatible** — `createRuntime()` returns `{ fetch }`, compatible with Bun, Cloudflare Workers, and other WinterCG runtimes.
-- **Metadata upsert route** — `PUT /placeholders/:placeholder_id/pathnames/:pathname` accepts a discriminated body (`{ type: "photo"|"video", asset_key }` or `{ type: "text", text }`) and delegates to `db.upsertContentMetadata()`.
-- **Presigned upload URL route** — `GET /assets/presigned-upload-url?asset_key=...` delegates to `storage.createPresignedUploadUrl()`. Returns `501` if the storage adapter doesn't implement it.
-- **Delete asset route** — `DELETE /asset/:asset_key` delegates to `storage.deleteAsset()`. Returns `501` if the adapter doesn't implement it, and `404` when the adapter returns `NOT_FOUND`.
-- **Failure code → HTTP status** — `models.ts` exports `failureCodeToStatus` that maps a `@raurus/core` `FailureCode` to an HTTP status (`NOT_FOUND` → 404, `CONFLICT` → 409, `RATE_LIMIT` → 429, `INVALID_INPUT` → 400, `PERMISSION` → 401, `NOT_IMPLEMENTED` → 501, `UPSTREAM` → 502, `CONNECTION` → 503, `CONFIGURATION` → 500, `UNKNOWN` → 500, anything else → 500). Routes use this to translate adapter `Failure` results into consistent HTTP responses without parsing `error.message`.
-- **OpenAPI detail metadata** — Each route inlines `detail: { summary, description, tags }` on the Elysia handler options. Tags use the `Operations` and `Metadata` groups. When adding a new route, always include a `detail` block.
+- **Fetch-compatible** — `createRuntime()` returns `{ fetch }`, backed by `OpenAPIHandler` from `@orpc/openapi/fetch`, compatible with Bun, Cloudflare Workers, and other WinterCG runtimes.
+- **Metadata upsert procedure** — `upsertMetadata` delegates to `db.upsertContentMetadata()`. Throws `ORPCError("NOT_IMPLEMENTED", ...)` on failure.
+- **Presigned upload URL procedure** — `getPresignedUploadUrl` delegates to `storage.createPresignedUploadUrl()`. Throws `ORPCError("NOT_IMPLEMENTED", { status: 501 })` if the storage adapter doesn't implement it.
+- **Delete asset procedure** — `deleteAsset` delegates to `storage.deleteAsset()`. Throws `ORPCError("NOT_FOUND", { status: 404 })` when the adapter returns `NOT_FOUND`, and `ORPCError("NOT_IMPLEMENTED", { status: 501 })` when the adapter doesn't implement deletion.
+- **Failure code → HTTP status** — `models.ts` exports `failureCodeToStatus` that maps a `FailureCode` to an HTTP status. Used by procedure handlers as the `status` parameter when throwing `ORPCError`.
 
 ## Package Standards
 
 - Keep runtime logic under `src/runtime/` — `src/index.ts` is a thin barrel that re-exports `raurus` and `CreateRuntimeOptions` from `./runtime`
-- Define schemas in `models.ts` using `t.Object()` / `t.String()` etc. from Elysia's TypeSystem
-- Routes import schemas via `import * as m from "./models"` and reference them as `m.SchemaName` — do not switch to named imports without a reason
-- Pass adapter dependencies to `routes()` via `RouteOptions` and expose them to handlers via `.decorate("db", ...)` / `.decorate("storage", ...)`
+- `routes.ts` is the single file defining procedure implementations using `implement()` from `@orpc/server` and the contracts from `@raurus/contract`
 - Export the runtime factory as `raurus` from `src/runtime/index.ts`
 - Use `@raurus/logger` for all logs; create module-level `const log = getLogger("server")` loggers and do not call `configure()` inside this package
-- When a route's underlying adapter call returns `Failure`, log the `error.message` and respond with `set.status = m.failureCodeToStatus(result.code)` and a `{ message: "Error", error: "<safe summary>" }` body
-- When a storage method is not implemented on the adapter (e.g. no `createPresignedUploadUrl`), check `if (!storage.<methodName>)` and return `status(501, { message: "Error", error: "Storage adapter does not support <methodName>" })` — never return `400` for a missing method
-- URL path parameters use `snake_case` naming (e.g. `:placeholder_id`, `:asset_key`), not `camelCase` — Elysia maps path params to handler `params` using the literal name from the path
-- Each route inlines a `detail: { summary, description, tags }` block on the Elysia handler options for documentation generation
+- When a procedure's underlying adapter call returns `Failure`, log the `error.message` and throw an `ORPCError` with the mapped status from `failureCodeToStatus(result.code)` and a descriptive `data.name`
+- When a storage method is not implemented on the adapter, check `if (!storage.<methodName>)` and throw `ORPCError("NOT_IMPLEMENTED", { status: 501 })` — never use a 400 status for a missing method
+- All validation is defined in `@raurus/contract` — do not duplicate schemas in the server package
 
 ## Workflow
 
@@ -68,8 +66,10 @@ tsdown.config.ts          # Build config — entry: ["src/index.ts", "src/core/i
 - Adapters extend the base config interfaces from `@raurus/server/core` (`RuntimeDatabaseAdapterBaseConfig`, `RuntimeStorageAdapterBaseConfig`) and use factory types for type safety
 - Database adapters — currently only `libsql`. The `CreateRuntimeOptions` field is named `databaseAdapter`.
 - Storage adapters — currently only `s3mini`. The `CreateRuntimeOptions` field is named `storageAdapter`.
-- All adapters must implement `checkConnection()` from `CommonRuntimeAdapter` (returns `AdapterAPIResult<null>` — i.e. `{ ok: true, data: null }` on success or `{ ok: false, error: Error, code?: FailureCode }` on failure) and must declare `apiVersion: "1"`
-- `RuntimeDatabaseAdapter` exposes `upsertContentMetadata` and `listContentMetadataByPath` — both required. `upsertContentMetadata` takes a discriminated payload union (`{ type: photo|video, assetKey }` or `{ type: text, text }`).
-- `RuntimeStorageAdapter` exposes a two-method menu (`createPresignedUploadUrl`, `deleteAsset`) — both optional, guarded at the route level with `501 Not Implemented` when absent
+- All adapters must implement `checkConnection()` from `CommonRuntimeAdapter` (returns `AdapterAPIResult<null>`) and must declare `apiVersion: "1"`
+- `RuntimeDatabaseAdapter` exposes `upsertContentMetadata` and `listContentMetadataByPath` — both required. `upsertContentMetadata` takes a discriminated payload union (`{ type: photo, assetKey } | { type: text, text } | { type: link, link }`).
+- `RuntimeStorageAdapter` exposes a two-method menu (`createPresignedUploadUrl`, `deleteAsset`) — both optional, guarded at the procedure level with `NOT_IMPLEMENTED` ORPCError when absent
 - `createRuntime()` is the runtime factory function defined in `runtime.ts`; it is re-exported as `raurus` from `runtime/index.ts`
 - `utils.ts` exports a module-level `log` logger instance and re-exports `initializeLogger` from `@raurus/logger`
+- The `@raurus/contract` package is a `workspace:*` dependency; contracts are imported via `import { contracts, FAILURE_CODES } from "@raurus/contract"`
+- `@orpc/openapi` is used for the `OpenAPIHandler` import at `@orpc/openapi/fetch`

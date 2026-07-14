@@ -1,163 +1,137 @@
-import { Elysia } from "elysia";
+import { ORPCError, implement } from "@orpc/server";
+import { contracts, FAILURE_CODES } from "@raurus/contract";
 
 import type { RuntimeDatabaseAdapter, RuntimeStorageAdapter } from "@/core";
 import { log } from "@/runtime/utils";
 
-import * as m from "./models";
+import { failureCodeToStatus } from "./models";
 
-interface RouteOptions {
-    databaseAdapter: RuntimeDatabaseAdapter;
-    storageAdapter: RuntimeStorageAdapter;
+// ---------------------------------------------------------------------------
+// Context type — adapters threaded to every procedure via .$context()
+// ---------------------------------------------------------------------------
+
+export interface ServerContext {
+    db: RuntimeDatabaseAdapter;
+    storage: RuntimeStorageAdapter;
 }
 
-export function routes({ databaseAdapter, storageAdapter }: RouteOptions) {
-    return (
-        new Elysia()
+// ---------------------------------------------------------------------------
+// Implementer — wraps the shared contracts, expects ServerContext
+// ---------------------------------------------------------------------------
 
-            .decorate("db", databaseAdapter)
-            .decorate("storage", storageAdapter)
+const base = implement(contracts).$context<ServerContext>();
 
-            .put(
-                "/placeholders/:placeholder_id/pathnames/:pathname",
-                async ({ status, set, params: { pathname, placeholder_id }, db, body }) => {
-                    log.debug("Metadata upsert requested", { placeholder_id });
+// ---------------------------------------------------------------------------
+// Procedure implementations
+// ---------------------------------------------------------------------------
 
-                    const result = await db.upsertContentMetadata(placeholder_id, pathname, body);
+// -- upsertMetadata ---------------------------------------------------------
 
-                    if (!result.ok) {
-                        log.error("Failed to upsert metadata", {
-                            placeholder_id,
-                            error: result.error.message,
-                        });
-                        const code = m.failureCodeToStatus(result.code);
-                        set.status = code;
-                        return {
-                            message: "Error",
-                            error: "Failed to upsert metadata",
-                        };
-                    }
+const upsertMetadata = base.upsertMetadata.handler(
+    async ({ input: { body, pathname, placeholder_id }, context: { db } }) => {
+        log.debug("Metadata upsert requested", { placeholder_id });
 
-                    log.debug("Metadata upserted", { placeholder_id });
-                    return status(200, { message: "OK" });
-                },
-                {
-                    detail: {
-                        summary: "Upsert Metadata",
-                        description: "Create or update a metadata record for a placeholder.",
-                        tags: ["Metadata"],
-                    },
-                    params: m.MetadataParamsSchema,
-                    body: m.UpsertMetadataBodySchema,
-                    response: {
-                        200: m.DeleteAssetResponseSchema,
-                        400: m.ErrorResponseSchema,
-                        501: m.ErrorResponseSchema,
-                    },
-                }
-            )
+        const result = await db.upsertContentMetadata(placeholder_id, pathname, body);
 
-            // Storage routes
-            .get(
-                "/assets/presigned-upload-url",
-                async ({ status, set, storage, query: { assetKey } }) => {
-                    log.debug("Presigned URL requested", { asset_key: assetKey });
+        if (!result.ok) {
+            log.error("Failed to upsert metadata", {
+                placeholder_id,
+                error: result.error.message,
+            });
 
-                    if (!storage.createPresignedUploadUrl) {
-                        log.warning("Storage adapter does not support presigned URLs", {
-                            adapterId: storage.id,
-                        });
+            throw new ORPCError("NOT_IMPLEMENTED", {
+                status: failureCodeToStatus(result.code),
+                message: "Error",
+                data: { name: "Failed to upsert metadata" },
+            });
+        }
 
-                        return status(501, {
-                            message: "Error",
-                            error: "Storage adapter does not support createPresignedUploadUrl",
-                        });
-                    }
+        log.debug("Metadata upserted", { placeholder_id });
+        return { message: "OK" as const };
+    }
+);
 
-                    const result = await storage.createPresignedUploadUrl(assetKey);
+// -- getPresignedUploadUrl ---------------------------------------------------
 
-                    if (!result.ok) {
-                        log.error("Failed to create presigned URL", {
-                            asset_key: assetKey,
-                            error: result.error.message,
-                        });
-                        const code = m.failureCodeToStatus(result.code);
-                        set.status = code;
-                        return {
-                            message: "Error",
-                            error: "Failed to create presigned URL",
-                        };
-                    }
+const getPresignedUploadUrl = base.getPresignedUploadUrl.handler(
+    async ({ input: { assetKey }, context: { storage } }) => {
+        log.debug("Presigned URL requested", { asset_key: assetKey });
 
-                    log.debug("Presigned URL created", { assetKey });
-                    return status(200, {
-                        message: "OK",
-                        data: {
-                            url: result.data.url,
-                        },
-                    });
-                },
-                {
-                    detail: {
-                        summary: "Get Presigned Upload URL",
-                        description: "Generate a presigned URL for uploading an asset to a storage service.",
-                        tags: ["Operations"],
-                    },
-                    query: m.PresignedUrlQuerySchema,
-                    response: {
-                        200: m.PresignedUrlResponseSchema,
-                        400: m.ErrorResponseSchema,
-                        501: m.ErrorResponseSchema,
-                    },
-                }
-            )
+        if (!storage.createPresignedUploadUrl) {
+            log.warning("Storage adapter does not support presigned URLs", {
+                adapterId: storage.id,
+            });
+            throw new ORPCError("NOT_IMPLEMENTED", {
+                status: 501,
+                data: { name: "Storage adapter does not support createPresignedUploadUrl" },
+            });
+        }
 
-            .delete(
-                "/asset/:asset_key",
-                async ({ status, set, storage, params: { assetKey } }) => {
-                    log.debug("Delete asset requested", { assetKey });
+        const result = await storage.createPresignedUploadUrl(assetKey);
 
-                    if (!storage.deleteAsset) {
-                        log.warning("Storage adapter does not support asset deletion", {
-                            adapterId: storage.id,
-                        });
+        if (!result.ok) {
+            log.error("Failed to create presigned URL", {
+                asset_key: assetKey,
+                error: result.error.message,
+            });
+            throw new ORPCError("NOT_IMPLEMENTED", {
+                status: failureCodeToStatus(result.code),
+                data: { name: "Failed to create presigned URL" },
+            });
+        }
 
-                        return status(501, {
-                            message: "Error",
-                            error: "Storage adapter does not support deleteAsset",
-                        });
-                    }
+        log.debug("Presigned URL created", { assetKey });
+        return {
+            message: "OK" as const,
+            data: { url: result.data.url },
+        };
+    }
+);
 
-                    const result = await storage.deleteAsset(assetKey);
+// -- deleteAsset -------------------------------------------------------------
 
-                    if (!result.ok) {
-                        log.error("Failed to delete asset", { assetKey, error: result.error.message });
+const deleteAsset = base.deleteAsset.handler(async ({ input: { assetKey }, context: { storage } }) => {
+    log.debug("Delete asset requested", { assetKey });
 
-                        const code = m.failureCodeToStatus(result.code);
-                        set.status = code;
+    if (!storage.deleteAsset) {
+        log.warning("Storage adapter does not support asset deletion", {
+            adapterId: storage.id,
+        });
+        throw new ORPCError("NOT_IMPLEMENTED", {
+            status: 501,
+            data: { name: "Storage adapter does not support deleteAsset" },
+        });
+    }
 
-                        return {
-                            message: "Error",
-                            error: "Failed to delete asset",
-                        };
-                    }
+    const result = await storage.deleteAsset(assetKey);
 
-                    log.debug("Asset deleted", { assetKey });
-                    return status(200, { message: "OK" });
-                },
-                {
-                    detail: {
-                        summary: "Delete Asset",
-                        description: "Delete an asset from the storage service.",
-                        tags: ["Operations"],
-                    },
-                    params: m.DeleteAssetParamsSchema,
-                    response: {
-                        200: m.DeleteAssetResponseSchema,
-                        400: m.ErrorResponseSchema,
-                        404: m.ErrorResponseSchema,
-                        501: m.ErrorResponseSchema,
-                    },
-                }
-            )
-    );
-}
+    if (!result.ok) {
+        log.error("Failed to delete asset", { assetKey, error: result.error.message });
+
+        const { code } = result;
+        if (code === FAILURE_CODES.NOT_FOUND) {
+            throw new ORPCError("NOT_FOUND", {
+                status: 404,
+                data: { name: "Failed to delete asset" },
+            });
+        }
+
+        throw new ORPCError("NOT_IMPLEMENTED", {
+            status: failureCodeToStatus(code),
+            data: { name: "Failed to delete asset" },
+        });
+    }
+
+    log.debug("Asset deleted", { assetKey });
+    return { message: "OK" as const };
+});
+
+// ---------------------------------------------------------------------------
+// Router — plain object matching the contract shape
+// ---------------------------------------------------------------------------
+
+export const router = {
+    upsertMetadata,
+    getPresignedUploadUrl,
+    deleteAsset,
+};

@@ -4,6 +4,7 @@ import type {
     AdapterAPIResult,
     CommonRuntimeAdapter,
     FailureCode,
+    LinkMetadataType,
     PhotoMetadataType,
     RaurusMetadata,
     RaurusMetadataType,
@@ -14,16 +15,15 @@ import type {
     RuntimeStorageAdapterBaseConfig,
     RuntimeStorageAdapterFactory,
     TextMetadataType,
-    VideoMetadataType,
 } from "./types";
 
 const makeMetadataAdapter = (): RuntimeDatabaseAdapter => null as unknown as RuntimeDatabaseAdapter;
 const makeStorageAdapter = (): RuntimeStorageAdapter => null as unknown as RuntimeStorageAdapter;
 
 describe("domain types", () => {
-    it("RaurusMetadataType is the union of photo, text, and video literals", () => {
-        expectTypeOf<RaurusMetadataType>().toEqualTypeOf<PhotoMetadataType | TextMetadataType | VideoMetadataType>();
-        expectTypeOf<RaurusMetadataType>().toEqualTypeOf<"photo" | "text" | "video">();
+    it("RaurusMetadataType is the union of photo, text, and link literals", () => {
+        expectTypeOf<RaurusMetadataType>().toEqualTypeOf<PhotoMetadataType | TextMetadataType | LinkMetadataType>();
+        expectTypeOf<RaurusMetadataType>().toEqualTypeOf<"photo" | "text" | "link">();
     });
 });
 
@@ -31,7 +31,7 @@ describe("RaurusMetadata discriminated union", () => {
     it("photo variant carries assetKey and excludes text", () => {
         const photo: RaurusMetadata = { placeholderId: "p1", type: "photo", assetKey: "a1" };
         expectTypeOf(photo).toExtend<RaurusMetadata>();
-        expectTypeOf(photo.type).toEqualTypeOf<PhotoMetadataType | VideoMetadataType>();
+        expectTypeOf(photo.type).toEqualTypeOf<PhotoMetadataType>();
         expectTypeOf(photo).toHaveProperty("assetKey");
         expectTypeOf(photo).not.toHaveProperty("text");
     });
@@ -44,12 +44,12 @@ describe("RaurusMetadata discriminated union", () => {
         expectTypeOf(text).not.toHaveProperty("assetKey");
     });
 
-    it("video variant carries assetKey", () => {
-        const video: RaurusMetadata = { placeholderId: "p3", type: "video", assetKey: "a3" };
-        expectTypeOf(video).toExtend<RaurusMetadata>();
-        expectTypeOf(video.type).toEqualTypeOf<PhotoMetadataType | VideoMetadataType>();
-        expectTypeOf(video).toHaveProperty("assetKey");
-        expectTypeOf(video).not.toHaveProperty("text");
+    it("link variant carries link and excludes text", () => {
+        const link: RaurusMetadata = { placeholderId: "p3", type: "link", link: "/page" };
+        expectTypeOf(link).toExtend<RaurusMetadata>();
+        expectTypeOf(link.type).toEqualTypeOf<LinkMetadataType>();
+        expectTypeOf(link).toHaveProperty("link");
+        expectTypeOf(link).not.toHaveProperty("text");
     });
 
     it("narrows the photo branch to expose assetKey", () => {
@@ -68,11 +68,11 @@ describe("RaurusMetadata discriminated union", () => {
         }
     });
 
-    it("narrows the video branch to expose assetKey", () => {
-        const meta: RaurusMetadata = { placeholderId: "p3", type: "video", assetKey: "a3" };
-        if (meta.type === "video") {
-            expectTypeOf(meta).toHaveProperty("assetKey");
-            expectTypeOf(meta.type).toEqualTypeOf<VideoMetadataType>();
+    it("narrows the link branch to expose link", () => {
+        const meta: RaurusMetadata = { placeholderId: "p3", type: "link", link: "/page" };
+        if (meta.type === "link") {
+            expectTypeOf(meta).toHaveProperty("link");
+            expectTypeOf(meta.type).toEqualTypeOf<LinkMetadataType>();
         }
     });
 });
@@ -133,20 +133,24 @@ describe("metadata adapter contract", () => {
         expectTypeOf<RuntimeDatabaseAdapter["id"]>().toEqualTypeOf<`${Lowercase<string>}-database-adapter`>();
     });
 
-    it("upsertContentMetadata accepts photo/video with a payload object containing assetKey", () => {
-        type UpsertPhotoVideo = Parameters<RuntimeDatabaseAdapter["upsertContentMetadata"]>;
-        expectTypeOf<UpsertPhotoVideo>().toEqualTypeOf<
+    it("upsertContentMetadata accepts photo/link payload and text payload", () => {
+        type Upsert = Parameters<RuntimeDatabaseAdapter["upsertContentMetadata"]>;
+        expectTypeOf<Upsert>().toEqualTypeOf<
             [
                 path: string,
                 placeholderId: string,
                 payload:
                     | {
-                          type: PhotoMetadataType | VideoMetadataType;
+                          type: PhotoMetadataType;
                           assetKey: string;
                       }
                     | {
                           type: TextMetadataType;
                           text: string;
+                      }
+                    | {
+                          type: LinkMetadataType;
+                          link: string;
                       },
             ]
         >();

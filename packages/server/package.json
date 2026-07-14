@@ -1,7 +1,7 @@
 {
     "name": "@raurus/server",
     "version": "0.0.0",
-    "description": "A starter for creating a TypeScript package.",
+    "description": "Contract-first HTTP server built on oRPC",
     "homepage": "https://github.com/RayhanHamada/raurus#readme",
     "bugs": {
         "url": "https://github.com/RayhanHamada/raurus/issues"
@@ -30,8 +30,9 @@
         "release": "bumpp"
     },
     "dependencies": {
+        "@orpc/server": "^1.14.8",
+        "@raurus/contract": "workspace:*",
         "@raurus/logger": "workspace:*",
-        "elysia": "^1.4.29",
         "s3mini": "^0.9.5",
         "ts-pattern": "^5.9.0"
     },
