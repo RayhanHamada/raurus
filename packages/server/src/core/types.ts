@@ -18,22 +18,25 @@ export type AdapterAPIResult<T> = Success<T> | Failure;
 
 export type PhotoMetadataType = typeof METADATA_TYPES.PHOTO;
 export type TextMetadataType = typeof METADATA_TYPES.TEXT;
-export type VideoMetadataType = typeof METADATA_TYPES.VIDEO;
+export type LinkMetadataType = typeof METADATA_TYPES.LINK;
 
-export type RaurusMetadataType = PhotoMetadataType | TextMetadataType | VideoMetadataType;
+export type RaurusMetadataType = PhotoMetadataType | TextMetadataType | LinkMetadataType;
 
-export type RaurusMetadata = {
-    placeholderId: string;
-} & (
+export type RaurusMetadataPayload =
     | {
-          type: PhotoMetadataType | VideoMetadataType;
+          type: PhotoMetadataType;
           assetKey: string;
       }
     | {
           type: TextMetadataType;
           text: string;
       }
-);
+    | {
+          type: LinkMetadataType;
+          link: string;
+      };
+
+export type RaurusMetadata = { placeholderId: string } & RaurusMetadataPayload;
 
 export interface RuntimeDatabaseAdapterBaseConfig {}
 
@@ -53,15 +56,7 @@ export interface RuntimeDatabaseAdapter extends CommonRuntimeAdapter {
     upsertContentMetadata: (
         placeholderId: string,
         path: string,
-        payload:
-            | {
-                  type: PhotoMetadataType | VideoMetadataType;
-                  assetKey: string;
-              }
-            | {
-                  type: TextMetadataType;
-                  text: string;
-              }
+        payload: RaurusMetadataPayload
     ) => Promise<AdapterAPIResult<null>>;
 
     listContentMetadataByPath: (path: string) => Promise<AdapterAPIResult<RaurusMetadata[]>>;

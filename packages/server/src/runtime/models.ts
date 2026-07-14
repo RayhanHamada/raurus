@@ -1,19 +1,11 @@
 import { t } from "elysia";
 
 // oxlint-disable no-template-curly-in-string
+import { METADATA_TYPES } from "@/core";
 import type { FailureCode } from "@/core";
 
-export const HealthCheckResponseSchema = t.Object({
-    status: t.Union([t.Literal("OK"), t.Literal("Error")]),
-    message: t.Literal("RAURUS_ENDPOINT"),
-    data: t.Object({
-        database_adapter_id: t.Nullable(t.String()),
-        storage_adapter_id: t.Nullable(t.String()),
-    }),
-});
-
 export const PresignedUrlQuerySchema = t.Object({
-    asset_key: t.RegExp(/^(?!\/)(?!.*\/\/)[A-Za-z0-9!_\-.*'()/]+(?:\/[A-Za-z0-9!_\-.*'()/]+)*$/u, {
+    assetKey: t.RegExp(/^(?!\/)(?!.*\/\/)[A-Za-z0-9!_\-.*'()/]+(?:\/[A-Za-z0-9!_\-.*'()/]+)*$/u, {
         examples: ["folder1/file.png", "file.txt", "folder1/folder2/file.jpg"],
     }),
 });
@@ -30,7 +22,7 @@ export const PresignedUrlResponseSchema = t.Object({
 });
 
 export const DeleteAssetParamsSchema = t.Object({
-    asset_key: t.String({ minLength: 1, examples: ["folder1/file.png"] }),
+    assetKey: t.String({ minLength: 1, examples: ["folder1/file.png"] }),
 });
 
 export const DeleteAssetResponseSchema = t.Object({
@@ -40,7 +32,7 @@ export const DeleteAssetResponseSchema = t.Object({
 export const UploadAssetResponseSchema = t.Object({
     message: t.Literal("OK"),
     data: t.Object({
-        asset_key: t.String(),
+        assetKey: t.String(),
     }),
 });
 
@@ -52,18 +44,18 @@ export const ErrorResponseSchema = t.Object({
 export const MetadataResponseSchema = t.Union([
     t.Object({
         placeholder_id: t.String(),
-        type: t.Literal("photo"),
-        asset_key: t.String(),
+        type: t.Literal(METADATA_TYPES.PHOTO),
+        assetKey: t.String(),
     }),
     t.Object({
         placeholder_id: t.String(),
-        type: t.Literal("text"),
+        type: t.Literal(METADATA_TYPES.TEXT),
         text: t.String(),
     }),
     t.Object({
         placeholder_id: t.String(),
-        type: t.Literal("video"),
-        asset_key: t.String(),
+        type: t.Literal(METADATA_TYPES.LINK),
+        link: t.String(),
     }),
 ]);
 
@@ -83,17 +75,21 @@ export const MetadataParamsSchema = t.Object({
 
 export const UpsertMetadataBodySchema = t.Union([
     t.Object({
-        type: t.Union([t.Literal("photo"), t.Literal("video")]),
-        asset_key: t.String(),
+        type: t.Literal(METADATA_TYPES.PHOTO),
+        assetKey: t.String(),
     }),
     t.Object({
-        type: t.Literal("text"),
+        type: t.Literal(METADATA_TYPES.TEXT),
         text: t.String(),
+    }),
+    t.Object({
+        type: t.Literal(METADATA_TYPES.LINK),
+        link: t.String(),
     }),
 ]);
 
 export const AssetContentParamsSchema = t.Object({
-    asset_key: t.String({ minLength: 1 }),
+    assetKey: t.String({ minLength: 1 }),
 });
 
 /**

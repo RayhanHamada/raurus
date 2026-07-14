@@ -174,26 +174,13 @@ function createEditableTextElement<Tag extends EditableTag>(As: Tag) {
     return Component;
 }
 
-export const {
-    EditableDiv,
-    EditableP,
-    EditableSpan,
-    EditableH1,
-    EditableH2,
-    EditableH3,
-    EditableH4,
-    EditableH5,
-    EditableH6,
-    EditableLink,
-} = {
-    EditableLink: createEditableTextElement("a"),
-    EditableDiv: createEditableTextElement("div"),
-    EditableP: createEditableTextElement("p"),
-    EditableSpan: createEditableTextElement("span"),
-    EditableH1: createEditableTextElement("h1"),
-    EditableH2: createEditableTextElement("h2"),
-    EditableH3: createEditableTextElement("h3"),
-    EditableH4: createEditableTextElement("h4"),
-    EditableH5: createEditableTextElement("h5"),
-    EditableH6: createEditableTextElement("h6"),
-} as const;
+export const EditableLink = createEditableTextElement("a");
+export const EditableDiv = createEditableTextElement("div");
+export const EditableP = createEditableTextElement("p");
+export const EditableSpan = createEditableTextElement("span");
+export const EditableH1 = createEditableTextElement("h1");
+export const EditableH2 = createEditableTextElement("h2");
+export const EditableH3 = createEditableTextElement("h3");
+export const EditableH4 = createEditableTextElement("h4");
+export const EditableH5 = createEditableTextElement("h5");
+export const EditableH6 = createEditableTextElement("h6");

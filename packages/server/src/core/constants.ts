@@ -14,5 +14,5 @@ export const FAILURE_CODES = {
 export const METADATA_TYPES = {
     PHOTO: "photo",
     TEXT: "text",
-    VIDEO: "video",
+    LINK: "link",
 } as const;

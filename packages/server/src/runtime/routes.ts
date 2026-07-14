@@ -1,6 +1,5 @@
 import { Elysia } from "elysia";
 
-import { METADATA_TYPES } from "@/core";
 import type { RuntimeDatabaseAdapter, RuntimeStorageAdapter } from "@/core";
 import { log } from "@/runtime/utils";
 
@@ -23,20 +22,11 @@ export function routes({ databaseAdapter, storageAdapter }: RouteOptions) {
                 async ({ status, set, params: { pathname, placeholder_id }, db, body }) => {
                     log.debug("Metadata upsert requested", { placeholder_id });
 
-                    const result =
-                        body.type === METADATA_TYPES.TEXT
-                            ? await db.upsertContentMetadata(placeholder_id, pathname, {
-                                  type: METADATA_TYPES.TEXT,
-                                  text: body.text,
-                              })
-                            : await db.upsertContentMetadata(placeholder_id, pathname, {
-                                  type: body.type,
-                                  assetKey: body.asset_key,
-                              });
+                    const result = await db.upsertContentMetadata(placeholder_id, pathname, body);
 
                     if (!result.ok) {
                         log.error("Failed to upsert metadata", {
-                            placeholderId: placeholder_id,
+                            placeholder_id,
                             error: result.error.message,
                         });
                         const code = m.failureCodeToStatus(result.code);
@@ -69,8 +59,8 @@ export function routes({ databaseAdapter, storageAdapter }: RouteOptions) {
             // Storage routes
             .get(
                 "/assets/presigned-upload-url",
-                async ({ status, set, storage, query: { asset_key } }) => {
-                    log.debug("Presigned URL requested", { assetKey: asset_key });
+                async ({ status, set, storage, query: { assetKey } }) => {
+                    log.debug("Presigned URL requested", { asset_key: assetKey });
 
                     if (!storage.createPresignedUploadUrl) {
                         log.warning("Storage adapter does not support presigned URLs", {
@@ -83,11 +73,11 @@ export function routes({ databaseAdapter, storageAdapter }: RouteOptions) {
                         });
                     }
 
-                    const result = await storage.createPresignedUploadUrl(asset_key);
+                    const result = await storage.createPresignedUploadUrl(assetKey);
 
                     if (!result.ok) {
                         log.error("Failed to create presigned URL", {
-                            asset_key,
+                            asset_key: assetKey,
                             error: result.error.message,
                         });
                         const code = m.failureCodeToStatus(result.code);
@@ -98,7 +88,7 @@ export function routes({ databaseAdapter, storageAdapter }: RouteOptions) {
                         };
                     }
 
-                    log.debug("Presigned URL created", { asset_key });
+                    log.debug("Presigned URL created", { assetKey });
                     return status(200, {
                         message: "OK",
                         data: {
@@ -123,8 +113,8 @@ export function routes({ databaseAdapter, storageAdapter }: RouteOptions) {
 
             .delete(
                 "/asset/:asset_key",
-                async ({ status, set, storage, params: { asset_key } }) => {
-                    log.debug("Delete asset requested", { assetKey: asset_key });
+                async ({ status, set, storage, params: { assetKey } }) => {
+                    log.debug("Delete asset requested", { assetKey });
 
                     if (!storage.deleteAsset) {
                         log.warning("Storage adapter does not support asset deletion", {
@@ -137,10 +127,10 @@ export function routes({ databaseAdapter, storageAdapter }: RouteOptions) {
                         });
                     }
 
-                    const result = await storage.deleteAsset(asset_key);
+                    const result = await storage.deleteAsset(assetKey);
 
                     if (!result.ok) {
-                        log.error("Failed to delete asset", { assetKey: asset_key, error: result.error.message });
+                        log.error("Failed to delete asset", { assetKey, error: result.error.message });
 
                         const code = m.failureCodeToStatus(result.code);
                         set.status = code;
@@ -151,7 +141,7 @@ export function routes({ databaseAdapter, storageAdapter }: RouteOptions) {
                         };
                     }
 
-                    log.debug("Asset deleted", { assetKey: asset_key });
+                    log.debug("Asset deleted", { assetKey });
                     return status(200, { message: "OK" });
                 },
                 {

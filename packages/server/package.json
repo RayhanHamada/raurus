@@ -32,7 +32,8 @@
     "dependencies": {
         "@raurus/logger": "workspace:*",
         "elysia": "^1.4.29",
-        "s3mini": "^0.9.5"
+        "s3mini": "^0.9.5",
+        "ts-pattern": "^5.9.0"
     },
     "devDependencies": {
         "@raurus/tsconfig": "workspace:*",
