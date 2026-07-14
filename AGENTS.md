@@ -13,8 +13,7 @@ raurus/
 │   ├── mvp-editable-field/    # @raurus/mvp-editable-field — Vite + React 19 + Tailwind CSS v4 example demoing editable content
 │   └── next-example/          # next-example — Next.js 16 + React 19 + Tailwind CSS v4 app integrating @raurus/react
 ├── packages/
-│   ├── core/                # @raurus/core — shared framework types and adapter contracts
-│   ├── server/              # @raurus/server — Elysia + @elysia/openapi runtime, ships built-in adapters
+│   ├── server/              # @raurus/server — Elysia + @elysia/openapi runtime, ships built-in adapters and core domain types
 │   ├── client/              # @raurus/client — type-safe SDK wrapping openapi-fetch with server-generated OpenAPI types
 │   ├── react/               # @raurus/react — React 19 visual editing component library (provider, hooks, editable components)
 │   ├── logger/              # @raurus/logger — LogTape wrapper: getLogger factory + a Config object
@@ -62,4 +61,5 @@ raurus/
 - Each package documents its own conventions in `packages/<name>/AGENTS.md`; examples document theirs in `examples/<name>/AGENTS.md`
 - Ignored paths for linting and formatting are defined in `oxignore.json`
 - Agent skills are locked via `skills-lock.json` and stored in `.agents/skills/`
+- Domain types and adapter contracts live in `packages/server/src/core/` and are exported via `@raurus/server/core`
 - Example/reference adapters live under `packages/server/src/adapters/` (e.g. database, storage) and are exported via `package.json` `exports` entries — real adapter packages (e.g. for Cloudflare, S3) should also be workspace packages, not inlined into apps

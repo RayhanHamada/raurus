@@ -1,6 +1,6 @@
 import cn from "cnfast";
-import { createElement, Fragment, useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
-import type { ComponentProps, FocusEventHandler, HTMLElementType, JSX, MouseEventHandler, RefObject } from "react";
+import { createElement, useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
+import type { ComponentProps, FocusEventHandler, HTMLElementType, MouseEventHandler, RefObject } from "react";
 import { createPortal } from "react-dom";
 
 import { useRaurus } from "@/hooks";
@@ -13,7 +13,7 @@ export interface EditableTextOwnProps {
 }
 
 interface IdTooltipProps {
-    element: HTMLElement | null;
+    targetElementRef: RefObject<HTMLElement | null>;
     id: string;
 }
 
@@ -43,14 +43,15 @@ const BASE_TOOLTIP_CLASSES = cn(
     "raurus:font-mono"
 );
 
-function IdTooltip({ element, id }: IdTooltipProps) {
+function IdTooltip({ targetElementRef, id }: IdTooltipProps) {
     const ref = useRef<HTMLDivElement>(null);
 
     useLayoutEffect(() => {
-        if (!element || !ref.current) {
+        if (!targetElementRef.current || !ref.current) {
             return;
         }
-        const rect = element.getBoundingClientRect();
+
+        const rect = targetElementRef.current.getBoundingClientRect();
         ref.current.style.top = `${rect.top + window.scrollY}px`;
         ref.current.style.left = `${rect.left + window.scrollX}px`;
         ref.current.style.transform = "translateY(-100%)";
@@ -137,7 +138,6 @@ function createEditableTextElement<Tag extends EditableTag>(As: Tag) {
         const onBlur = useCallback<FocusEventHandler<HTMLElement>>(
             (e) => {
                 propsOnBlur?.(e);
-
                 ctx.stopEditing();
             },
             [ctx, propsOnBlur]
@@ -146,29 +146,27 @@ function createEditableTextElement<Tag extends EditableTag>(As: Tag) {
         const onMouseEnter = useCallback<MouseEventHandler<HTMLElement>>(() => setHovered(true), []);
         const onMouseLeave = useCallback<MouseEventHandler<HTMLElement>>(() => setHovered(false), []);
 
-        const editableElement = createElement(As, {
-            ...props,
-            ref,
-            suppressContentEditableWarning: true,
-            className,
-            contentEditable,
-            onClick,
-            onBlur,
-            onMouseEnter,
-            onMouseLeave,
-            "data-raurus-id": props.id,
-            "data-raurus-edit-mode": ctx.editMode || undefined,
-            "data-raurus-selected": isSelected || undefined,
-            "data-raurus-editing": isEditing || undefined,
-        }) as JSX.Element;
-
         const shouldShowTooltip = ctx.editMode && (isSelected || isEditing || hovered);
 
         return (
-            <Fragment>
-                {shouldShowTooltip && <IdTooltip element={ref.current} id={props.id} />}
-                {editableElement}
-            </Fragment>
+            <>
+                {shouldShowTooltip && <IdTooltip targetElementRef={ref} id={props.id} />}
+                {createElement(As, {
+                    ...props,
+                    ref,
+                    className,
+                    contentEditable,
+                    onClick,
+                    onBlur,
+                    onMouseEnter,
+                    onMouseLeave,
+                    suppressContentEditableWarning: true,
+                    "data-raurus-id": props.id,
+                    "data-raurus-edit-mode": ctx.editMode || undefined,
+                    "data-raurus-selected": isSelected || undefined,
+                    "data-raurus-editing": isEditing || undefined,
+                })}
+            </>
         );
     }
 

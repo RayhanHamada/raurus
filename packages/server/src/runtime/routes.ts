@@ -1,7 +1,7 @@
-import { METADATA_TYPES } from "@raurus/core";
-import type { RuntimeDatabaseAdapter, RuntimeStorageAdapter } from "@raurus/core";
 import { Elysia } from "elysia";
 
+import { METADATA_TYPES } from "@/core";
+import type { RuntimeDatabaseAdapter, RuntimeStorageAdapter } from "@/core";
 import { log } from "@/runtime/utils";
 
 import * as m from "./models";

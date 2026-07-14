@@ -1,6 +1,6 @@
-import type { RuntimeDatabaseAdapter, RuntimeStorageAdapter } from "@raurus/core";
 import { Elysia } from "elysia";
 
+import type { RuntimeDatabaseAdapter, RuntimeStorageAdapter } from "@/core";
 import { initializeLogger, log } from "@/runtime/utils";
 
 import { routes } from "./routes";

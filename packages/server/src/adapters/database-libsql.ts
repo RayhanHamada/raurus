@@ -1,6 +1,7 @@
 import { createClient } from "@libsql/client";
-import { FAILURE_CODES } from "@raurus/core";
-import type { RuntimeDatabaseAdapterBaseConfig, RuntimeDatabaseAdapterFactory } from "@raurus/core";
+
+import { FAILURE_CODES } from "@/core";
+import type { RuntimeDatabaseAdapterBaseConfig, RuntimeDatabaseAdapterFactory } from "@/core";
 
 export interface LibsqlMetadataAdapterConfig extends RuntimeDatabaseAdapterBaseConfig {
     /**

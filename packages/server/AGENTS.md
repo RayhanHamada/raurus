@@ -9,22 +9,23 @@ This package is `@raurus/server`, a contract-first, OpenAPI-driven HTTP server b
 ```
 src/
 ├── index.ts             # Public barrel — exports raurus and CreateRuntimeOptions from src/runtime/
+├── core/
+│   ├── index.ts              # Barrel: re-exports types + constants
+│   ├── constants.ts          # FAILURE_CODES, METADATA_TYPES (as const objects)
+│   ├── types.ts              # Domain types, adapter contracts, factories
+│   └── types.test.ts         # Vitest type-level tests
 ├── adapters/
-│   ├── database/
-│   │   ├── index.ts              # Barrel: re-exports libSqlDatabaseAdapter
-│   │   └── libsql/
-│   │       └── index.ts          # libsql-based database adapter
-│   └── storage/
-│       ├── index.ts              # Barrel: re-exports s3MiniStorageAdapter
-│       └── s3mini/
-│           └── index.ts          # S3-compatible storage adapter backed by s3mini
+│   ├── database-libsql.ts    # libsql-based database adapter
+│   ├── storage-s3mini.ts     # S3-compatible storage adapter backed by s3mini
+│   └── index.ts              # Barrel: re-exports all adapters
 └── runtime/
     ├── index.ts          # Named export: raurus (alias for createRuntime) + CreateRuntimeOptions
     ├── models.ts         # Elysia TypeSystem schemas (t.Object, t.String, etc.) + failureCodeToStatus mapper
     ├── routes.ts         # Route plugin — composable Elysia instance taking adapter options
-    └── runtime.ts        # createRuntime() — inline OpenAPI config, route composition, fetch handle
+    ├── runtime.ts        # createRuntime() — inline OpenAPI config, route composition, fetch handle
+    └── utils.ts          # Logger factory (getLogger("server"))
 
-tsdown.config.ts          # Build config — entry: ["src/index.ts", "src/runtime/index.ts", "src/adapters/*/{index.ts,*/index.ts}"]
+tsdown.config.ts          # Build config — entry: ["src/index.ts", "src/core/index.ts", "src/runtime/index.ts", "src/adapters/*/{index.ts,*/index.ts}"]
 ```
 
 ## Key Concepts
@@ -66,10 +67,10 @@ tsdown.config.ts          # Build config — entry: ["src/index.ts", "src/runtim
 
 ## Package Notes
 
-- Build uses tsdown with entries `src/index.ts`, `src/runtime/index.ts`, and `src/adapters/*/{index.ts,*/index.ts}` — category barrel exports and individual adapters are auto-picked up
+- Build uses tsdown with entries `src/index.ts`, `src/core/index.ts`, `src/runtime/index.ts`, and `src/adapters/*/{index.ts,*/index.ts}` — category barrel exports and individual adapters are auto-picked up
 - Each adapter subdirectory under `src/adapters/<category>/` must have a corresponding `exports` entry in `package.json` (e.g. `"./adapters/storage/s3mini": "./dist/adapters/storage/s3mini/index.mjs"`)
 - Category barrels (`src/adapters/database/index.ts`, `src/adapters/storage/index.ts`) re-export all adapters in that category — consumers can import individual adapters or the category barrel
-- Adapters extend the base config interfaces from `@raurus/core` (`RuntimeDatabaseAdapterBaseConfig`, `RuntimeStorageAdapterBaseConfig`) and use factory types for type safety
+- Adapters extend the base config interfaces from `@raurus/server/core` (`RuntimeDatabaseAdapterBaseConfig`, `RuntimeStorageAdapterBaseConfig`) and use factory types for type safety
 - Database adapters are under `src/adapters/database/` — currently only `libsql`. Imported via `@raurus/server/adapters/database` (barrel) or `@raurus/server/adapters/database/libsql` (individual). The `CreateRuntimeOptions` field is named `databaseAdapter`.
 - Storage adapters are under `src/adapters/storage/` — currently only `s3mini`. Imported via `@raurus/server/adapters/storage` (barrel) or `@raurus/server/adapters/storage/s3mini` (individual). The `CreateRuntimeOptions` field is named `storageAdapter`.
 - All adapters must implement `checkConnection()` from `CommonRuntimeAdapter` (returns `AdapterAPIResult<null>` — i.e. `{ ok: true, data: null }` on success or `{ ok: false, error: Error, code?: FailureCode }` on failure) and must declare `apiVersion: "1"`

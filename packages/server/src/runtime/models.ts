@@ -1,6 +1,7 @@
-// oxlint-disable no-template-curly-in-string
-import type { FailureCode } from "@raurus/core";
 import { t } from "elysia";
+
+// oxlint-disable no-template-curly-in-string
+import type { FailureCode } from "@/core";
 
 export const HealthCheckResponseSchema = t.Object({
     status: t.Union([t.Literal("OK"), t.Literal("Error")]),

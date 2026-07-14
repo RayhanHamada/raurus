@@ -1,9 +1,10 @@
 import { useStore } from "@nanostores/react";
-import { useCallback, useEffect, useLayoutEffect } from "react";
+import { useEffect, useLayoutEffect, useMemo } from "react";
 import type { FC, PropsWithChildren } from "react";
 
 import type { Data } from "@/common";
 import { RaurusContext } from "@/context";
+import type { IRaurusContext } from "@/context";
 import { $editMode, $editingId, $placeholders, $selectedId } from "@/state";
 
 export interface RaurusClientProviderProps {
@@ -14,8 +15,33 @@ export interface RaurusClientProviderProps {
 const toggleEditMode = () => $editMode.set(!$editMode.get());
 const setEditMode = (mode: boolean) => $editMode.set(mode);
 
+const getById = (id: string) => $placeholders.get()[id];
+
+const upsertPlaceholder = (id: string, data: Data) => {
+    $placeholders.set({ ...$placeholders.get(), [id]: data });
+};
+
+const select = (id: string) => {
+    $selectedId.set(id);
+    $editingId.set(null);
+};
+
+const deselect = () => {
+    $selectedId.set(null);
+    $editingId.set(null);
+};
+
+const startEditing = (id: string) => {
+    $selectedId.set(id);
+    $editingId.set(id);
+};
+
+const stopEditing = () => {
+    $editingId.set(null);
+};
+
 const DEFAULT_PROPS = {
-    enableEdit: true,
+    enableEdit: false,
 } satisfies Partial<RaurusClientProviderProps>;
 
 export const RaurusClientProvider: FC<PropsWithChildren<RaurusClientProviderProps>> = ({
@@ -29,31 +55,6 @@ export const RaurusClientProvider: FC<PropsWithChildren<RaurusClientProviderProp
     const editMode = useStore($editMode);
     const selectedId = useStore($selectedId);
     const editingId = useStore($editingId);
-
-    const getById = useCallback((id: string) => $placeholders.get()[id], []);
-
-    const upsertPlaceholder = useCallback((id: string, data: Data) => {
-        $placeholders.set({ ...$placeholders.get(), [id]: data });
-    }, []);
-
-    const select = useCallback((id: string) => {
-        $selectedId.set(id);
-        $editingId.set(null);
-    }, []);
-
-    const deselect = useCallback(() => {
-        $selectedId.set(null);
-        $editingId.set(null);
-    }, []);
-
-    const startEditing = useCallback((id: string) => {
-        $selectedId.set(id);
-        $editingId.set(id);
-    }, []);
-
-    const stopEditing = useCallback(() => {
-        $editingId.set(null);
-    }, []);
 
     useLayoutEffect(() => {
         function handleMouseDown(e: globalThis.MouseEvent) {
@@ -75,26 +76,25 @@ export const RaurusClientProvider: FC<PropsWithChildren<RaurusClientProviderProp
         return () => document.removeEventListener("mousedown", handleMouseDown);
     }, []);
 
-    return (
-        <RaurusContext.Provider
-            value={{
-                editMode,
-                startEditing,
-                stopEditing,
+    const value = useMemo<IRaurusContext>(
+        () => ({
+            editMode,
+            startEditing,
+            stopEditing,
 
-                selectedId,
-                select,
-                deselect,
+            selectedId,
+            select,
+            deselect,
 
-                editingId,
-                toggleEditMode,
-                setEditMode,
+            editingId,
+            toggleEditMode,
+            setEditMode,
 
-                getById,
-                upsertPlaceholder,
-            }}
-        >
-            {children}
-        </RaurusContext.Provider>
+            getById,
+            upsertPlaceholder,
+        }),
+        [editMode, editingId, selectedId]
     );
+
+    return <RaurusContext.Provider value={value}>{children}</RaurusContext.Provider>;
 };

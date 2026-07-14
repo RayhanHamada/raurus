@@ -1,7 +1,8 @@
-import type { RuntimeStorageAdapterBaseConfig, RuntimeStorageAdapterFactory } from "@raurus/core";
 import { getLogger } from "@raurus/logger";
 import { S3mini } from "s3mini";
 import type { S3Config } from "s3mini";
+
+import type { RuntimeStorageAdapterBaseConfig, RuntimeStorageAdapterFactory } from "@/core";
 
 const log = getLogger("server");
 
