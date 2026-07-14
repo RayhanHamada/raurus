@@ -1,4 +1,3 @@
-import { openapi } from "@elysia/openapi";
 import type { RuntimeDatabaseAdapter, RuntimeStorageAdapter } from "@raurus/core";
 import { Elysia } from "elysia";
 
@@ -18,19 +17,12 @@ export interface CreateRuntimeOptions {
     /**
      * The database adapter to use for the Raurus instance.
      */
-    databaseAdapter?: RuntimeDatabaseAdapter | undefined;
+    databaseAdapter: RuntimeDatabaseAdapter;
 
     /**
      * The storage adapter to use for the Raurus instance.
      */
-    storageAdapter?: RuntimeStorageAdapter | undefined;
-
-    /**
-     * Whether to enable OpenAPI documentation. This is optional and defaults to `true`.
-     *
-     * @default true
-     */
-    openapi?: boolean;
+    storageAdapter: RuntimeStorageAdapter;
 
     /**
      * Whether to enable debug logging. This is optional and defaults to `false`.
@@ -41,7 +33,6 @@ export interface CreateRuntimeOptions {
 }
 
 const DEFAULT_RUNTIME_OPTIONS = {
-    openapi: true,
     debug: false,
 } satisfies Partial<CreateRuntimeOptions>;
 
@@ -58,43 +49,23 @@ export function createRuntime(config: CreateRuntimeOptions) {
         initializeLogger();
     }
 
-    const baseUrlString = options.baseUrl.toString();
-    log.debug("Creating Raurus runtime", { baseUrl: baseUrlString, openapi: options.openapi });
-
-    const url = URL.parse(baseUrlString);
+    const url = URL.parse(options.baseUrl);
     if (!url) {
-        log.error("Invalid baseUrl provided", { baseUrl: baseUrlString });
-        throw new Error(`Invalid baseUrl: ${baseUrlString}`);
+        const baseUrl = options.baseUrl.toString();
+        log.error("Invalid baseUrl provided", { baseUrl });
+        throw new Error(`Invalid baseUrl: ${baseUrl}`);
     }
 
-    const basePath = url.pathname === "/" ? "_raurus" : url.pathname;
+    const prefix = url.pathname === "/" ? "_raurus" : url.pathname;
 
-    log.info("Raurus runtime initialized", { basePath, origin: url.origin, openapi: options.openapi });
+    log.info("Raurus runtime initialized", { basePath: prefix, origin: url.origin });
 
-    const app = new Elysia({
-        prefix: basePath,
-    })
-
-        .use(
-            openapi({
-                enabled: options.openapi,
-                documentation: {
-                    openapi: "3.1.1",
-                    servers: [{ url: url.origin }],
-                    info: {
-                        title: "Raurus OpenAPI",
-                        version: "1.0.0",
-                        description: "This is the OpenAPI specification for the Raurus server.",
-                        license: { name: "MIT" },
-                    },
-                },
-            })
-        )
+    const app = new Elysia({ prefix })
 
         .use(
             routes({
-                database: options.databaseAdapter,
-                storage: options.storageAdapter,
+                databaseAdapter: options.databaseAdapter,
+                storageAdapter: options.storageAdapter,
             })
         );
 

@@ -7,115 +7,29 @@ import { log } from "@/runtime/utils";
 import * as m from "./models";
 
 interface RouteOptions {
-    database?: RuntimeDatabaseAdapter | undefined;
-    storage?: RuntimeStorageAdapter | undefined;
+    databaseAdapter: RuntimeDatabaseAdapter;
+    storageAdapter: RuntimeStorageAdapter;
 }
 
-export function routes({ database, storage }: RouteOptions) {
+export function routes({ databaseAdapter, storageAdapter }: RouteOptions) {
     return (
-        new Elysia({ name: "raurus.routes" })
-            .decorate("dependencies", {
-                database,
-                storage,
-            })
+        new Elysia()
 
-            .macro({
-                checkDatabase(_: boolean) {
-                    return {
-                        beforeHandle({ dependencies, status }) {
-                            if (!dependencies?.database) {
-                                log.warning("Metadata adapter is not configured");
-
-                                return status(501, {
-                                    message: "Error",
-                                    error: "Metadata adapter is not configured",
-                                });
-                            }
-                        },
-
-                        resolve({ dependencies }) {
-                            if (!dependencies?.database) {
-                                return;
-                            }
-
-                            return {
-                                dependencies: {
-                                    ...dependencies,
-                                    database: dependencies.database,
-                                },
-                            };
-                        },
-                    };
-                },
-
-                checkStorage(_: boolean) {
-                    return {
-                        beforeHandle({ dependencies, status }) {
-                            if (!dependencies?.storage) {
-                                log.warning("Storage adapter is not configured");
-
-                                return status(501, {
-                                    message: "Error",
-                                    error: "Storage adapter is not configured",
-                                });
-                            }
-                        },
-
-                        resolve({ dependencies }) {
-                            if (!dependencies?.storage) {
-                                return;
-                            }
-
-                            return {
-                                dependencies: {
-                                    ...dependencies,
-                                    storage: dependencies.storage,
-                                },
-                            };
-                        },
-                    };
-                },
-            })
-
-            // Health check (public)
-            .get(
-                "/",
-                async ({ dependencies, status }) => {
-                    log.debug("Health check requested");
-                    return status(200, {
-                        status: "OK",
-                        message: "RAURUS_ENDPOINT",
-                        data: {
-                            database_adapter_id: dependencies.database?.id ?? null,
-                            storage_adapter_id: dependencies.storage?.id ?? null,
-                        },
-                    });
-                },
-                {
-                    detail: {
-                        summary: "Health Check",
-                        description:
-                            "A simple endpoint to check if the Raurus Rest API is running. It can be used for monitoring and health checks.",
-                        tags: ["Operations"],
-                    },
-                    response: {
-                        200: m.HealthCheckResponseSchema,
-                    },
-                }
-            )
+            .decorate("db", databaseAdapter)
+            .decorate("storage", storageAdapter)
 
             .put(
                 "/placeholders/:placeholder_id/pathnames/:pathname",
-                async ({ status, set, params: { pathname, placeholder_id }, dependencies, body }) => {
+                async ({ status, set, params: { pathname, placeholder_id }, db, body }) => {
                     log.debug("Metadata upsert requested", { placeholder_id });
 
                     const result =
                         body.type === METADATA_TYPES.TEXT
-                            ? await dependencies.database.upsertContentMetadata(placeholder_id, pathname, {
+                            ? await db.upsertContentMetadata(placeholder_id, pathname, {
                                   type: METADATA_TYPES.TEXT,
                                   text: body.text,
                               })
-                            : await dependencies.database.upsertContentMetadata(placeholder_id, pathname, {
+                            : await db.upsertContentMetadata(placeholder_id, pathname, {
                                   type: body.type,
                                   assetKey: body.asset_key,
                               });
@@ -149,19 +63,18 @@ export function routes({ database, storage }: RouteOptions) {
                         400: m.ErrorResponseSchema,
                         501: m.ErrorResponseSchema,
                     },
-                    checkDatabase: true,
                 }
             )
 
             // Storage routes
             .get(
                 "/assets/presigned-upload-url",
-                async ({ status, set, dependencies, query: { asset_key } }) => {
+                async ({ status, set, storage, query: { asset_key } }) => {
                     log.debug("Presigned URL requested", { assetKey: asset_key });
 
-                    if (!dependencies.storage.createPresignedUploadUrl) {
+                    if (!storage.createPresignedUploadUrl) {
                         log.warning("Storage adapter does not support presigned URLs", {
-                            adapterId: dependencies.storage.id,
+                            adapterId: storage.id,
                         });
 
                         return status(501, {
@@ -170,7 +83,7 @@ export function routes({ database, storage }: RouteOptions) {
                         });
                     }
 
-                    const result = await dependencies.storage.createPresignedUploadUrl(asset_key);
+                    const result = await storage.createPresignedUploadUrl(asset_key);
 
                     if (!result.ok) {
                         log.error("Failed to create presigned URL", {
@@ -205,18 +118,17 @@ export function routes({ database, storage }: RouteOptions) {
                         400: m.ErrorResponseSchema,
                         501: m.ErrorResponseSchema,
                     },
-                    checkStorage: true,
                 }
             )
 
             .delete(
                 "/asset/:asset_key",
-                async ({ status, set, dependencies, params: { asset_key } }) => {
+                async ({ status, set, storage, params: { asset_key } }) => {
                     log.debug("Delete asset requested", { assetKey: asset_key });
 
-                    if (!dependencies.storage.deleteAsset) {
+                    if (!storage.deleteAsset) {
                         log.warning("Storage adapter does not support asset deletion", {
-                            adapterId: dependencies.storage.id,
+                            adapterId: storage.id,
                         });
 
                         return status(501, {
@@ -225,7 +137,7 @@ export function routes({ database, storage }: RouteOptions) {
                         });
                     }
 
-                    const result = await dependencies.storage.deleteAsset(asset_key);
+                    const result = await storage.deleteAsset(asset_key);
 
                     if (!result.ok) {
                         log.error("Failed to delete asset", { assetKey: asset_key, error: result.error.message });
@@ -255,7 +167,6 @@ export function routes({ database, storage }: RouteOptions) {
                         404: m.ErrorResponseSchema,
                         501: m.ErrorResponseSchema,
                     },
-                    checkStorage: true,
                 }
             )
     );
