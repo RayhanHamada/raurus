@@ -30,63 +30,35 @@ export const libSqlDatabaseAdapter: RuntimeDatabaseAdapterFactory<LibsqlMetadata
         async init() {
             log.info("Initializing libsql database adapter", { url: c.url });
 
-            // Check whether the definitions table already exists.
-            let result = await client.execute(
+            // Use raurus_placeholder_definitions as the sentinel table.
+            // If it exists, assume both tables are already initialized.
+            const result = await client.execute(
                 `SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'raurus_placeholder_definitions'`
             );
-            if (result.rows.length === 0) {
-                await client.execute(`
-                    CREATE TABLE IF NOT EXISTS raurus_placeholder_definitions (
-                        placeholder_id TEXT PRIMARY KEY,
-                        type TEXT NOT NULL,
-                        created_at TEXT NOT NULL DEFAULT (datetime('now'))
-                    )
-                `);
-                log.info("Created raurus_placeholder_definitions table");
+            if (result.rows.length > 0) {
+                log.info("libsql database adapter already initialized — skipping");
+                return;
             }
 
-            // Check whether the metadata table already exists.
-            result = await client.execute(
-                `SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'raurus_metadata'`
-            );
-            if (result.rows.length === 0) {
-                await client.execute(`
-                    CREATE TABLE IF NOT EXISTS raurus_metadata (
-                        placeholder_id TEXT NOT NULL,
-                        pathname TEXT NOT NULL,
-                        type TEXT NOT NULL,
-                        asset_key TEXT,
-                        text_content TEXT,
-                        link_url TEXT,
-                        updated_at TEXT NOT NULL DEFAULT (datetime('now')),
-                        PRIMARY KEY (placeholder_id, pathname)
-                    )
-                `);
-                log.info("Created raurus_metadata table");
-            } else {
-                // If the table already exists from a prior schema version
-                // (single-column PK on placeholder_id), we need to recreate it.
-                // Check whether the old schema is in place by looking at the PK.
-                const pkInfo = await client.execute(`PRAGMA table_info('raurus_metadata')`);
-                const hasPathname = pkInfo.rows.some((row) => row["name"] === "pathname");
-                if (!hasPathname) {
-                    log.info("Migrating raurus_metadata table to composite primary key");
-                    await client.execute("DROP TABLE IF EXISTS raurus_metadata");
-                    await client.execute(`
-                        CREATE TABLE raurus_metadata (
-                            placeholder_id TEXT NOT NULL,
-                            pathname TEXT NOT NULL,
-                            type TEXT NOT NULL,
-                            asset_key TEXT,
-                            text_content TEXT,
-                            link_url TEXT,
-                            updated_at TEXT NOT NULL DEFAULT (datetime('now')),
-                            PRIMARY KEY (placeholder_id, pathname)
-                        )
-                    `);
-                    log.info("Recreated raurus_metadata table with composite primary key");
-                }
-            }
+            await client.execute(`
+                CREATE TABLE IF NOT EXISTS raurus_placeholder_definitions (
+                    placeholder_id TEXT PRIMARY KEY,
+                    type TEXT NOT NULL,
+                    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+                )
+            `);
+            await client.execute(`
+                CREATE TABLE IF NOT EXISTS raurus_metadata (
+                    placeholder_id TEXT NOT NULL,
+                    pathname TEXT NOT NULL,
+                    type TEXT NOT NULL,
+                    asset_key TEXT,
+                    text_content TEXT,
+                    link_url TEXT,
+                    updated_at TEXT NOT NULL DEFAULT (datetime('now')),
+                    PRIMARY KEY (placeholder_id, pathname)
+                )
+            `);
 
             log.info("libsql database adapter initialized");
         },
