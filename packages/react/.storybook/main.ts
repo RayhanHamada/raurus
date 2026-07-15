@@ -1,8 +1,11 @@
-import path from "node:path";
+// This file has been automatically migrated to valid ESM format by Storybook.
+import path, { dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import type { StorybookConfig } from "@storybook/react-vite";
 import tailwindcss from "@tailwindcss/vite";
+
+const __filename = fileURLToPath(import.meta.url);
 
 /**
  * This function is used to resolve the absolute path of a package.
