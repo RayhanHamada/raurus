@@ -29,7 +29,22 @@ const base = implement(contracts).$context<ServerContext>();
 
 const upsertMetadata = base.upsertMetadata.handler(
     async ({ input: { body, pathname, placeholder_id }, context: { db } }) => {
-        log.debug("Metadata upsert requested", { placeholder_id });
+        log.debug("Metadata upsert requested", { placeholder_id, pathname });
+
+        // Check / seed the placeholder definition.
+        // The first type for a given placeholder_id wins — subsequent
+        // upserts with a different type are silently accepted (no-op)
+        // to keep the editing experience frictionless.
+        const defResult = await db.getOrSeedPlaceholderDefinition(placeholder_id, body.type);
+        if (!defResult.ok) {
+            log.warning("Placeholder type mismatch — silently ignoring upsert", {
+                placeholder_id,
+                requestedType: body.type,
+                error: defResult.error.message,
+            });
+
+            return { message: "OK" as const };
+        }
 
         const result = await db.upsertContentMetadata(placeholder_id, pathname, body);
 
@@ -126,6 +141,28 @@ const deleteAsset = base.deleteAsset.handler(async ({ input: { assetKey }, conte
     return { message: "OK" as const };
 });
 
+// -- listMetadataByPathname --------------------------------------------------
+
+const listMetadataByPathname = base.listMetadataByPathname.handler(async ({ input: { pathname }, context: { db } }) => {
+    log.debug("List metadata requested", { pathname });
+
+    const result = await db.listContentMetadataByPath(pathname);
+
+    if (!result.ok) {
+        log.error("Failed to list metadata", {
+            pathname,
+            error: result.error.message,
+        });
+        throw new ORPCError("NOT_IMPLEMENTED", {
+            status: failureCodeToStatus(result.code),
+            data: { name: "Failed to list metadata by pathname" },
+        });
+    }
+
+    log.debug("Metadata listed", { pathname, count: result.data.length });
+    return { message: "OK" as const, data: result.data };
+});
+
 // ---------------------------------------------------------------------------
 // Router — plain object matching the contract shape
 // ---------------------------------------------------------------------------
@@ -134,4 +171,5 @@ export const router = {
     upsertMetadata,
     getPresignedUploadUrl,
     deleteAsset,
+    listMetadataByPathname,
 };

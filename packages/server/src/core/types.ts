@@ -33,10 +33,13 @@ export type RaurusMetadataPayload =
       }
     | {
           type: LinkMetadataType;
+          text: string;
           link: string;
       };
 
 export type RaurusMetadata = { placeholderId: string } & RaurusMetadataPayload;
+
+export type RaurusMetadataWithPath = RaurusMetadata & { pathname: string };
 
 export interface RuntimeDatabaseAdapterBaseConfig {}
 
@@ -76,13 +79,26 @@ export type RaurusStorageAdapterId = `${Lowercase<string>}-storage-adapter`;
 export interface RuntimeDatabaseAdapter extends CommonRuntimeAdapter {
     id: RaurusDatabaseAdapterId;
 
+    /**
+     * Get or create the type definition for a placeholder.
+     * On first call for a given placeholderId, seeds the definition with the
+     * provided type. On subsequent calls, validates that the type matches the
+     * existing definition. Returns CONFLICT when the definition exists but the
+     * type doesn't match — the caller (route handler) should reject the upsert
+     * in that case.
+     */
+    getOrSeedPlaceholderDefinition: (
+        placeholderId: string,
+        type: RaurusMetadataType
+    ) => Promise<AdapterAPIResult<null>>;
+
     upsertContentMetadata: (
         placeholderId: string,
         path: string,
         payload: RaurusMetadataPayload
     ) => Promise<AdapterAPIResult<null>>;
 
-    listContentMetadataByPath: (path: string) => Promise<AdapterAPIResult<RaurusMetadata[]>>;
+    listContentMetadataByPath: (path: string) => Promise<AdapterAPIResult<RaurusMetadataWithPath[]>>;
 }
 
 export interface RuntimeStorageAdapter extends CommonRuntimeAdapter {

@@ -13,6 +13,12 @@ const baseOc = oc.errors({
             name: v.string(),
         }),
     },
+    CONFLICT: {
+        data: v.object({
+            name: v.string(),
+            detail: v.optional(v.string()),
+        }),
+    },
 });
 
 // ---------------------------------------------------------------------------
@@ -38,6 +44,7 @@ const textBodySchema = v.object({
 
 const linkBodySchema = v.object({
     type: v.literal(METADATA_TYPES.LINK),
+    text: v.string(),
     link: v.string(),
 });
 
@@ -62,6 +69,37 @@ const presignedUrlDataSchema = v.object({
 const presignedUrlResponseSchema = v.object({
     message: v.literal(RESPONSE_MESSAGES.OK),
     data: presignedUrlDataSchema,
+});
+
+// ---- Read (list) response schemas -----------------------------------------
+
+const textMetadataItemSchema = v.object({
+    placeholderId: v.string(),
+    pathname: v.string(),
+    type: v.literal(METADATA_TYPES.TEXT),
+    text: v.string(),
+});
+
+const linkMetadataItemSchema = v.object({
+    placeholderId: v.string(),
+    pathname: v.string(),
+    type: v.literal(METADATA_TYPES.LINK),
+    text: v.string(),
+    link: v.string(),
+});
+
+const photoMetadataItemSchema = v.object({
+    placeholderId: v.string(),
+    pathname: v.string(),
+    type: v.literal(METADATA_TYPES.PHOTO),
+    assetKey: v.string(),
+});
+
+const metadataItemSchema = v.variant("type", [textMetadataItemSchema, linkMetadataItemSchema, photoMetadataItemSchema]);
+
+const listMetadataResponseSchema = v.object({
+    message: v.literal(RESPONSE_MESSAGES.OK),
+    data: v.array(metadataItemSchema),
 });
 
 // ---------------------------------------------------------------------------
@@ -101,6 +139,16 @@ const deleteAsset = baseOc
     )
     .output(successResponseSchema);
 
+// -- GET /placeholders?pathname=:pathname -----------------------------------
+
+const listMetadataByPathname = baseOc
+    .input(
+        v.object({
+            pathname: v.string(),
+        })
+    )
+    .output(listMetadataResponseSchema);
+
 // ---------------------------------------------------------------------------
 // Exports
 // ---------------------------------------------------------------------------
@@ -110,6 +158,7 @@ const contracts = {
     upsertMetadata,
     getPresignedUploadUrl,
     deleteAsset,
+    listMetadataByPathname,
 } as const;
 
 export { baseOc, contracts, errorResponseSchema, metadataBodySchema };

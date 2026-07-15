@@ -44,12 +44,13 @@ describe("RaurusMetadata discriminated union", () => {
         expectTypeOf(text).not.toHaveProperty("assetKey");
     });
 
-    it("link variant carries link and excludes text", () => {
-        const link: RaurusMetadata = { placeholderId: "p3", type: "link", link: "/page" };
+    it("link variant carries text and link, excludes assetKey", () => {
+        const link: RaurusMetadata = { placeholderId: "p3", type: "link", text: "Click here", link: "/page" };
         expectTypeOf(link).toExtend<RaurusMetadata>();
         expectTypeOf(link.type).toEqualTypeOf<LinkMetadataType>();
+        expectTypeOf(link).toHaveProperty("text");
         expectTypeOf(link).toHaveProperty("link");
-        expectTypeOf(link).not.toHaveProperty("text");
+        expectTypeOf(link).not.toHaveProperty("assetKey");
     });
 
     it("narrows the photo branch to expose assetKey", () => {
@@ -68,9 +69,10 @@ describe("RaurusMetadata discriminated union", () => {
         }
     });
 
-    it("narrows the link branch to expose link", () => {
-        const meta: RaurusMetadata = { placeholderId: "p3", type: "link", link: "/page" };
+    it("narrows the link branch to expose text and link", () => {
+        const meta: RaurusMetadata = { placeholderId: "p3", type: "link", text: "Click here", link: "/page" };
         if (meta.type === "link") {
+            expectTypeOf(meta).toHaveProperty("text");
             expectTypeOf(meta).toHaveProperty("link");
             expectTypeOf(meta.type).toEqualTypeOf<LinkMetadataType>();
         }
@@ -133,12 +135,12 @@ describe("metadata adapter contract", () => {
         expectTypeOf<RuntimeDatabaseAdapter["id"]>().toEqualTypeOf<`${Lowercase<string>}-database-adapter`>();
     });
 
-    it("upsertContentMetadata accepts photo/link payload and text payload", () => {
+    it("upsertContentMetadata accepts photo, text, and link payloads", () => {
         type Upsert = Parameters<RuntimeDatabaseAdapter["upsertContentMetadata"]>;
         expectTypeOf<Upsert>().toEqualTypeOf<
             [
-                path: string,
                 placeholderId: string,
+                path: string,
                 payload:
                     | {
                           type: PhotoMetadataType;
@@ -150,6 +152,7 @@ describe("metadata adapter contract", () => {
                       }
                     | {
                           type: LinkMetadataType;
+                          text: string;
                           link: string;
                       },
             ]
