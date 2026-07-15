@@ -31,7 +31,7 @@ tsdown.config.ts          # Build config — entry: ["src/index.ts", "src/core/i
 
 ## Key Concepts
 
-- **Single public export** — `raurus()` from `@raurus/server` is the only entry point. It creates a fetch-compatible runtime from adapter options. `CreateRuntimeOptions` is also exported as a type for consumers.
+- **Single public export** — `raurus()` from `@raurus/server` is the only entry point. It creates a fetch-compatible runtime from adapter options. `CreateRuntimeOptions` is also exported as a type for consumers. `Router` (the oRPC router type derived from `typeof router`) is exported so that RPC clients (e.g., `RPCLink`) can consume the server's typed procedure signatures.
 - **Contract-first** — Routes are defined in `@raurus/contract` (Valibot schemas + oRPC contracts). The server package implements them via `@orpc/server`'s `implement(contracts).$context<ServerContext>()`. Input validation is handled entirely by the contract layer.
 - **CreateRuntimeOptions** — `baseUrl: string | URL` (required), `databaseAdapter: RuntimeDatabaseAdapter` (required), `storageAdapter: RuntimeStorageAdapter` (required), `debug?: boolean` (default `false`).
 - **Context-based dependency injection** — `routes.ts` defines a `ServerContext` interface `{ db: RuntimeDatabaseAdapter; storage: RuntimeStorageAdapter }`. The `implement(contracts).$context<ServerContext>()` threads adapters to every handler via the oRPC context, replacing Elysia's `.decorate()` pattern.

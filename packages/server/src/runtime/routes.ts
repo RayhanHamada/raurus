@@ -173,3 +173,5 @@ export const router = {
     deleteAsset,
     listMetadataByPathname,
 };
+
+export type Router = typeof router;

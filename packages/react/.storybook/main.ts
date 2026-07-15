@@ -5,7 +5,7 @@ import { fileURLToPath } from "node:url";
 import type { StorybookConfig } from "@storybook/react-vite";
 import tailwindcss from "@tailwindcss/vite";
 
-const __filename = fileURLToPath(import.meta.url);
+const __filename = import.meta.filename;
 
 /**
  * This function is used to resolve the absolute path of a package.
