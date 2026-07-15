@@ -12,6 +12,7 @@ raurus/
 │   └── next-example/          # next-example — Next.js 16 + React 19 + Tailwind CSS v4 app integrating @raurus/react
 ├── packages/
 │   ├── server/              # @raurus/server — Elysia runtime with built-in adapters and core domain types
+│   ├── client/              # @raurus/client — Typed RPC client (RPCLink + createORPCClient) for the Raurus API
 │   ├── react/               # @raurus/react — React 19 visual editing component library (provider, hooks, editable components)
 │   ├── logger/              # @raurus/logger — LogTape wrapper: getLogger factory + a Config object
 │   └── tsconfig/            # @raurus/tsconfig — shared TypeScript base configuration

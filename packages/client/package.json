@@ -1,0 +1,22 @@
+{
+    "name": "@raurus/client",
+    "version": "0.0.0",
+    "private": true,
+    "description": "Typed RPC client for the Raurus API",
+    "type": "module",
+    "exports": {
+        ".": "./src/index.ts"
+    },
+    "scripts": {
+        "typecheck": "tsc --noEmit"
+    },
+    "dependencies": {
+        "@orpc/client": "^1.14.8",
+        "@orpc/contract": "^1.14.8",
+        "@raurus/contract": "workspace:*"
+    },
+    "devDependencies": {
+        "@raurus/tsconfig": "workspace:*",
+        "typescript": "^7.0.2"
+    }
+}
