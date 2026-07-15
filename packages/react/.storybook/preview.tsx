@@ -5,9 +5,24 @@ import { RaurusClientProvider } from "../src/components/client-provider";
 import "../src/index.css";
 
 const preview: Preview = {
+    globalTypes: {
+        editMode: {
+            name: "Edit Mode",
+            description: "Toggle visual editing mode",
+            defaultValue: "false",
+            toolbar: {
+                icon: "edit",
+                items: [
+                    { value: "false", icon: "eye", title: "View Mode" },
+                    { value: "true", icon: "edit", title: "Edit Mode" },
+                ],
+                dynamicTitle: true,
+            },
+        },
+    },
     decorators: [
-        (Story) => (
-            <RaurusClientProvider url="https://example.com">
+        (Story, { globals }) => (
+            <RaurusClientProvider url="https://example.com" enableEdit={globals.editMode === "true"}>
                 <Story />
             </RaurusClientProvider>
         ),

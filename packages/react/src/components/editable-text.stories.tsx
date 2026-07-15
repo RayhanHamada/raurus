@@ -1,8 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect } from "storybook/test";
 
-import { RaurusClientProvider } from "@/components";
-
 import {
     EditableDiv,
     EditableH1,
@@ -19,13 +17,6 @@ import {
 const meta = {
     component: EditableH1,
     tags: ["ai-generated"],
-    decorators: [
-        (Story) => (
-            <RaurusClientProvider url="https://example.com" enableEdit>
-                <Story />
-            </RaurusClientProvider>
-        ),
-    ],
 } satisfies Meta<typeof EditableH1>;
 
 export default meta;
