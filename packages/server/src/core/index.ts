@@ -1,2 +1,2 @@
 export * from "./types";
-export * from "./constants";
+export { FAILURE_CODES, METADATA_TYPES, RESPONSE_MESSAGES } from "@raurus/contract";

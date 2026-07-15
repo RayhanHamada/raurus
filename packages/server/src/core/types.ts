@@ -1,5 +1,5 @@
 // oxlint-disable typescript/unified-signatures
-import type { FAILURE_CODES, METADATA_TYPES } from "./constants";
+import type { FAILURE_CODES, METADATA_TYPES } from "@raurus/contract";
 
 export type FailureCode = (typeof FAILURE_CODES)[keyof typeof FAILURE_CODES];
 
