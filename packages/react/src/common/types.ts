@@ -8,4 +8,10 @@ export interface ImageContent {
     url: string;
 }
 
-export type Data = { placeholder_id: string } & (TextContent | ImageContent);
+export interface LinkContent {
+    type: "link";
+    link: string;
+    text: string;
+}
+
+export type Data = { placeholder_id: string } & (TextContent | ImageContent | LinkContent);

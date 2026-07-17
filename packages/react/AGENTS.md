@@ -15,16 +15,13 @@ src/
 ├── index.css                    # Tailwind v4 entry — prefixed with "raurus:" layer
 ├── components/
 │   ├── index.ts                 # Barrel for all components
-│   ├── client-provider.tsx      # RaurusClientProvider — React context provider wrapping nanostores atoms
+│   ├── client-provider.tsx      # RaurusClientProvider — React context provider with useState-based state
 │   └── editable-text.tsx        # Editable text components (Div, Span, H1–H6, A, P)
 ├── context/
 │   └── index.ts                 # IRaurusContext interface + createContext
 ├── hooks/
 │   ├── index.ts                 # Barrel for hooks
 │   └── useRaurus.ts             # useRaurus() hook — accesses IRaurusContext, throws if outside provider
-├── state/
-│   ├── index.ts                 # Barrel for state atoms
-│   └── atoms.ts                 # nanostores atoms: $editMode, $selectedId, $editingId, $placeholders
 ├── common/
 │   ├── index.ts                 # Barrel for common types
 │   └── types.ts                 # Data, TextContent, ImageContent types
@@ -34,8 +31,8 @@ src/
 ## Key Concepts
 
 - **Dual exports** — `@raurus/react/client` for client components and `@raurus/react/server` for server-only utilities. The `"use client"` directive is in `src/client.ts`, not on individual components.
-- **State management** — Editing state lives in [nanostores](https://github.com/nanostores/nanostores) atoms (`src/state/atoms.ts`). Persistent state (`$editMode`, `$placeholders`) uses `@nanostores/persistent` with localStorage. Transient state (`$selectedId`, `$editingId`) uses plain `atom()`. The `RaurusClientProvider` subscribes to atoms via `useStore()` and exposes them through React context — components consume state via `useRaurus()`, not atoms directly. Portal-rendered components (IdTooltip, future overlays) can read atoms directly without context.
-- **RaurusClientProvider** — Context provider wrapping nanostores atoms and exposing the `IRaurusContext` interface. Accepts `url` and `editMode` (sets `$editMode` via `useState` initializer). Deselection is handled globally on mousedown events outside `[data-raurus-id]` elements.
+- **State management** — All editing state (`editMode`, `selectedId`, `editingId`, `placeholders`) is managed via React `useState` in the `RaurusClientProvider` and exposed through React context. Components consume state via `useRaurus()` — there is no external state library. Portal-rendered components (IdTooltip, future overlays) access state through context like any other component.
+- **RaurusClientProvider** — Context provider managing all editing state with React `useState` and exposing the `IRaurusContext` interface. Accepts `url` and `editMode` (defaults to `false`). Deselection is handled globally on mousedown events outside `[data-raurus-id]` elements via `useLayoutEffect`.
 - **Editable text components** — Factory-pattern generated components (`EditableDiv`, `EditableSpan`, `EditableH1`–`EditableH6`, `EditableLink`) created by `createEditableTextElement()`. Each handles select→edit two-click flow, focus management, hover state, an `IdTooltip` portal overlay showing the component's `id`, and visual state via `data-raurus-*` attributes. The `EditableLink` component prevents default click behavior in edit mode to allow selection without navigation.
 
 - **Placeholder ID convention** — Editable components require an `id` prop (enforced by TypeScript via `EditableTextOwnProps`). IDs are page-local — they only need to be unique within a single page, not globally. Use `kebab-case` descriptive names (e.g., `hero-title`, `nav.cta`, `footer.copyright`). The server's `(placeholder_id, pathname)` composite key handles uniqueness across pages, so the same ID (`hero-title`) can exist on `/` and `/about` with different values. The first upsert for a given `placeholder_id` locks its type — subsequent upserts with a mismatched type are silently accepted (no-op) to keep the editing experience frictionless.
@@ -52,10 +49,9 @@ src/
 - Editable components carry `data-raurus-id` (always present), `data-raurus-edit-mode`, `data-raurus-selected`, and `data-raurus-editing` data attributes for CSS targeting and DOM queries
 - Use `suppressContentEditableWarning` on contentEditable elements
 - Tailwind classes use the `raurus:` prefix consistently
-- State atoms live in `src/state/atoms.ts` — add new atoms there, barrel-export from `src/state/index.ts`
-- Persistent state uses `persistentBoolean` / `persistentJSON` from `@nanostores/persistent` with a `"raurus:"` key prefix
-- Transient state (selection, editing) uses plain `atom()`
-- Direct atom reads (outside context) are allowed for portal-rendered components; context consumers should use `useRaurus()`
+- State is managed in `RaurusClientProvider` via React `useState` — add new state variables there and expose them through the `IRaurusContext` interface
+- State is not persisted to localStorage (no persistent state mechanism)
+- All components (including portal-rendered) access state through `useRaurus()` via React context
 
 ## Workflow
 
@@ -70,11 +66,11 @@ src/
 - Build uses tsdown with two entries (`src/client.ts`, `src/server.ts`), exports mode, and PostCSS CSS transformer
 - `react` and `react-dom` are configured as `neverBundle` deps in tsdown config
 - The `@bosh-code/tsdown-plugin-tailwindcss` and `@bosh-code/tsdown-plugin-inject-css` plugins handle Tailwind v4 compilation and CSS injection in the build output
-- `nanostores` (`^1.4.0`), `@nanostores/react` (`^1.1.0`), and `@nanostores/persistent` (`^1.3.4`) manage editing state — all atoms are in `src/state/atoms.ts`
+- Editing state is managed via React `useState` in `RaurusClientProvider` — no external state library is used
 - Vitest config uses `@vitejs/plugin-react` with tsconfig path resolution and `passWithNoTests: true`
 - Tests run against a real browser via `@vitest/browser-playwright`
 - Storybook is configured with `@storybook/addon-vitest` for running stories as vitest tests (`npx vitest --project storybook run`)
 - The Storybook preview wraps all stories in `RaurusClientProvider` and imports the project's Tailwind CSS
-- Storybook stories must NOT nest additional `RaurusClientProvider` instances — the global preview decorator already provides one, and nanostores atoms are global singletons
+- Storybook stories must NOT nest additional `RaurusClientProvider` instances — the global preview decorator already provides one
 - `@tailwindcss/vite` plugin is used in `.storybook/main.ts` `viteFinal` to process Tailwind CSS classes
 - Storybook init boilerplate (`src/stories/`) was removed; real stories are colocated with their components
