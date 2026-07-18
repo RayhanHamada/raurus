@@ -4,7 +4,8 @@ import type { S3Config } from "s3mini";
 
 import type { RuntimeStorageAdapterBaseConfig, RuntimeStorageAdapterFactory } from "@/core";
 
-const log = getLogger("server");
+const adapterId = "s3-mini-storage-adapter";
+const log = getLogger("server", adapterId);
 
 export interface S3MiniStorageAdapterOptions extends RuntimeStorageAdapterBaseConfig {
     s3Config: S3Config;
@@ -18,7 +19,7 @@ export const s3MiniStorageAdapter: RuntimeStorageAdapterFactory<S3MiniStorageAda
     const client = new S3mini(options.s3Config);
 
     return {
-        id: "s3-mini-storage-adapter",
+        id: adapterId,
         apiVersion: "1",
 
         async init() {

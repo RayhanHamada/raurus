@@ -98,8 +98,8 @@ export interface RuntimeStorageAdapter extends CommonRuntimeAdapter {
 
 export type RuntimeDatabaseAdapterFactory<
     Config extends RuntimeDatabaseAdapterBaseConfig = RuntimeDatabaseAdapterBaseConfig,
-> = (config?: Config) => RuntimeDatabaseAdapter;
+> = (config: Config) => RuntimeDatabaseAdapter;
 
 export type RuntimeStorageAdapterFactory<
     Config extends RuntimeStorageAdapterBaseConfig = RuntimeStorageAdapterBaseConfig,
-> = (config?: Config) => RuntimeStorageAdapter;
+> = (config: Config) => RuntimeStorageAdapter;

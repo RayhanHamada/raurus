@@ -1,3 +1,4 @@
+import type { Config } from "@libsql/client";
 import { createClient } from "@libsql/client";
 import { METADATA_TYPES } from "@raurus/contract";
 import { getLogger } from "@raurus/logger";
@@ -5,30 +6,25 @@ import { getLogger } from "@raurus/logger";
 import { FAILURE_CODES } from "@/core";
 import type { RaurusMetadataWithPath, RuntimeDatabaseAdapterBaseConfig, RuntimeDatabaseAdapterFactory } from "@/core";
 
-const log = getLogger("server");
+const adapterId = `libsql-database-adapter`;
+const log = getLogger("server", adapterId);
 
 export interface LibsqlMetadataAdapterConfig extends RuntimeDatabaseAdapterBaseConfig {
     /**
-     * @see {@link https://github.com/libsql/libsql-client-ts#supported-urls}
+     * libsql `createClient` config
      */
-    url: string;
-    authToken?: string;
+    config: Config;
 }
 
-export const libSqlDatabaseAdapter: RuntimeDatabaseAdapterFactory<LibsqlMetadataAdapterConfig> = (config) => {
-    if (!config?.url) {
-        throw new Error("Missing required configuration: url");
-    }
-
-    const c = config;
-    const client = c.authToken ? createClient({ url: c.url, authToken: c.authToken }) : createClient({ url: c.url });
+export const libSqlDatabaseAdapter: RuntimeDatabaseAdapterFactory<LibsqlMetadataAdapterConfig> = ({ config }) => {
+    const client = createClient(config);
 
     return {
-        id: "libsql-database-adapter",
+        id: adapterId,
         apiVersion: "1",
 
         async init() {
-            log.info("Initializing libsql database adapter", { url: c.url });
+            log.info("Initializing libsql database adapter");
 
             // Use raurus_placeholders as the sentinel table.
             const result = await client.execute(
