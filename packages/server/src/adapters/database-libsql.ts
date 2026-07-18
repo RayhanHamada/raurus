@@ -30,10 +30,9 @@ export const libSqlDatabaseAdapter: RuntimeDatabaseAdapterFactory<LibsqlMetadata
         async init() {
             log.info("Initializing libsql database adapter", { url: c.url });
 
-            // Use raurus_placeholder_definitions as the sentinel table.
-            // If it exists, assume both tables are already initialized.
+            // Use raurus_placeholders as the sentinel table.
             const result = await client.execute(
-                `SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'raurus_placeholder_definitions'`
+                `SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'raurus_placeholders'`
             );
             if (result.rows.length > 0) {
                 log.info("libsql database adapter already initialized — skipping");
@@ -41,14 +40,7 @@ export const libSqlDatabaseAdapter: RuntimeDatabaseAdapterFactory<LibsqlMetadata
             }
 
             await client.execute(`
-                CREATE TABLE IF NOT EXISTS raurus_placeholder_definitions (
-                    placeholder_id TEXT PRIMARY KEY,
-                    type TEXT NOT NULL,
-                    created_at TEXT NOT NULL DEFAULT (datetime('now'))
-                )
-            `);
-            await client.execute(`
-                CREATE TABLE IF NOT EXISTS raurus_metadata (
+                CREATE TABLE IF NOT EXISTS raurus_placeholders (
                     placeholder_id TEXT NOT NULL,
                     pathname TEXT NOT NULL,
                     type TEXT NOT NULL,
@@ -84,59 +76,6 @@ export const libSqlDatabaseAdapter: RuntimeDatabaseAdapterFactory<LibsqlMetadata
             }
         },
 
-        async getOrSeedPlaceholderDefinition(placeholderId, type) {
-            try {
-                // Attempt to insert the definition. ON CONFLICT DO NOTHING
-                // is atomic — if a row already exists, this is a no-op.
-                await client.execute(
-                    `INSERT INTO raurus_placeholder_definitions (placeholder_id, type) VALUES (?, ?)
-                     ON CONFLICT(placeholder_id) DO NOTHING`,
-                    [placeholderId, type]
-                );
-
-                // Read back the actual type (either newly inserted or pre-existing).
-                const result = await client.execute(
-                    `SELECT type FROM raurus_placeholder_definitions WHERE placeholder_id = ?`,
-                    [placeholderId]
-                );
-
-                if (result.rows.length === 0) {
-                    return {
-                        ok: false,
-                        error: new Error(`Failed to seed placeholder definition for "${placeholderId}"`),
-                        code: FAILURE_CODES.UNKNOWN,
-                    };
-                }
-
-                const [firstRow] = result.rows;
-                if (!firstRow) {
-                    return {
-                        ok: false,
-                        error: new Error(`No definition row found for "${placeholderId}"`),
-                        code: FAILURE_CODES.UNKNOWN,
-                    };
-                }
-                const actualType = firstRow["type"] as string;
-                if (actualType !== type) {
-                    return {
-                        ok: false,
-                        error: new Error(
-                            `"${placeholderId}" is defined as "${actualType}", cannot upsert as "${type}"`
-                        ),
-                        code: FAILURE_CODES.CONFLICT,
-                    };
-                }
-
-                return { ok: true, data: null };
-            } catch (error) {
-                return {
-                    ok: false,
-                    error: error instanceof Error ? error : new Error(String(error)),
-                    code: FAILURE_CODES.UPSTREAM,
-                };
-            }
-        },
-
         async upsertContentMetadata(placeholderId, pathname, payload) {
             let assetKey: string | null = null;
             let textContent: string | null = null;
@@ -155,7 +94,7 @@ export const libSqlDatabaseAdapter: RuntimeDatabaseAdapterFactory<LibsqlMetadata
             try {
                 await client.execute(
                     `
-                    INSERT INTO raurus_metadata (placeholder_id, pathname, type, asset_key, text_content, link_url, updated_at)
+                    INSERT INTO raurus_placeholders (placeholder_id, pathname, type, asset_key, text_content, link_url, updated_at)
                     VALUES (?, ?, ?, ?, ?, ?, datetime('now'))
                     ON CONFLICT(placeholder_id, pathname) DO UPDATE SET
                         type = excluded.type,
@@ -184,7 +123,7 @@ export const libSqlDatabaseAdapter: RuntimeDatabaseAdapterFactory<LibsqlMetadata
             try {
                 const result = await client.execute(
                     `SELECT placeholder_id, pathname, type, asset_key, text_content, link_url
-                     FROM raurus_metadata WHERE pathname = ?`,
+                     FROM raurus_placeholders WHERE pathname = ?`,
                     [pathname]
                 );
 

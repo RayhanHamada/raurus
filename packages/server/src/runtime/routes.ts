@@ -31,21 +31,6 @@ const upsertMetadata = base.upsertMetadata.handler(
     async ({ input: { body, pathname, placeholder_id }, context: { db } }) => {
         log.debug("Metadata upsert requested", { placeholder_id, pathname });
 
-        // Check / seed the placeholder definition.
-        // The first type for a given placeholder_id wins — subsequent
-        // upserts with a different type are silently accepted (no-op)
-        // to keep the editing experience frictionless.
-        const defResult = await db.getOrSeedPlaceholderDefinition(placeholder_id, body.type);
-        if (!defResult.ok) {
-            log.warning("Placeholder type mismatch — silently ignoring upsert", {
-                placeholder_id,
-                requestedType: body.type,
-                error: defResult.error.message,
-            });
-
-            return { message: "OK" as const };
-        }
-
         const result = await db.upsertContentMetadata(placeholder_id, pathname, body);
 
         if (!result.ok) {
