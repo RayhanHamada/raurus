@@ -48,8 +48,5 @@
     "peerDependencies": {
         "@cloudflare/workers-types": "latest",
         "@libsql/client": "^0.17.4"
-    },
-    "inlinedDependencies": {
-        "valibot": "1.4.1"
     }
 }

@@ -24,8 +24,7 @@ src/
 
 - Keep the `RaurusClient` interface in sync with the procedure contracts in `@raurus/contract` — when a new procedure is added to `contracts`, add a corresponding method signature here
 - Do not add a build step or tsdown config — this package is consumed as raw TypeScript
-- Do not introduce `@raurus/server` as a dependency — the client only depends on `@raurus/contract`
-- `valibot` is a direct dependency (not just transitive via `@raurus/contract`) for importing `InferInput` to type the discriminated `metadataBodySchema`
+- Do not introduce `@raurus/server` as a dependency — the client only depends on `@raurus/contract` and `@orpc/client`
 
 ## Workflow
 

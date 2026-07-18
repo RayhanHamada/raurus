@@ -2,7 +2,7 @@
 
 ## Package Context
 
-This package is `@raurus/server`, a contract-first HTTP server built on [oRPC](https://orpc.dev). It implements the shared contracts from `@raurus/contract` using `@orpc/server` and exposes an `OpenAPIHandler`-backed fetch handler. It uses `@raurus/logger` for structured logging and never calls `configure()` itself — that is the responsibility of the consuming application.
+This package is `@raurus/server`, a contract-first HTTP server built on [oRPC](https://orpc.dev). It implements the shared contracts from `@raurus/contract` using `@orpc/server` and exposes an `RPCHandler`-backed fetch handler. It uses `@raurus/logger` for structured logging and never calls `configure()` itself — that is the responsibility of the consuming application.
 
 ## Architecture
 
@@ -10,8 +10,7 @@ This package is `@raurus/server`, a contract-first HTTP server built on [oRPC](h
 src/
 ├── index.ts             # Public barrel — exports raurus and CreateRuntimeOptions from src/runtime/
 ├── core/
-│   ├── index.ts              # Barrel: re-exports types + constants
-│   ├── constants.ts          # FAILURE_CODES, METADATA_TYPES (as const objects)
+│   ├── index.ts              # Barrel: re-exports types from types.ts + constants from @raurus/contract
 │   ├── types.ts              # Domain types, adapter contracts, factories
 │   └── types.test.ts         # Vitest type-level tests
 ├── adapters/
@@ -23,7 +22,7 @@ src/
     ├── index.ts          # Named export: raurus (alias for createRuntime) + CreateRuntimeOptions
     ├── models.ts         # failureCodeToStatus mapper (FailureCode → HTTP status)
     ├── routes.ts         # oRPC procedure implementations — wraps @raurus/contract contracts via implement()
-    ├── runtime.ts        # createRuntime() — creates OpenAPIHandler, returns { fetch }
+    ├── runtime.ts        # createRuntime() — creates RPCHandler, returns { fetch, close }
     └── utils.ts          # Logger factory (getLogger("server"))
 
 tsdown.config.ts          # Build config — entry: ["src/index.ts", "src/core/index.ts", "src/runtime/index.ts", "src/adapters/*/{index.ts,*/index.ts}"]
@@ -37,7 +36,7 @@ tsdown.config.ts          # Build config — entry: ["src/index.ts", "src/core/i
 - **Context-based dependency injection** — `routes.ts` defines a `ServerContext` interface `{ db: RuntimeDatabaseAdapter; storage: RuntimeStorageAdapter }`. The `implement(contracts).$context<ServerContext>()` threads adapters to every handler via the oRPC context, replacing Elysia's `.decorate()` pattern.
 - **Error handling** — Procedure handlers throw `ORPCError` with a typed error code (`NOT_IMPLEMENTED`, `NOT_FOUND`, `CONFLICT`) and an HTTP status derived from `failureCodeToStatus()`. The `NOT_IMPLEMENTED` error carries `{ name: string }` data as defined in the contract. The `NOT_FOUND` error is defined on the `deleteAsset` contract specifically. The `CONFLICT` error carries `{ name: string, detail?: string }` and is used when a placeholder type mismatch is detected.
 - **Logging** — Use `getLogger("server")` from `@raurus/logger` for runtime, route, and adapter logs. The server package only obtains loggers; the consuming app is responsible for calling `configure()` from `@logtape/logtape` once at startup.
-- **Fetch-compatible** — `createRuntime()` returns `{ fetch, close }`, backed by `OpenAPIHandler` from `@orpc/openapi/fetch`, compatible with Bun, Cloudflare Workers, and other WinterCG runtimes. The `close()` method gracefully shuts down both adapters. In serverless environments like Cloudflare Workers, there is no automatic shutdown hook — `close()` must be called explicitly by the consumer (e.g., in a scheduled handler or via a custom lifecycle wrapper). `new URL()` is used for baseUrl parsing instead of `URL.parse()` for broad Workers compatibility date support.
+- **Fetch-compatible** — `createRuntime()` returns `{ fetch, close }`, backed by `RPCHandler` from `@orpc/server/fetch`, compatible with Bun, Cloudflare Workers, and other WinterCG runtimes. The `close()` method gracefully shuts down both adapters. In serverless environments like Cloudflare Workers, there is no automatic shutdown hook — `close()` must be called explicitly by the consumer (e.g., in a scheduled handler or via a custom lifecycle wrapper). `new URL()` is used for baseUrl parsing instead of `URL.parse()` for broad Workers compatibility date support.
 - **Adapter lifecycle** — Every adapter implements `init()` and `close()` from `AdapterLifecycle` (inherited via `CommonRuntimeAdapter`). `init()` runs lazily on the first adapter method invocation via the `withAutoInit()` wrapper in `createRuntime()`. Adapter factories are synchronous and pure — they construct the adapter object but perform no side effects. All setup (connection opening, schema migrations, authentication) goes in `init()`. `close()` releases resources; after `close()`, all subsequent method calls throw.
 - **`withAutoInit()`** — A generic wrapper in `src/adapters/auto-init.ts` that guarantees `init()` runs exactly once, concurrency-safe, with retry-on-failure and a 5-second cooldown. Also poisons the adapter after `close()`. The wrapper is transparent to consumers — routes see the same `RuntimeDatabaseAdapter` / `RuntimeStorageAdapter` interface.
 - **Metadata upsert procedure** — `upsertMetadata` first calls `db.getOrSeedPlaceholderDefinition()` to validate/enforce type consistency, then delegates to `db.upsertContentMetadata()`. Throws `ORPCError("CONFLICT", { status: 409 })` on type mismatch, or `ORPCError("NOT_IMPLEMENTED", ...)` on adapter failure.
@@ -81,4 +80,4 @@ tsdown.config.ts          # Build config — entry: ["src/index.ts", "src/core/i
 - `utils.ts` exports a module-level `log` logger instance and re-exports `initializeLogger` from `@raurus/logger`
 - The `@raurus/contract` package is a `workspace:*` dependency; contracts are imported via `import { contracts, FAILURE_CODES } from "@raurus/contract"`. The `baseOc` contract defines three shared error types: `NOT_IMPLEMENTED`, `NOT_FOUND` (on `deleteAsset` only), and `CONFLICT`.
 - The libsql database adapter creates two tables on `init()`: `raurus_placeholder_definitions` (locks `placeholder_id → type` via `ON CONFLICT DO NOTHING`) and `raurus_metadata` (composite primary key `(placeholder_id, pathname)` with `link_url` column for link hrefs). Migration from the old single-PK schema is handled automatically by checking for the `pathname` column.
-- `@orpc/openapi` is used for the `OpenAPIHandler` import at `@orpc/openapi/fetch`
+- `@orpc/server` is used for the `RPCHandler` import at `@orpc/server/fetch`

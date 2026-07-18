@@ -21,7 +21,7 @@ src/
 
 - **Categories** — Every log is namespaced under the `["raurus", <packageName>]` category. Use `getLogger("<name>")` to grab a logger for a package, or `getLogger("<name>", "subCategory")` to add a deeper sub-category.
 - **`logTapeConfig`** — A ready-to-use `Config` object that consumers pass to LogTape's `configure()` function. It defines a `console` sink (with `ansiColorFormatter`), one logger per package in `RaurusPackageNames`, and a `noDebugFromOthers` filter.
-- **Library philosophy** — Per the LogTape guidance, this package **never calls `configure()` itself**. The consuming application is responsible for wiring up LogTape once at startup. The package only provides loggers and a config object.
+- **Library philosophy** — The package provides `logTapeConfig` for consumers to pass to LogTape's `configure()`, and also exports `initializeLogger()` which calls `configureSync(logTapeConfig)` for quick setup (e.g. in `debug` mode). For production use, consumers should call `configure(logTapeConfig)` themselves.
 
 ## Package Standards
 
@@ -43,4 +43,4 @@ src/
 - This package depends only on `@logtape/logtape` — file sinks, OpenTelemetry, Sentry, and other integrations should be added to `logTapeConfig` in `config.ts` only if every consuming app needs them
 - `@raurus/server` is a consumer of this package; add it to `RaurusPackageNames` if it ever needs its own dedicated log level entry (it is already covered by the `server` entry)
 - The `developmentLogLevels` / `productionLogLevels` maps default every package to `debug` in dev and `info` in prod; override per package by mutating these exports before passing `logTapeConfig` to `configure()`
-- `process.env.NODE_ENV` is read at module evaluation time. If you need runtime reconfiguration, build your own `Config` by spreading `logTapeConfig` and overriding `loggers` `loggers`
+- `process.env.NODE_ENV` is read at module evaluation time. If you need runtime reconfiguration, build your own `Config` by spreading `logTapeConfig` and overriding the `loggers` array

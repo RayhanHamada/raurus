@@ -11,11 +11,13 @@ raurus/
 ├── examples/
 │   └── next-example/          # next-example — Next.js 16 + React 19 + Tailwind CSS v4 app integrating @raurus/react
 ├── packages/
-│   ├── server/              # @raurus/server — Elysia runtime with built-in adapters and core domain types
+│   ├── server/              # @raurus/server — oRPC runtime with built-in adapters and core domain types
 │   ├── client/              # @raurus/client — Typed RPC client (RPCLink + createORPCClient) for the Raurus API
+│   ├── contract/            # @raurus/contract — Shared oRPC contracts (Valibot schemas + procedure definitions)
 │   ├── react/               # @raurus/react — React 19 visual editing component library (provider, hooks, editable components)
 │   ├── logger/              # @raurus/logger — LogTape wrapper: getLogger factory + a Config object
-│   └── tsconfig/            # @raurus/tsconfig — shared TypeScript base configuration
+│   ├── tsconfig/            # @raurus/tsconfig — shared TypeScript base configuration
+│   └── next/                # Reserved (currently empty)
 ├── apps/                   # Reserved for future app packages (currently empty)
 ├── turbo.json               # Turborepo pipeline config
 └── package.json             # Root workspace config (bun@1.3.14)
@@ -30,7 +32,7 @@ raurus/
 | **oxlint**          | Rust-based linter, configured via `ultracite` presets                  |
 | **oxfmt**           | Rust-based formatter, configured via `ultracite`                       |
 | **vitest**          | Unit testing framework                                                 |
-| **TypeScript 7**    | Type checking with `@tsconfig/strictest` as baseline                   |
+| **TypeScript 6**    | Type checking with `@tsconfig/strictest` as baseline                   |
 | **@changesets/cli** | Versioning and changelog management                                    |
 
 ## Standards
