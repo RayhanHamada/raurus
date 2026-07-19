@@ -1,5 +1,5 @@
 {
-    "extends": "@raurus/tsconfig/base.json",
+    "extends": "@raurus/tsconfig",
     "compilerOptions": {
         "paths": {
             "@/*": ["./src/*"]
