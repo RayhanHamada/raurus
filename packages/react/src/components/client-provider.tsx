@@ -1,4 +1,4 @@
-import { useCallback, useLayoutEffect, useMemo, useState } from "react";
+import { useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
 import type { FC, PropsWithChildren } from "react";
 
 import type { Data } from "@/common";
@@ -8,12 +8,17 @@ import type { IRaurusContext } from "@/context";
 export interface RaurusClientProviderProps {
     url: string | URL;
     enableEdit?: boolean;
+    initialPlaceholders?: Map<string, Data>;
 }
 
-export const RaurusClientProvider: FC<PropsWithChildren<RaurusClientProviderProps>> = ({ children, enableEdit }) => {
+export const RaurusClientProvider: FC<PropsWithChildren<RaurusClientProviderProps>> = ({
+    children,
+    enableEdit,
+    initialPlaceholders,
+}) => {
     const [selectedId, setSelectedId] = useState<string | null>(null);
     const [editingId, setEditingId] = useState<string | null>(null);
-    const [placeholders, setPlaceholders] = useState<Record<string, Data>>({});
+    const placeholdersRef = useRef<Map<string, Data>>(initialPlaceholders ?? new Map());
 
     const [internalEditMode, setInternalEditMode] = useState(false);
     const editMode = enableEdit ?? internalEditMode;
@@ -27,10 +32,17 @@ export const RaurusClientProvider: FC<PropsWithChildren<RaurusClientProviderProp
         [enableEdit]
     );
 
-    const getById = useCallback((id: string) => placeholders[id], [placeholders]);
+    const getById = useCallback((id: string) => placeholdersRef.current.get(id), []);
 
     const upsertPlaceholder = useCallback((id: string, data: Data) => {
-        setPlaceholders((prev) => ({ ...prev, [id]: data }));
+        placeholdersRef.current.set(id, data);
+    }, []);
+
+    const registerPlaceholder = useCallback((id: string, innerHTML: string) => {
+        if (placeholdersRef.current.has(id)) {
+            return;
+        }
+        placeholdersRef.current.set(id, { placeholder_id: id, type: "text" as const, content: innerHTML });
     }, []);
 
     const select = useCallback((id: string) => {
@@ -83,6 +95,7 @@ export const RaurusClientProvider: FC<PropsWithChildren<RaurusClientProviderProp
 
             getById,
             upsertPlaceholder,
+            registerPlaceholder,
         }),
         [
             editMode,
@@ -95,6 +108,7 @@ export const RaurusClientProvider: FC<PropsWithChildren<RaurusClientProviderProp
             setEditMode,
             getById,
             upsertPlaceholder,
+            registerPlaceholder,
         ]
     );
 

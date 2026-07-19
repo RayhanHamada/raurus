@@ -16,6 +16,8 @@ export interface IRaurusContext {
 
     getById: (id: string) => Data | undefined;
     upsertPlaceholder: (id: string, data: Data) => void;
+    /** Register a placeholder if not already present — called by editable components on mount. */
+    registerPlaceholder: (id: string, innerHTML: string) => void;
 }
 
 export const RaurusContext = createContext<IRaurusContext | null>(null);

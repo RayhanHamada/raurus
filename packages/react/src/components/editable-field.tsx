@@ -1,5 +1,5 @@
 import cn from "cnfast";
-import { createElement, useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { createElement, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import type { ComponentProps, FocusEventHandler, HTMLElementType, MouseEventHandler, RefObject } from "react";
 import { createPortal } from "react-dom";
 
@@ -111,15 +111,24 @@ function createEditableField<Tag extends EditableTag>(As: Tag) {
 
         useEditingFocus(ref, isEditing);
 
+        // Auto-register on mount if placeholder not already in store
+        useEffect(() => {
+            const el = ref.current;
+            if (!el) {
+                return;
+            }
+            ctx.registerPlaceholder(props.id, el.innerHTML);
+            // eslint-disable-next-line react-hooks/exhaustive-deps
+        }, []);
+
         const onClick = useCallback<MouseEventHandler<HTMLElement>>(
             (e) => {
                 if (ctx.editMode && As === "a") {
                     e.preventDefault();
                 }
 
-                propsOnClick?.(e);
-
                 if (!ctx.editMode) {
+                    propsOnClick?.(e);
                     return;
                 }
 
