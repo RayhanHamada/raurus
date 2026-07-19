@@ -7,7 +7,7 @@ import { useRaurus } from "@/hooks";
 
 type EditableTag = Extract<HTMLElementType, "a" | "div" | "p" | "span" | `h${1 | 2 | 3 | 4 | 5 | 6}`>;
 
-export interface EditableTextOwnProps {
+export interface EditableFieldOwnProps {
     id: string;
     plainText?: boolean;
 }
@@ -91,8 +91,8 @@ function useEditingFocus(ref: RefObject<HTMLElement | null>, editing: boolean) {
     }, [editing, ref]);
 }
 
-function createEditableTextElement<Tag extends EditableTag>(As: Tag) {
-    type Props = EditableTextOwnProps & Omit<ComponentProps<Tag>, "contentEditable">;
+function createEditableField<Tag extends EditableTag>(As: Tag) {
+    type Props = EditableFieldOwnProps & Omit<ComponentProps<Tag>, "contentEditable">;
 
     function Component(props: Props) {
         const ctx = useRaurus();
@@ -174,13 +174,13 @@ function createEditableTextElement<Tag extends EditableTag>(As: Tag) {
     return Component;
 }
 
-export const EditableLink = createEditableTextElement("a");
-export const EditableDiv = createEditableTextElement("div");
-export const EditableP = createEditableTextElement("p");
-export const EditableSpan = createEditableTextElement("span");
-export const EditableH1 = createEditableTextElement("h1");
-export const EditableH2 = createEditableTextElement("h2");
-export const EditableH3 = createEditableTextElement("h3");
-export const EditableH4 = createEditableTextElement("h4");
-export const EditableH5 = createEditableTextElement("h5");
-export const EditableH6 = createEditableTextElement("h6");
+export const EditableLink = createEditableField("a");
+export const EditableDiv = createEditableField("div");
+export const EditableP = createEditableField("p");
+export const EditableSpan = createEditableField("span");
+export const EditableH1 = createEditableField("h1");
+export const EditableH2 = createEditableField("h2");
+export const EditableH3 = createEditableField("h3");
+export const EditableH4 = createEditableField("h4");
+export const EditableH5 = createEditableField("h5");
+export const EditableH6 = createEditableField("h6");

@@ -12,7 +12,7 @@ import {
     EditableLink,
     EditableP,
     EditableSpan,
-} from "./editable-text";
+} from "./editable-field";
 
 const meta = {
     component: EditableH1,

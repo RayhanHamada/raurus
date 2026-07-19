@@ -16,7 +16,7 @@ src/
 ├── components/
 │   ├── index.ts                 # Barrel for all components
 │   ├── client-provider.tsx      # RaurusClientProvider — React context provider with useState-based state
-│   └── editable-text.tsx        # Editable text components (Div, Span, H1–H6, A, P)
+│   └── editable-field.tsx       # Editable field components (Div, Span, H1–H6, A, P)
 ├── context/
 │   └── index.ts                 # IRaurusContext interface + createContext
 ├── hooks/
@@ -33,9 +33,9 @@ src/
 - **Dual exports** — `@raurus/react/client` for client components and `@raurus/react/server` for server-only utilities. The `"use client"` directive is in `src/client.ts`, not on individual components.
 - **State management** — All editing state (`editMode`, `selectedId`, `editingId`, `placeholders`) is managed via React `useState` in the `RaurusClientProvider` and exposed through React context. Components consume state via `useRaurus()` — there is no external state library. Portal-rendered components (IdTooltip, future overlays) access state through context like any other component.
 - **RaurusClientProvider** — Context provider managing all editing state with React `useState` and exposing the `IRaurusContext` interface. Accepts `url` and `editMode` (defaults to `false`). Deselection is handled globally on mousedown events outside `[data-raurus-id]` elements via `useLayoutEffect`.
-- **Editable text components** — Factory-pattern generated components (`EditableDiv`, `EditableSpan`, `EditableH1`–`EditableH6`, `EditableLink`) created by `createEditableTextElement()`. Each handles select→edit two-click flow, focus management, hover state, an `IdTooltip` portal overlay showing the component's `id`, and visual state via `data-raurus-*` attributes. The `EditableLink` component prevents default click behavior in edit mode to allow selection without navigation.
+- **Editable field components** — Factory-pattern generated components (`EditableDiv`, `EditableSpan`, `EditableH1`–`EditableH6`, `EditableLink`) created by `createEditableField()`. Each handles select→edit two-click flow, focus management, hover state, an `IdTooltip` portal overlay showing the component's `id`, and visual state via `data-raurus-*` attributes. The `EditableLink` component prevents default click behavior in edit mode to allow selection without navigation.
 
-- **Placeholder ID convention** — Editable components require an `id` prop (enforced by TypeScript via `EditableTextOwnProps`). IDs are page-local — they only need to be unique within a single page, not globally. Use `kebab-case` descriptive names (e.g., `hero-title`, `nav.cta`, `footer.copyright`). The server's `(placeholder_id, pathname)` composite key handles uniqueness across pages, so the same ID (`hero-title`) can exist on `/` and `/about` with different values. Each `(placeholder_id, pathname)` pair is independent — upserts always replace the existing row. There is no type locking; a placeholder can change type between edits.
+- **Placeholder ID convention** — Editable components require an `id` prop (enforced by TypeScript via `EditableFieldOwnProps`). IDs are page-local — they only need to be unique within a single page, not globally. Use `kebab-case` descriptive names (e.g., `hero-title`, `nav.cta`, `footer.copyright`). The server's `(placeholder_id, pathname)` composite key handles uniqueness across pages, so the same ID (`hero-title`) can exist on `/` and `/about` with different values. Each `(placeholder_id, pathname)` pair is independent — upserts always replace the existing row. There is no type locking; a placeholder can change type between edits.
 - **IdTooltip** — A portal-rendered tooltip that appears above editable elements on hover, select, or edit (when in edit mode). Uses `useLayoutEffect` for position calculation relative to the target element.
 - **Tailwind v4 prefix** — All Tailwind utilities are prefixed with `raurus:` to avoid collisions with consumer stylesheets. CSS is sourced from `./components/` directory.
 - **cnfast** — Uses `cnfast` for className merging (not clsx/classnames).

@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 import { useRaurus } from "../hooks/useRaurus";
-import { EditableH1 } from "./editable-text";
+import { EditableH1 } from "./editable-field";
 
 function EditorStatus() {
     const ctx = useRaurus();
