@@ -10,22 +10,22 @@ export interface RaurusClientProviderProps {
     enableEdit?: boolean;
 }
 
-const DEFAULT_PROPS = {
-    enableEdit: false,
-} satisfies Partial<RaurusClientProviderProps>;
-
-export const RaurusClientProvider: FC<PropsWithChildren<RaurusClientProviderProps>> = ({
-    children,
-    enableEdit = DEFAULT_PROPS.enableEdit,
-}) => {
-    const [editMode, setEditMode] = useState(enableEdit);
+export const RaurusClientProvider: FC<PropsWithChildren<RaurusClientProviderProps>> = ({ children, enableEdit }) => {
     const [selectedId, setSelectedId] = useState<string | null>(null);
     const [editingId, setEditingId] = useState<string | null>(null);
     const [placeholders, setPlaceholders] = useState<Record<string, Data>>({});
 
-    const toggleEditMode = useCallback(() => {
-        setEditMode((prev) => !prev);
-    }, []);
+    const [internalEditMode, setInternalEditMode] = useState(false);
+    const editMode = enableEdit ?? internalEditMode;
+
+    const setEditMode = useCallback(
+        (value: boolean) => {
+            if (enableEdit === undefined) {
+                setInternalEditMode(value);
+            }
+        },
+        [enableEdit]
+    );
 
     const getById = useCallback((id: string) => placeholders[id], [placeholders]);
 
@@ -79,7 +79,6 @@ export const RaurusClientProvider: FC<PropsWithChildren<RaurusClientProviderProp
             deselect,
 
             editingId,
-            toggleEditMode,
             setEditMode,
 
             getById,
@@ -93,7 +92,6 @@ export const RaurusClientProvider: FC<PropsWithChildren<RaurusClientProviderProp
             stopEditing,
             select,
             deselect,
-            toggleEditMode,
             setEditMode,
             getById,
             upsertPlaceholder,

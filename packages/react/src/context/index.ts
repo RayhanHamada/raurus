@@ -4,7 +4,6 @@ import type { Data } from "@/common";
 
 export interface IRaurusContext {
     editMode: boolean;
-    toggleEditMode: () => void;
     setEditMode: (mode: boolean) => void;
 
     selectedId: string | null;
