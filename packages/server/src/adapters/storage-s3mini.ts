@@ -2,7 +2,7 @@ import { getLogger } from "@raurus/logger";
 import { S3mini } from "s3mini";
 import type { S3Config } from "s3mini";
 
-import type { RuntimeStorageAdapterBaseConfig, RuntimeStorageAdapterFactory } from "@/core";
+import { FAILURE_CODES, type RuntimeStorageAdapterBaseConfig, type RuntimeStorageAdapterFactory } from "@/core";
 
 const adapterId = "s3-mini-storage-adapter";
 const log = getLogger("server", adapterId);
@@ -41,7 +41,7 @@ export const s3MiniStorageAdapter: RuntimeStorageAdapterFactory<S3MiniStorageAda
 
                     return {
                         ok: false,
-                        code: "CONNECTION" as const,
+                        code: FAILURE_CODES.CONNECTION,
                         error: new Error("Bucket does not exist"),
                     };
                 }
@@ -58,7 +58,7 @@ export const s3MiniStorageAdapter: RuntimeStorageAdapterFactory<S3MiniStorageAda
 
                 return {
                     ok: false,
-                    code: "CONNECTION" as const,
+                    code: FAILURE_CODES.CONNECTION,
                     error: error instanceof Error ? error : new Error("Unknown error"),
                 };
             }
@@ -79,7 +79,7 @@ export const s3MiniStorageAdapter: RuntimeStorageAdapterFactory<S3MiniStorageAda
 
                 return {
                     ok: false,
-                    code: "UPSTREAM" as const,
+                    code: FAILURE_CODES.UPSTREAM,
                     error: error instanceof Error ? error : new Error("Unknown error"),
                 };
             }
@@ -92,7 +92,7 @@ export const s3MiniStorageAdapter: RuntimeStorageAdapterFactory<S3MiniStorageAda
                     log.warning("Delete asset returned false (object may not exist)", { assetKey });
                     return {
                         ok: false,
-                        code: "NOT_FOUND" as const,
+                        code: FAILURE_CODES.NOT_FOUND,
                         error: new Error(`Object not found: ${assetKey}`),
                     };
                 }
@@ -104,7 +104,7 @@ export const s3MiniStorageAdapter: RuntimeStorageAdapterFactory<S3MiniStorageAda
 
                 return {
                     ok: false,
-                    code: "UPSTREAM" as const,
+                    code: FAILURE_CODES.UPSTREAM,
                     error: error instanceof Error ? error : new Error("Unknown error"),
                 };
             }
