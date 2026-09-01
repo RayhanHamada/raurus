@@ -62,4 +62,16 @@ raurus/
 - Ignored paths for linting and formatting are defined in `oxignore.json`
 - Agent skills are locked via `skills-lock.json` and stored in `.agents/skills/`
 - Domain types and adapter contracts live in `packages/server/src/core/` and are exported via `@raurus/server/core`
-- Adapters live as flat files under `packages/server/src/adapters/` (e.g. `database-libsql.ts`, `storage-s3mini.ts`) and are exported via a barrel `index.ts` — real adapter packages (e.g. for Cloudflare, S3) should also be workspace packages, not inlined into apps
+## Agent skills
+
+### Issue tracker
+
+Issues are tracked in GitHub Issues via the `gh` CLI. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Default canonical labels: `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context — `CONTEXT.md` + `docs/adr/` at repo root. See `docs/agents/domain.md`.
