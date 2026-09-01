@@ -11,7 +11,7 @@
         "typecheck": "tsc --noEmit"
     },
     "dependencies": {
-        "@orpc/contract": "^1.14.8",
+        "@orpc/contract": "^1.15.0",
         "valibot": "^1.4.2"
     },
     "devDependencies": {

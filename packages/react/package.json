@@ -37,7 +37,7 @@
     },
     "dependencies": {
         "@vitest/browser": "^4.1.10",
-        "cnfast": "^0.0.8"
+        "cnfast": "^0.1.0"
     },
     "devDependencies": {
         "@bosh-code/tsdown-plugin-inject-css": "^2.0.0",

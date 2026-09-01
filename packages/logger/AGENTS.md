@@ -34,7 +34,7 @@ src/
 ## Workflow
 
 - Read the root `AGENTS.md` before planning or implementing changes in this package
-- Build with `bun run build` (uses tsdown with exports mode)
+- **No build step** — this package is consumed as source by workspace consumers (e.g. `@raurus/server` bundles it). `bun run build` is a no-op.
 - Run tests with `bun run test` (vitest)
 - Type-check with `bun run typecheck`
 
